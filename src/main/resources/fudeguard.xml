@@ -1,0 +1,16 @@
+<ProcessList>
+    <Process Enable="yes" Name="hotbackup" Status="start">
+        <WorkPath>/home/nebula/esb/bin</WorkPath>
+        <StartCmd>sh hbu.sh</StartCmd>
+        <StopCmd TimeOut="5" />
+        <CheckCmd Interval="300" NumFail="3" RunTimeOut="60" />
+        <Dependencies />
+        <Profiles /><PidFile />
+        <Matches>
+            <Match>hotbackup</Match>
+        </Matches>
+    </Process>
+    <Process Enable="yes" Name="KafkaBase" Status="start">
+        <WorkPath>/opt/esb/kafka/bin</WorkPath>
+        <StartCmd>sh kafkaGuard.sh</StartCmd>
+        <StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /><Matches><Match>kafkaGuard.sh</Match></Matches></Process><Process Enable="yes" Name="Nebula_KFKESB" Status="start"><WorkPath>/home/nebula/esb/bin</WorkPath><StartCmd>./Loki.sh start</StartCmd><StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /><Matches><Match>com.loki.KafKa</Match></Matches></Process><Process Enable="yes" Name="Nebula_Uranus_Slave" Status="start"><WorkPath>/home/nebula//app_uranus/bin/</WorkPath><StartCmd>./Loki.sh start</StartCmd><StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /><Matches><Match>Uranus_Slave</Match></Matches></Process><Process Enable="yes" Name="snmpd" Status="start"><WorkPath>/opt/FUDE-1.1/fude/bin</WorkPath><StartCmd>fudeservice snmpd start</StartCmd><StopCmd TimeOut="11">fudeservice snmpd stop</StopCmd><CheckCmd Interval="300" NumFail="3" RunTimeOut="10">python fudeservice.py snmpd check</CheckCmd><Dependencies /><Profiles /><PidFile>/opt/FUDE-1.1/fude/var/run/snmpd.pid</PidFile><Matches /></Process><Process Enable="yes" Name="KafkaMonitor" Status="start"><WorkPath>/opt/esb/kafka/bin</WorkPath><StartCmd>sh kafkaMonitor.sh</StartCmd><StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /><Matches><Match>OffsetGetterWeb</Match></Matches></Process><Process Enable="yes" Name="LogCollect_FlumeAgent" Status="stop"><WorkPath>/home/LogCollect/FlumeAgent</WorkPath><StartCmd>sh ./start.sh</StartCmd><StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /><Matches><Match>LogCollect_FlumeAgent</Match><Match>org.apache.flume.node.Application</Match></Matches></Process><Process Enable="yes" Name="UranusMonitor" Status="start"><WorkPath>/home/nebula/NebulaPF_App_UranusMonitor/</WorkPath><StartCmd>sh reStart.sh</StartCmd><StopCmd TimeOut="5" /><CheckCmd Interval="300" NumFail="3" RunTimeOut="60" /><Dependencies /><Profiles /><PidFile /></ProcessList>

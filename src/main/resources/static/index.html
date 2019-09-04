@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>建表模块</title>
+  <link href="fh-ui/css/fh-ui.min.css" rel="stylesheet">
+  <link href="css/create.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="pg-container">
+    <div class="pg-hd">
+      <h1 class="logo">F-Pointer</h1>
+      <ul class="nav">
+        <!--<li class="btn-group"><button type="button" class="btn btn-default"><a href="javascript:;">FP相关</a></button></li>-->
+        <li class="btn-group current"><button type="button" class="btn btn-primary"><a href="index.html">建表</a></button></li>
+        <li class="btn-group">
+          <button type="button" class="btn btn-default"><a href="./html/database_upload.html">日志检测</a></button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="./html/fail_sql.html">不合格SQL展示</a></li>
+            <li><a href="./html/error.html">报错信息展示</a></li>
+          </ul>
+        </li>
+        <li class="btn-group">
+          <button type="button" class="btn btn-default"><a href="./html/analysis.html">业务分析</a></button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="./html/analysis_detail.html">业务分析详情</a></li>
+            <li><a href="./html/sql_detail.html">SQL展示详情</a></li>
+          </ul>
+        </li>
+      </ul>
+      <a href="./html/fp.html" class="fp" title="FP小叮当"><span>FP小叮当</span><i class="aidicon aidicon-help-circle"></i></a>
+    </div>
+    <div class="pg-bd">
+      <div class="content-wrapper">
+        <div class="group step1">
+          <h2 class="title">⒈上传业务调查表</h2>
+          <div class="content">
+            <button type="button" class="btn btn-primary file-upload">
+              <span class="aidicon aidicon-upload margin-right-small-3"></span>文件上传
+            </button>
+            <input class="file-input" type="file" accept=".xls">
+          </div>
+        </div>
+        <div class="group step2">
+          <h2 class="title">⒉检验元数据</h2>
+          <div class="content">
+            <div class="test-list">
+              <h4>检验项：</h4>
+              <ul>
+                  <li>
+                      <i class="list-group-icon aidicon aidicon-star"></i>表名不能为空
+                  </li>
+                  <li>
+                      <i class="list-group-icon aidicon aidicon-star"></i>建表类型是否是映射表或者物理表
+                  </li>
+                  <li>
+                      <i class="list-group-icon aidicon aidicon-star"></i>存储物理表名不能为空
+                  </li>
+                  <li>
+                      <i class="list-group-icon aidicon aidicon-star"></i>表字段类型转换关系是否存在
+                  </li>
+              </ul>
+            </div>
+            <button type="button" class="btn btn-primary test-btn disabled"><span>开始检验</span><div class="loading loading-white loading-min-style"></div></button>
+          </div>
+        </div>
+        <div class="group step3">
+          <h2 class="title">⒊自动生成建表脚本</h2>
+          <div class="content">
+            <p>建表脚本仅供参考，需要自行修改</p>
+            <div class="progress progress-ty">
+              <div class="progress-bars">
+                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                  aria-valuemax="100" style="width: 0%;">
+                </div>
+              </div>
+              <span class="progress-percent">0%</span>
+            </div>
+            <button type="button" class="btn btn-primary create-btn disabled"><span>开始生成</span><div class="loading loading-white loading-min-style"></div></button>
+          </div>
+        </div>
+        <div class="group step4">
+          <h2 class="title">⒋下载建表脚本</h2>
+          <div class="content"><button type="button" class="btn btn-primary download-btn disabled"><span>下载</span><div class="loading loading-white loading-min-style"></div></button></div>
+          
+        </div>
+        <div class="group step5">
+          <h2 class="title">⒌业务元数据信息入库</h2>
+          <div class="content"><button type="button" class="btn btn-primary start-btn disabled"><span>开始</span><div class="loading loading-white loading-min-style"></div></button></div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <span class="btn btn-success fileinput-button">
+    <i class="glyphicon glyphicon-plus"></i>
+    <span>选择文件...</span>
+      <!-- The file input field used as target for the file upload widget -->
+    <input id="fileupload" type="file" name="file[]" multiple>
+</span>
+  </div>
+  </div>
+  <script src="fh-ui/js/lib/jquery/jquery.min.js"></script>
+  <script src="fh-ui/js/fh-ui.min.js"></script>
+  <script src="js/create.js"></script>
+  <script>
+    $('.btn-group').on('mouseenter', function () {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-default').removeClass('btn-default').addClass('btn-primary');
+      }
+    });
+    $('.btn-group').on('mouseleave', function () {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-primary').removeClass('btn-primary').addClass('btn-default');
+      }
+    });
+
+
+    $('#fileupload').fileupload({
+      url: "<%=request.getContextPath()%>/log/upload",
+      sequentialUploads: true,
+      singleFileUploads: false,
+      add: function (e, data) {
+        data.context = $('<button/>').text('Upload')
+                .appendTo(document.body)
+                .click(function () {
+                  data.context = $('<p/>').text('Uploading...').replaceAll($(this));
+                  data.submit();
+                });
+      },
+      done: function (e, data) {
+        $.each(data.files, function (index, file) {
+          $('<p/>').text(file.name).appendTo(document.body);
+        });     }
+    });
+  </script>
+</body>
+
+</html>

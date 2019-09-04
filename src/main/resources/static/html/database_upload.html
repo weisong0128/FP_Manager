@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>日志检测</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet">
+  <link href="../css/database_upload.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="pg-container">
+    <div class="pg-hd">
+      <h1 class="logo">F-Pointer</h1>
+      <ul class="nav">
+        <!--<li class="btn-group"><button type="button" class="btn btn-default"><a href="javascript:;">FP相关</a></button></li>-->
+        <li class="btn-group"><button type="button" class="btn btn-default"><a href="./create.html">建表</a></button></li>
+        <li class="btn-group current">
+          <button type="button" class="btn btn-primary"><a href="./database_upload.html">日志检测</a></button>
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="./fail_sql.html">不合格SQL展示</a></li>
+            <li><a href="./error.html">报错信息展示</a></li>
+          </ul>
+        </li>
+        <li class="btn-group">
+          <button type="button" class="btn btn-default"><a href="./analysis.html">业务分析</a></button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="./analysis_detail.html">业务分析详情</a></li>
+            <li><a href="./sql_detail.html">SQL展示详情</a></li>
+          </ul>
+        </li>
+      </ul>
+      <a href="./fp.html" class="fp" title="FP小叮当"><span>FP小叮当</span><i class="aidicon aidicon-help-circle"></i></a>
+    </div>
+    <div class="pg-bd">
+      <h2>日志上传</h2>
+      <div class="form-wrapper form-horizon">
+        <p>请填写相关配置信息</p>
+        <form class="form">
+          <div class="form-group clearfix">
+            <label class="form-label">日志地址：</label>
+            <input type="text" class="form-control" required="" name="path"  placeholder="请输入日志地址">
+          </div>
+          <div class="form-group clearfix">
+            <label class="form-label">项目名称：</label>
+            <input type="text" id="typeahead2" class="form-control" name="pjName" required="" mobile1="true" placeholder="请输入项目名称">
+          </div>
+          <div class="form-group clearfix">
+              <label class="form-label">项目地址：</label>
+              <input type="text" class="form-control" name="pjLocation" required="" mobile1="true" placeholder="请输入项目地址">
+            </div>
+        </form>
+      </div>
+      <button type="button" class="btn btn-primary submit">
+        <span>开始分析</span>
+        <div class="loading loading-white loading-min-style"></div>
+      </button>
+    </div>
+  </div>
+  <script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+  <script src="../fh-ui/js/fh-ui.min.js"></script>
+  <script src="../fh-ui/js/plugins/bootstrap3-typeahead/bootstrap3-typeahead.min.js"></script>
+  <script src="../fh-ui/js/plugins/jquery-validate/jquery.validate.min.js"></script> 
+  <script src="../js/database_upload.js"></script>
+  <script>
+    $('.btn-group').on('mouseenter', function () {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-default').removeClass('btn-default').addClass('btn-primary');
+      }
+    });
+    $('.btn-group').on('mouseleave', function () {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-primary').removeClass('btn-primary').addClass('btn-default');
+      }
+    });
+  </script>
+</body>
+
+</html>

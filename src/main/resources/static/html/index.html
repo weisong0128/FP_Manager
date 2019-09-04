@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet">
+  <link href="../css/index.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="pg-container">
+    <div class="pg-hd">
+      <h1 class="logo">F-Pointer</h1>
+      <ul class="nav">
+        <!--<li class="btn-group"><button type="button" class="btn btn-default">FP相关</button></li>-->
+        <li class="btn-group"><button type="button" class="btn btn-default">建表</button></li>
+        <li class="btn-group current">
+          <!-- <span>日志检测</span>
+          <i class="aidicon aidicon-menu-down dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+          <ul class="dropdown-menu">
+              <li><a href="javascript:void(0)">日志上传</a></li>
+              <li><a href="javascript:void(0)">不合格SQL展示</a></li>
+              <li><a href="javascript:void(0)">报错信息展示</a></li>
+              <li><a href="javascript:void(0)">FP小叮当</a></li>
+          </ul> -->
+          <button type="button" class="btn btn-primary">日志检测</button>
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a href="javascript:void(0)">日志上传</a></li>
+            <li><a href="javascript:void(0)">不合格SQL展示</a></li>
+            <li><a href="javascript:void(0)">报错信息展示</a></li>
+            <li><a href="javascript:void(0)">FP小叮当</a></li>
+          </ul>
+        </li>
+        <li class="btn-group">
+            <button type="button" class="btn btn-default">业务分析</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="javascript:void(0)">业务分析详情</a></li>
+              <li><a href="javascript:void(0)">SQL展示详情</a></li>
+            </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="pg-bd"></div>
+  </div>
+  <script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+  <script src="../fh-ui/js/fh-ui.min.js"></script>
+  <script>
+    $('.btn-group').on('mouseenter', function() {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-default').removeClass('btn-default').addClass('btn-primary');
+      }
+    });
+    $('.btn-group').on('mouseleave', function() {
+      if (!$(this).hasClass('current')) {
+        $(this).find('.btn-primary').removeClass('btn-primary').addClass('btn-default');
+      }
+    });
+  </script>
+</body>
+
+</html>
