@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -395,15 +396,10 @@ public class FileUtil {
 
 
     public static void main(String[] args) {
-        // List<File> files = cutFile(new File("D:\\test\\新建文件夹 (2)\\cl.log"), 10 * 1024 * 1024);
-        ArrayList<File> files = new ArrayList<>();
-        //findAllSizeMore(new File("D:\\test\\新建文件夹 (2)"), 5 * 1024 * 1024);
 
-       /* getSizeLLesser(new File("D:\\test\\新建文件夹 (2)"), 6 * 1024 * 1024, files);
-        System.out.println(files);*/
-
-        deleteAllDirect(new File("D:\\test\\新建文件夹 (2)"));
-
+        String q = "sdagafg123";
+        int i = Integer.valueOf(q);
+        System.out.println(i);
     }
 
     public static List<File> cutFile(File orginalFile, long oneFileLength) {
@@ -518,10 +514,11 @@ public class FileUtil {
     }
 
     public static void findAllSizeMore(File rootFile, long size) {
+        long size1= FileUtil.getByteSize(1) + size;
         if (rootFile.exists() && rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
             for (File file : files) {
-                if (file.length() > size) {
+                if (file.length() > size1) {
                     cutFile(file, size);
                 }
             }
@@ -555,6 +552,15 @@ public class FileUtil {
                 if (file.isDirectory()) {
                     deleteDirect(file.getPath());
                 }
+            }
+        }
+    }
+
+    public static void deleteRootPathDir(File rootFile) {
+        File[] files = rootFile.listFiles();
+        for (File file : files) {
+            if (file.isDirectory() && file.getName().contains("_cut")) {
+                deleteAllDirect(file);
             }
         }
     }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +31,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Service
 public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
-
-    static ConcurrentHashMap<String, Map<String, Boolean>> hashMap = new ConcurrentHashMap<>();
 
     Logger logging = LoggerFactory.getLogger(LogAnalyzeServiceImpl.class);
     @Autowired
@@ -80,53 +79,61 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Override
     public boolean startAnalyse(String project, String location, String uuid, Long analyseTime) {
         String dir = uploadLogPath + File.separator + location + File.separator + project + File.separator + analyseTime;
-        FileUtil.replacerConf(uploadLogPath + File.separator + config,
+       /* FileUtil.replacerConf(uploadLogPath + File.separator + config,
                 "cl_dir=" + dir + File.separator,
                 "business=" + project,
                 "relief=" + location,
                 "analyseTime=" + analyseTime,
-                config);
+                config);*/
         File direct = new File(dir);
         ArrayList<File> fileArrayList1 = new ArrayList<>();
         long byteSize = FileUtil.getByteSize(10);
         FileUtil.findAllSizeMore(direct, byteSize);
         FileUtil.getSizeLLesser(direct, byteSize, fileArrayList1);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
-        upload(map.get(uuid));
+        upload(map.get(uuid),dir);
         return true;
     }
 
 
-    public void upload(AnalyseProcess analyseProcess) {
+    public void upload(AnalyseProcess analyseProcess,String dir) {
+
         Map<String, FileStatus> fileMap = analyseProcess.getFileMap();
         String uuid = analyseProcess.getUuid();
         List<File> fileArrayList1 = map2FileList(fileMap);
         for (int i = 0; i < fileArrayList1.size(); i++) {
             File file = fileArrayList1.get(i);
             String filePath = file.getPath();
+            Long createTime = analyseProcess.getCreateTime();
+            String projectName = analyseProcess.getProjectName();
+            String projectLocation = analyseProcess.getProjectLocation();
             pool.execute(() -> {
                 //调用脚本方法
-                String bashCommand = "sh /home/nebula/analys.sh " + filePath + "";
-                //boolean upload = ShellUtil.execSh(bashCommand,uuid,filePath);
+                String bashCommand = "sh "+shellPath+File.separator+"fp_analysis.sh  " + filePath + " " + projectName + " " + projectLocation + " " + createTime;
                 boolean upload = ShellUtil.newShSuccess(bashCommand, uuid, filePath);
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
                 LogAnalze logAnalze = fileStatus.setFinish(true);
                 if (logAnalze != null) {
                     //如果本次分析完整
-                    String objectSerializePath = analyseProcess1.getObjectSerializePath(uploadLogPath);
-                    if (analyseProcess1.getFileMap().size() == 0) {
-                        File file1 = new File(objectSerializePath);
-                        if (file1.exists()) {
-                            file1.delete();
+                    try {
+                        String objectSerializePath = analyseProcess1.getObjectSerializePath(dir);
+                        if (analyseProcess1.getUnSuccessFileMap().size() == 0) {
+                            File file1 = new File(objectSerializePath);
+                            if (file1.exists()&&file1.getParentFile().getParent().equals(analyseProcess.getUploadFileRootPath())) {
+                                file1.delete();
+                            }
+                        } else {
+                            FileUtil.ObjectOutputStreamDisk(analyseProcess,objectSerializePath);
                         }
-                    } else {
-                        FileUtil.ObjectInputStreamDisk(objectSerializePath);
+                        logAnalzeDao.updateLogAnalze(logAnalze);
+                        map.remove(uuid);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    logAnalzeDao.updateLogAnalze(logAnalze);
-                    map.remove(uuid);
                 }
             });
+            sleep(1000);
         }
     }
 

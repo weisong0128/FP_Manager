@@ -2,9 +2,10 @@ package com.fiberhome.fp.util;
 
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.listener.event.FileStatus;
-import com.fiberhome.fp.pojo.ShellReturnFlags;
+import com.fiberhome.fp.pojo.LogAnalze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.Date;
@@ -37,30 +38,35 @@ public class ShellUtil {
     }
 
 
-    public static boolean newShSuccess(String bashCommand,String uuid,String filePath) {
-        ProcessBuilder processBuilder = new ProcessBuilder(bashCommand);
-        processBuilder.redirectErrorStream(true);
+    public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
+        logging.info(String.format("执行%s脚本", bashCommand));
+        Process pro = null;
+        try {
+            pro = Runtime.getRuntime().exec(bashCommand);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         int success = -1;
         try {
-            Process pro = processBuilder.start();
+            Process finalPro = pro;
+            AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
+            FileStatus fileStatus = analyseProcess.getFileMap().get(filePath);
+            pool.execute(() -> errorMsg(finalPro.getErrorStream(), fileStatus));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-            StringBuilder builder = new StringBuilder();
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
                 line = new String(line.getBytes(), "utf-8");
-                logging.info(String.format("执行%s脚本", bashCommand));
-                FileStatus fileStatus = AnalyseProcess.map.get(uuid).getFileMap().get(filePath);
-                if (line.contains(ShellReturnFlags.successFlag)) {
-                    fileStatus.setSuccess(true);
-                } else if (line.contains(ShellReturnFlags.showAnalyseFlag)) {
-                    fileStatus.setShow(true);
-                } else if (line.contains(ShellReturnFlags.errorFlag)) {
-                    fileStatus.setErrorResult("错误原因");
+                if (line.contains("analyse progress")) {
+                    String[] split = line.split(" ");
+                    Integer progress = Integer.valueOf(split[split.length - 1]);
+                    if (progress == 10) {
+                        fileStatus.setSuccess(true);
+                    } else if (progress == 5) {
+                        fileStatus.setShow(true);
+                    }
                 }
-                builder.append(line + "\n");
             }
-             success = pro.waitFor();
-            logging.info(builder.toString());
+            success = pro.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,6 +75,7 @@ public class ShellUtil {
         }
         return false;
     }
+
     public static boolean shSuccess(String bashCommand, String logPath, String configPath) throws IOException, InterruptedException {
         Process pro = Runtime.getRuntime().exec(bashCommand);
         int status = pro.waitFor();
@@ -153,7 +160,7 @@ public class ShellUtil {
     }
 
 
-    public static boolean execSh(String bashCommand,String uuid,String filePath,String ww) throws IOException, InterruptedException {
+    public static boolean execSh(String bashCommand, String uuid, String filePath, String ww) throws IOException, InterruptedException {
         Process pro = Runtime.getRuntime().exec(bashCommand);
 //        String path = "/home/analysis/fptool";
         pool.execute(() -> errorMsg(pro.getErrorStream()));
@@ -165,16 +172,6 @@ public class ShellUtil {
                     if (!((line = bufferedReader.readLine()) != null)) break;
                     line = new String(line.getBytes(), "utf-8");
                     logging.info(String.format("执行%s脚本：输出%s", bashCommand, line));
-                    if (line.contains(ShellReturnFlags.successFlag)) {
-                        FileStatus fileStatus = AnalyseProcess.map.get(uuid).getFileMap().get(filePath);
-                        fileStatus.setFinish(true);
-                    } else if (line.contains(ShellReturnFlags.showAnalyseFlag)) {
-                        FileStatus fileStatus = AnalyseProcess.map.get(uuid).getFileMap().get(filePath);
-                        fileStatus.setShow(true);
-                    } else if (line.contains(ShellReturnFlags.errorFlag)) {
-                        FileStatus fileStatus = AnalyseProcess.map.get(uuid).getFileMap().get(filePath);
-                       fileStatus.setErrorResult("错误原因");
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -185,6 +182,37 @@ public class ShellUtil {
         return false;
     }
 
+
+    public static void errorMsg(InputStream errorStream, FileStatus fileStatus) {
+        StringBuilder builder = new StringBuilder();
+        // logging.info("执行错误输出流");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
+        try {
+            String line = null;
+            while ((line = bufferedReader.readLine()) != null) {
+                line = new String(line.getBytes(), "utf-8");
+                builder.append(line + "\r\n");
+            }
+            if (builder.length() > 0) {
+                fileStatus.setErrorResult(builder.toString());
+                logging.info("错误输出流结果：" + builder.toString());
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                errorStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            errorStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void errorMsg(InputStream errorStream) {
         logging.info("执行错误输出流");

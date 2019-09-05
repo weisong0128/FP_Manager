@@ -2,16 +2,20 @@ package com.fiberhome.fp.listener.event;
 
 
 import com.fiberhome.fp.pojo.LogAnalze;
+import com.fiberhome.fp.service.impl.LogAnalyzeServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class AnalyseProcess {
+public class AnalyseProcess implements Serializable {
     /*  public ConcurrentHashMap<String, List<Boolean>> hashMap = new ConcurrentHashMap();*/
-
+    Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
     public static ConcurrentHashMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
     //进程
     private int process;
@@ -22,13 +26,15 @@ public class AnalyseProcess {
     private int finishCount;
     private int showCount;
     private int successCount;
-    private Map<String, FileStatus> fileMap;
-    private Map<String, String> errorResultMap;
+    private ConcurrentHashMap<String, FileStatus> fileMap;
+    private ConcurrentHashMap<String, String> errorResultMap;
 
     private String projectName;
     private String projectLocation;
     private Long createTime;
     private String uuid;
+    private String uploadFileRootPath;
+    private ConcurrentHashMap<String, FileStatus> unSuccessFileMap;
 
 
     public static ConcurrentHashMap<String, AnalyseProcess> getMap() {
@@ -41,7 +47,7 @@ public class AnalyseProcess {
 
     public static void init(String uuid, List<File> fileList, String projectName, String projectLocation, Long createTime, String rootPath) {
 
-        HashMap<String, FileStatus> statusHashMap = new HashMap<>();
+        ConcurrentHashMap<String, FileStatus> statusHashMap = new ConcurrentHashMap<>();
         AnalyseProcess analyseProcess = new AnalyseProcess();
         for (File file : fileList) {
             FileStatus fileStatus = new FileStatus();
@@ -62,8 +68,10 @@ public class AnalyseProcess {
         analyseProcess.setProjectName(projectName);
         analyseProcess.setProjectLocation(projectLocation);
         analyseProcess.setCreateTime(createTime);
-        analyseProcess.setErrorResultMap(new HashMap<String, String>());
+        analyseProcess.setErrorResultMap(new ConcurrentHashMap<>());
         analyseProcess.setUuid(uuid);
+        analyseProcess.setUnSuccessFileMap(new ConcurrentHashMap<>());
+        analyseProcess.setUploadFileRootPath(rootPath);
         map.put(uuid, analyseProcess);
     }
 
@@ -98,11 +106,11 @@ public class AnalyseProcess {
         isShow = show;
     }
 
-    public Map<String, FileStatus> getFileMap() {
+    public ConcurrentHashMap<String, FileStatus> getFileMap() {
         return fileMap;
     }
 
-    public void setFileMap(Map<String, FileStatus> fileMap) {
+    public void setFileMap(ConcurrentHashMap<String, FileStatus> fileMap) {
         this.fileMap = fileMap;
     }
 
@@ -112,19 +120,25 @@ public class AnalyseProcess {
     }
 
     public void setShowCount(int showCount) {
-        synchronized (this.getClass()) {
-            this.showCount = showCount;
-            if ((showCount * 100) / count == 100) {
-                setShow(true);
-            }
+        this.showCount = showCount;
+        if (this.showCount==count) {
+            setShow(true);
         }
     }
 
-    public Map<String, String> getErrorResultMap() {
+    public ConcurrentHashMap<String, String> getErrorResultMap() {
         return errorResultMap;
     }
 
-    public void setErrorResultMap(Map<String, String> errorResultMap) {
+    public String getUploadFileRootPath() {
+        return uploadFileRootPath;
+    }
+
+    public void setUploadFileRootPath(String uploadFileRootPath) {
+        this.uploadFileRootPath = uploadFileRootPath;
+    }
+
+    public void setErrorResultMap(ConcurrentHashMap<String, String> errorResultMap) {
         this.errorResultMap = errorResultMap;
     }
 
@@ -136,19 +150,31 @@ public class AnalyseProcess {
         this.count = count;
     }
 
+    public ConcurrentHashMap<String, FileStatus> getUnSuccessFileMap() {
+        return unSuccessFileMap;
+    }
+
+    public void setUnSuccessFileMap(ConcurrentHashMap<String, FileStatus> unSuccessFileMap) {
+        this.unSuccessFileMap = unSuccessFileMap;
+    }
+
+    public void setUnSuccessFileMap(String path, FileStatus fileStatus) {
+        this.unSuccessFileMap.put(path, fileStatus);
+    }
+
     public int getFinishCount() {
         return finishCount;
     }
 
     public LogAnalze setFinishCount(int finishCount) {
-        synchronized (this.getClass()) {
-            this.finishCount = finishCount;
-            if ((finishCount * 100 / count) == 100) {
-                LogAnalze logAnalze = adapt(this);
-                return logAnalze;
-            }
-            return null;
+
+        this.finishCount = finishCount;
+        if ((finishCount * 100 / count) == 100) {
+            LogAnalze logAnalze = adapt(this);
+            return logAnalze;
         }
+        return null;
+
 
     }
 
@@ -193,13 +219,14 @@ public class AnalyseProcess {
     }
 
     public void setSuccessCount(int successCount) {
-        synchronized (this.getClass()) {
-            this.successCount = successCount;
-            this.process = (successCount * 100) / count;
-            if (process == 100) {
-                this.isFinish = true;
-            }
+
+        this.successCount = successCount;
+        this.process = (successCount * 100) / count;
+        if (process == 100) {
+            this.isFinish = true;
         }
+        logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
+
     }
 
     public String getUuid() {
@@ -228,7 +255,27 @@ public class AnalyseProcess {
     }
 
     public String getObjectSerializePath(String rootPath) {
-        String path = rootPath+File.separator+uuid+"_Serialize)";
+        String path = rootPath + File.separator + uuid + "_Serialize";
         return path;
+    }
+
+    @Override
+    public String toString() {
+        return "AnalyseProcess{" +
+                "process=" + process +
+                ", isFinish=" + isFinish +
+                ", isShow=" + isShow +
+                ", isAnalyseError=" + isAnalyseError +
+                ", count=" + count +
+                ", finishCount=" + finishCount +
+                ", showCount=" + showCount +
+                ", successCount=" + successCount +
+                ", fileMap=" + fileMap +
+                ", errorResultMap=" + errorResultMap +
+                ", projectName='" + projectName + '\'' +
+                ", projectLocation='" + projectLocation + '\'' +
+                ", createTime=" + createTime +
+                ", uuid='" + uuid + '\'' +
+                '}';
     }
 }

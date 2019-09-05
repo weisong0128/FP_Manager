@@ -74,12 +74,17 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         builder.append("WHERE uuid = ?");
         list.add(uuid);
-        int update = mysqlJdbcTemplate.update(builder.toString(), list.toArray());
+        int update = 0;
+        try {
+            update = mysqlJdbcTemplate.update(builder.toString(), list.toArray());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
         return update;
     }
 
     public int updateLogAnalze(LogAnalze logAnalze) {
-        String sql = ("UPDATE fp_log_analyze SET project_name=? ,address=? , parsing_state=?,progress=?,result=?,create_time?,update_time=? WHERE uuid=?");
+        String sql = ("UPDATE fp_log_analyze SET project_name=? ,address=? , parsing_state=?,progress=?,result=?,create_time=?,update_time=? WHERE uuid=?");
         ArrayList<Object> list = new ArrayList<>();
         list.add(logAnalze.getProjectName());
         list.add(logAnalze.getAddress());
@@ -87,9 +92,14 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         list.add(logAnalze.getProgress());
         list.add(logAnalze.getResult());
         list.add(logAnalze.getCreateTime());
-        list.add(logAnalze.getUpdateTime());
+        list.add(new Date());
         list.add(logAnalze.getUuid());
-        int update = mysqlJdbcTemplate.update(sql, list.toArray());
+        int update;
+        try {
+            update = mysqlJdbcTemplate.update(sql, list.toArray());
+        } finally {
+
+        }
         return update;
     }
 

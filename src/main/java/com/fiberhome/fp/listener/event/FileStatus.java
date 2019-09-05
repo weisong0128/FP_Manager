@@ -4,10 +4,11 @@ import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.FileUtil;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FileStatus {
+public class FileStatus implements Serializable {
 
     private ConcurrentHashMap<String, AnalyseProcess> map = AnalyseProcess.map;
     private boolean isFinish;
@@ -17,6 +18,7 @@ public class FileStatus {
     private String filePath;
     private String originalLogFilePath;
     private boolean isSuccess;
+    private int process;
 
     public boolean isFinish() {
         return isFinish;
@@ -89,16 +91,18 @@ public class FileStatus {
 
     public void setSuccess(boolean success) {
         synchronized (this.getClass()) {
-
-
             isSuccess = success;
             int successCount = getAnalyseProcess().getSuccessCount();
             getAnalyseProcess().setSuccessCount(successCount + 1);
-            getAnalyseProcess().getFileMap().remove(filePath);
-            FileUtil.deleteDirect(filePath);
-            if (originalLogFilePath != null && FileUtil.getDirectSize(new File(filePath).getParent()) == 0) {
-                FileUtil.deleteDirect(originalLogFilePath);
-            }
+            //getAnalyseProcess().setUnSuccessFileMap(filePath,this);
         }
+    }
+
+    public int getProcess() {
+        return process;
+    }
+
+    public void setProcess(int process) {
+        this.process = process;
     }
 }

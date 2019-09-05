@@ -4,7 +4,6 @@ import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.pojo.ErrorResult;
 import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
-import com.fiberhome.fp.service.ErrorResultService;
 import com.fiberhome.fp.service.LogAnalyzeService;
 import com.fiberhome.fp.util.FileUtil;
 import com.fiberhome.fp.util.Page;
@@ -38,10 +37,6 @@ public class LogAnalzeController {
     private String uploadLogPath;
     @Autowired
     private LogAnalyzeService logAnalyzeService;
-    @Autowired
-    private ErrorResultService errorResultService;
-
-
     /**
      * 上传日志文件接口
      *
@@ -95,7 +90,7 @@ public class LogAnalzeController {
             File file = new File(pt + File.separator + fileName);
             try {
                 multipartFile.transferTo(file);
-                logging.info("日志文件上传至 %s", director);
+                logging.info("日志文件上传至 {}", director);
                 return Response.ok();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -308,7 +303,7 @@ public class LogAnalzeController {
                 try {
                     analyseProcess = (AnalyseProcess) FileUtil.ObjectInputStreamDisk(serializePath);
                     map.put(uuid, analyseProcess);
-                    logAnalyzeService.upload(analyseProcess);
+                    logAnalyzeService.upload(analyseProcess,pt);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

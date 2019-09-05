@@ -25,5 +25,5 @@ public interface LogAnalyzeService {
 
     public Response batchDeleteLogAnaylse(List<String> uuids);
 
-    public void upload(AnalyseProcess analyseProcess);
+    public void upload(AnalyseProcess analyseProcess,String dir);
 }
