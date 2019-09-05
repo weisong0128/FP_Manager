@@ -230,38 +230,33 @@ public class AllResultDaoImpl implements AllResultDao {
             pjLocationList = new ArrayList<>(Arrays.asList(pjLocations));
         }
         //时间分区
-        List<String> partitions = partitions(rowResult.getSearchTime());
+        /*List<String> partitions = partitions(rowResult.getSearchTime());*/
+        List<String> partitions = partitions("three");
         //字段类型分区
         String typePartition = fieldType2Partition(rowResult.getPartition());
         Map paramMap = new HashMap();
         StringBuilder comSql = new StringBuilder();
-        if ("fp_field".equals(typePartition)){
-            comSql.append("with a as (select count(*) as cc from sql_tmp where partition='fp_field'  ") ;
-        }else {
-            comSql.append(" with a as (select count(*) as cc from sql_tmp where partition in ('fp_equal','fp_group','fp_order','fp_size') ") ;
+        paramMap.put("partitions",partitions);
+        paramMap.put("tableName",rowResult.getTableName());
+        paramMap.put("pjname",rowResult.getPjName());
+        paramMap.put("pjlocation",rowResult.getPjLocation());
+        paramMap.put("rowName",rowResult.getRowName());
+        paramMap.put("typePartition",typePartition);
+        comSql.append("with a as (select count(*) as cc from sql_tmp where   partition in (:partitions) and tag='fp_table' and table_name =:tableName  and  pjname =:pjname and  pjlocation =:pjlocation limit 1), " +
+                " b as (select row_name,count(*) as row_count from sql_tmp where  partition in (:partitions) and tag=:typePartition and  pjname =:pjname and  pjlocation =:pjlocation and table_name =:tableName  group by row_name ) " +
+                " select num,row_name, row_count,percent from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t  where ") ;
+        if(rowResult.getRowName()!=null&&rowResult.getRowName()!=""){
+            comSql.append("  row_name=:rowName  and ");
         }
-        concatSql(rowResult,comSql,paramMap,pjNameList,pjLocationList,partitions);
-        comSql.append(" limit 1),  b as (select row_name,count(*) as row_count from sql_tmp where partition =:typePartition  ");
-        concatSql(rowResult,comSql,paramMap,pjNameList,pjLocationList,partitions);
-        comSql.append(" group by row_name )  select num,row_name, row_count,percent from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t ");
-
         //统计总条数
         StringBuilder countSql = new StringBuilder();
-        if ("fp_field".equals(typePartition)){
-            countSql.append("with a as (select count(*) as cc from sql_tmp where partition='fp_field'  ") ;
-            if(rowResult.getTableName()!=null && rowResult.getTableName()!=""){
-                countSql.append(" and table_name =:tableName ");
-                paramMap.put("tableName",rowResult.getTableName());
-            }
-        }else {
-            countSql.append(" with a as (select count(*) as cc from sql_tmp where partition in ('fp_equal','fp_group','fp_order','fp_size') ") ;
+        countSql.append("with a as (select count(*) as cc from sql_tmp where   partition in (:partitions) and tag='fp_table' and table_name =:tableName  and  pjname =:pjname and  pjlocation =:pjlocation limit 1), " +
+                " b as (select row_name,count(*) as row_count from sql_tmp where  partition in (:partitions) and tag=:typePartition and  pjname =:pjname and  pjlocation =:pjlocation and table_name =:tableName  group by row_name ) " +
+                " select count(*) as count from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t  ") ;
+        if(rowResult.getRowName()!=null&&rowResult.getRowName()!=""){
+            countSql.append(" where  row_name=:rowName ");
         }
-        concatSql(rowResult,countSql,paramMap,pjNameList,pjLocationList,partitions);
-        countSql.append(" limit 1),  b as (select row_name,count(*) as row_count from sql_tmp where partition =:typePartition  ");
-        concatSql(rowResult,countSql,paramMap,pjNameList,pjLocationList,partitions);
-        countSql.append(" group by row_name )  select count(*) as count from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t ");
-        paramMap.put("typePartition",typePartition);
-        paramMap.put("partitions",partitions);
+
         if (page != null){
             int total = 0;
             List<RowResult> totalList = namedParameterJdbcTemplate.query(countSql.toString(),paramMap,new BeanPropertyRowMapper<>(RowResult.class));
@@ -270,7 +265,7 @@ public class AllResultDaoImpl implements AllResultDao {
             }
             page.setTotalRows(total);
         }
-        comSql.append("  where  num >"+page.getRowStart()+" and num <"+(page.getRowStart()+page.getPageSize())+" limit "+page.getPageSize()+" ");
+        comSql.append("   num >"+page.getRowStart()+" and num <"+(page.getRowStart()+page.getPageSize())+" limit "+page.getPageSize()+" ");
         List<RowResult> list = namedParameterJdbcTemplate.query(comSql.toString(),paramMap,new BeanPropertyRowMapper<>(RowResult.class));
         return list;
     }
@@ -326,6 +321,8 @@ public class AllResultDaoImpl implements AllResultDao {
             case "4" : partition = "fp_order";
                 break;
             case "5" : partition = "fp_group";
+                break;
+            case "6" : partition = "fp_like";
                 break;
         }
         return partition;

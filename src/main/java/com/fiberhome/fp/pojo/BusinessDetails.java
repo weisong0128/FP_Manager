@@ -4,26 +4,16 @@ package com.fiberhome.fp.pojo;
  * 业务分析详情实体
  */
 public class BusinessDetails {
-    //表名
     private String tableName;
-    //表分区
-    private String tablePartition;
-    //项目安装地
+    private String cnt;
     private String pjlocation;
+    private String date;
 
-    private String partition;
-    //使用次数
-    private String count;
-    //创建时间
-    private String createTime;
-
-    public BusinessDetails(String tableName, String tablePartition, String pjlocation, String partition, String count, String createTime) {
+    public BusinessDetails(String tableName, String cnt, String pjlocation, String date) {
         this.tableName = tableName;
-        this.tablePartition = tablePartition;
+        this.cnt = cnt;
         this.pjlocation = pjlocation;
-        this.partition = partition;
-        this.count = count;
-        this.createTime = createTime;
+        this.date = date;
     }
 
     public BusinessDetails() {
@@ -37,12 +27,12 @@ public class BusinessDetails {
         this.tableName = tableName;
     }
 
-    public String getTablePartition() {
-        return tablePartition;
+    public String getCnt() {
+        return cnt;
     }
 
-    public void setTablePartition(String tablePartition) {
-        this.tablePartition = tablePartition;
+    public void setCnt(String cnt) {
+        this.cnt = cnt;
     }
 
     public String getPjlocation() {
@@ -53,27 +43,11 @@ public class BusinessDetails {
         this.pjlocation = pjlocation;
     }
 
-    public String getPartition() {
-        return partition;
+    public String getDate() {
+        return date;
     }
 
-    public void setPartition(String partition) {
-        this.partition = partition;
-    }
-
-    public String getCount() {
-        return count;
-    }
-
-    public void setCount(String count) {
-        this.count = count;
-    }
-
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setDate(String date) {
+        this.date = date;
     }
 }

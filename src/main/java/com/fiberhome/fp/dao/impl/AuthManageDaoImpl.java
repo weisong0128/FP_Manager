@@ -146,8 +146,8 @@ public class AuthManageDaoImpl implements AuthManageDao {
             if (authManage.getSortField()!=null&& authManage.getSortField()!=""){
                 if ("desc".equals(authManage.getSortField())){
                     sql.append("  ORDER BY download_time DESC  ");
-                }else if("esc".equals(authManage.getSortField())){
-                    sql.append("  ORDER BY download_time ESC  ");
+                }else if("asc".equals(authManage.getSortField())){
+                    sql.append("  ORDER BY download_time asc  ");
                 }
             }
         }
