@@ -20,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Api(value = "日志分析", description = "日志文件分析结果处理")
 @RestController
@@ -156,8 +153,22 @@ public class LogAnalzeController {
                     boolean analyseError = analyseProcess.isAnalyseError();
                     map1.put("process", process);
                     map1.put("show", show);
-                    map1.put("status", analyseError);
-                    map1.put("errorResultList", errorResultList);
+                    map1.put("isError", analyseError);
+                    ArrayList<String> list = new ArrayList<>();
+                 /*    for (String s : errorResultList) {
+                        String[] split = s.split("\r\n");
+                        for (String sp1 : split) {
+                            if (!list.contains(sp1)) {
+                                list.add(sp1);
+                            }
+                        }
+                    }*/
+                    for (String s : errorResultList) {
+                        if (!list.contains(s)) {
+                            list.add(s);
+                        }
+                    }
+                    map1.put("errorResultList", list);
                     returnMap.put(uuid, map1);
                 }
             }

@@ -100,6 +100,9 @@ public class AnalyseProcess implements Serializable {
 
     public void setFinish(boolean finish) {
         isFinish = finish;
+        if (successCount != count) {
+            setAnalyseError(true);
+        }
     }
 
     public boolean isShow() {
@@ -176,6 +179,7 @@ public class AnalyseProcess implements Serializable {
     public LogAnalze setFinishCount(int finishCount) {
         this.finishCount = finishCount;
         if ((finishCount * 100 / count) == 100) {
+            setFinish(true);
             LogAnalze logAnalze = adapt(this);
             logging.info("已全部分析完毕 ,更新数据{}", logAnalze);
             return logAnalze;
