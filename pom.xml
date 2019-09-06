@@ -24,6 +24,7 @@
         <moudle.name>FPTool-install</moudle.name>
         <install.finalName>
             ${moudle.name}-runtime-${version}-${maven.build.timestamp}
+           <!-- ${moudle.name}-runtime-${version}-->
         </install.finalName>
         <unzip.name>fptool</unzip.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -182,7 +183,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.13</version>
+            <version>5.1.38</version>
         </dependency>
 
 

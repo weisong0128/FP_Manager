@@ -23,7 +23,7 @@ public interface LogAnalyzeService {
 
     public List<FpOperationTable> listOperation(Page page, FpOperationTable fpOperationTable);
 
-    public Response batchDeleteLogAnaylse(List<String> uuids);
+    public Boolean batchDeleteLogAnaylse(List<String> uuids);
 
     public void upload(AnalyseProcess analyseProcess,String dir);
 }

@@ -402,7 +402,8 @@ public class FileUtil {
         System.out.println(i);
     }
 
-    public static List<File> cutFile(File orginalFile, long oneFileLength) {
+    //此处修改了 返回 List<File>  成为  fileSize
+    public static List<File> cutFile(File orginalFile, Long oneFileLength) {
         ArrayList<File> cutFileList = new ArrayList<>();
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
@@ -410,11 +411,11 @@ public class FileUtil {
             String orginalFileName = orginalFile.getName();
             String targetDirectPath = orginalFile.getParentFile().getPath();
             String rootPath = orginalFile.getParentFile().getPath();
-            long orginalFilelength = orginalFile.length();
             if (!orginalFile.exists()) {
                 logging.error("原始文件不存在");
                 return null;
             }
+            long orginalFilelength = orginalFile.length();
             File targetDirect = new File(targetDirectPath);
             if (!targetDirect.exists()) {
                 targetDirect.mkdirs();
@@ -424,24 +425,27 @@ public class FileUtil {
             int length = 0;
             long lenth2 = 0;
             int i = 0;
-
-            creatDir(rootPath + File.separator + orginalFileName + "_cut");
-            cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cutFileList.get(0))));
-            while ((line = bufferedReader.readLine()) != null) {
-                length += line.getBytes().length;
-                lenth2 += line.getBytes().length;
-                if (length > oneFileLength && orginalFilelength - lenth2 > getByteSize(1)) {
-                    if (!line.startsWith("\tat ") && !line.contains("[ERROR]")) {
-                        i++;
-                        cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
-                        File file = cutFileList.get(i);
-                        closeStream(bufferedWriter);
-                        bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-                        length = 0;
+            String cutRootPath = rootPath + File.separator + orginalFileName + "_cut";
+            File file1 = new File(cutRootPath);
+            if (!file1.exists()) {
+                creatDir(cutRootPath);
+                cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cutFileList.get(0))));
+                while ((line = bufferedReader.readLine()) != null) {
+                    length += line.getBytes().length;
+                    lenth2 += line.getBytes().length;
+                    if (length > oneFileLength && orginalFilelength - lenth2 > getByteSize(1)) {
+                        if (!line.startsWith("\tat ") && !line.contains("[ERROR]")) {
+                            i++;
+                            cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
+                            File file = cutFileList.get(i);
+                            closeStream(bufferedWriter);
+                            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+                            length = 0;
+                        }
                     }
+                    bufferedWriter.write(line + "\r\n");
                 }
-                bufferedWriter.write(line + "\r\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -462,6 +466,24 @@ public class FileUtil {
             for (File file : files) {
                 if (file.isDirectory()) {
                     deleteDirect(file.getPath());
+                }
+                deleteFile(file.getParentFile().getPath(), file.getName());
+            }
+            rootFile.delete();
+        } else {
+            rootFile.delete();
+        }
+    }
+
+    public static void deleteDirect(File rootFile) {
+        if (!rootFile.exists()) {
+            return;
+        }
+        if (rootFile.isDirectory()) {
+            File[] files = rootFile.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirect(file);
                 }
                 deleteFile(file.getParentFile().getPath(), file.getName());
             }
@@ -513,13 +535,14 @@ public class FileUtil {
         }
     }
 
-    public static void findAllSizeMore(File rootFile, long size) {
-        long size1= FileUtil.getByteSize(1) + size;
+    public static void findAllSizeMore(File rootFile, Long size) {
+        long size1 = FileUtil.getByteSize(1) + size;
         if (rootFile.exists() && rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
             for (File file : files) {
                 if (file.length() > size1) {
-                    cutFile(file, size);
+                    List<File> cutFile = cutFile(file, size);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,异步下发分析", file.getName(), file.length() / 1024 / 1024, cutFile.size());
                 }
             }
         }
@@ -556,11 +579,11 @@ public class FileUtil {
         }
     }
 
-    public static void deleteRootPathDir(File rootFile) {
+    public static void deleteRootPathDir(File rootFile, String rex) {
         File[] files = rootFile.listFiles();
         for (File file : files) {
-            if (file.isDirectory() && file.getName().contains("_cut")) {
-                deleteAllDirect(file);
+            if (file.isDirectory() && file.getName().contains(rex)) {
+                deleteDirect(file);
             }
         }
     }
@@ -571,31 +594,62 @@ public class FileUtil {
 
 
     public static boolean ObjectOutputStreamDisk(Object object, String filePath) {
+        FileOutputStream fos = null;
+        ObjectOutputStream ops = null;
         try {
-            FileOutputStream fos = new FileOutputStream(filePath);
-            ObjectOutputStream ops = new ObjectOutputStream(fos);
+            fos = new FileOutputStream(filePath);
+            ops = new ObjectOutputStream(fos);
             ops.writeObject(object);
-            fos.close();
-            ops.close();
+
             return true;
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ops != null) {
+                    ops.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     public static Object ObjectInputStreamDisk(String filePath) {
+        FileInputStream fis = null;
+        ObjectInputStream ops = null;
         try {
-            FileInputStream fos = new FileInputStream(filePath);
-            ObjectInputStream ops = new ObjectInputStream(fos);
+            fis = new FileInputStream(filePath);
+            ops = new ObjectInputStream(fis);
             Object o = ops.readObject();
-            fos.close();
-            ops.close();
             return o;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (ops != null) {
+                    ops.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

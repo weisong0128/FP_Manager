@@ -48,6 +48,7 @@ public class AnalyseProcess implements Serializable {
     public static void init(String uuid, List<File> fileList, String projectName, String projectLocation, Long createTime, String rootPath) {
 
         ConcurrentHashMap<String, FileStatus> statusHashMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, FileStatus> statusHashMap2 = new ConcurrentHashMap<>();
         AnalyseProcess analyseProcess = new AnalyseProcess();
         for (File file : fileList) {
             FileStatus fileStatus = new FileStatus();
@@ -62,6 +63,7 @@ public class AnalyseProcess implements Serializable {
                 }
             }
             statusHashMap.put(file.getPath(), fileStatus);
+            statusHashMap2.put(file.getPath(), fileStatus);
         }
         analyseProcess.setCount(fileList.size());
         analyseProcess.setFileMap(statusHashMap);
@@ -70,7 +72,7 @@ public class AnalyseProcess implements Serializable {
         analyseProcess.setCreateTime(createTime);
         analyseProcess.setErrorResultMap(new ConcurrentHashMap<>());
         analyseProcess.setUuid(uuid);
-        analyseProcess.setUnSuccessFileMap(new ConcurrentHashMap<>());
+        analyseProcess.setUnSuccessFileMap(statusHashMap2);
         analyseProcess.setUploadFileRootPath(rootPath);
         map.put(uuid, analyseProcess);
     }
@@ -87,7 +89,9 @@ public class AnalyseProcess implements Serializable {
     }
 
     public void setProcess(int process) {
-        this.process = process;
+        synchronized (this.getClass()) {
+            this.process = process;
+        }
     }
 
     public boolean isFinish() {
@@ -121,8 +125,11 @@ public class AnalyseProcess implements Serializable {
 
     public void setShowCount(int showCount) {
         this.showCount = showCount;
-        if (this.showCount==count) {
+        this.process = ((successCount + this.showCount) * 50) / count;
+        logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
+        if (this.showCount == count) {
             setShow(true);
+            logging.info("分析任务完成50% ,项目名{},项目地市{} , 是否可看{} ", projectName, projectLocation, isShow);
         }
     }
 
@@ -167,15 +174,13 @@ public class AnalyseProcess implements Serializable {
     }
 
     public LogAnalze setFinishCount(int finishCount) {
-
         this.finishCount = finishCount;
         if ((finishCount * 100 / count) == 100) {
             LogAnalze logAnalze = adapt(this);
+            logging.info("已全部分析完毕 ,更新数据{}", logAnalze);
             return logAnalze;
         }
         return null;
-
-
     }
 
     public String getProjectName() {
@@ -219,14 +224,12 @@ public class AnalyseProcess implements Serializable {
     }
 
     public void setSuccessCount(int successCount) {
-
         this.successCount = successCount;
-        this.process = (successCount * 100) / count;
+        setProcess(((successCount + showCount) * 50) / count);
         if (process == 100) {
             this.isFinish = true;
         }
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
-
     }
 
     public String getUuid() {

@@ -41,9 +41,9 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         param.add(logAnalze.getProjectName());
         param.add(logAnalze.getAddress());
         param.add(new Date());
-        param.add(null);
+        param.add("");
         param.add(0);
-        param.add(null);
+        param.add("");
         param.add(logAnalze.getCreateTime());
         param.add(new Date());
         try {
@@ -94,11 +94,11 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         list.add(logAnalze.getCreateTime());
         list.add(new Date());
         list.add(logAnalze.getUuid());
-        int update;
+        int update = 0;
         try {
             update = mysqlJdbcTemplate.update(sql, list.toArray());
-        } finally {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return update;
     }
@@ -107,7 +107,12 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     @Override
     public int deleteLogAnalze(String uuid) {
         String sql = "DELETE FROM fp_log_analyze WHERE uuid = ?";
-        int update = mysqlJdbcTemplate.update(sql, uuid);
+        int update = 0;
+        try {
+            update = mysqlJdbcTemplate.update(sql, uuid);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
         return update;
     }
 
@@ -309,7 +314,13 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
 
         }
-        return namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
+        List query = null;
+        try {
+            query = namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
+        } catch (DataAccessException e) {e.printStackTrace();
+
+        }
+        return query;
     }
 
     /**

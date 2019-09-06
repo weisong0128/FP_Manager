@@ -26,7 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class LogAnalyzeServiceImpl implements LogAnalyzeService {
@@ -38,7 +40,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private FpProjectService fpProjectService;
 
-    private ThreadPoolExecutor pool = FpProjectServiceImpl.pool;
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 35, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -53,6 +55,9 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Value("${shell.execute.path}")
     String shellPath;
+
+    @Value("${cut.file.size}")
+    String cutfilesize;
 
 
     public Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
@@ -87,19 +92,26 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                 config);*/
         File direct = new File(dir);
         ArrayList<File> fileArrayList1 = new ArrayList<>();
-        long byteSize = FileUtil.getByteSize(10);
+        Long byteSize = FileUtil.getByteSize(Integer.valueOf(cutfilesize));
         FileUtil.findAllSizeMore(direct, byteSize);
         FileUtil.getSizeLLesser(direct, byteSize, fileArrayList1);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
-        upload(map.get(uuid),dir);
+        upload(map.get(uuid), dir);
         return true;
     }
 
 
-    public void upload(AnalyseProcess analyseProcess,String dir) {
-
-        Map<String, FileStatus> fileMap = analyseProcess.getFileMap();
+    public void upload(AnalyseProcess analyseProcess, String dir) {
+        ConcurrentHashMap<String, FileStatus> fileMap;
+        if (analyseProcess.getFileMap().size() != analyseProcess.getUnSuccessFileMap().size()) {
+            fileMap = analyseProcess.getUnSuccessFileMap();
+            int finishCount = analyseProcess.getFinishCount();
+            analyseProcess.setFinishCount(finishCount - fileMap.size());
+        } else {
+            fileMap = analyseProcess.getFileMap();
+        }
         String uuid = analyseProcess.getUuid();
+        String uploadFileRootPath = analyseProcess.getUploadFileRootPath();
         List<File> fileArrayList1 = map2FileList(fileMap);
         for (int i = 0; i < fileArrayList1.size(); i++) {
             File file = fileArrayList1.get(i);
@@ -107,24 +119,25 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             Long createTime = analyseProcess.getCreateTime();
             String projectName = analyseProcess.getProjectName();
             String projectLocation = analyseProcess.getProjectLocation();
+            String j = i + "";
             pool.execute(() -> {
                 //调用脚本方法
-                String bashCommand = "sh "+shellPath+File.separator+"fp_analysis.sh  " + filePath + " " + projectName + " " + projectLocation + " " + createTime;
+                String bashCommand = "sh " + shellPath + File.separator + "fp_analysis.sh  " + filePath + " " + projectName + " " + projectLocation + " " + createTime;
+                //   if (!j.equals("1")) {
                 boolean upload = ShellUtil.newShSuccess(bashCommand, uuid, filePath);
+                //   }
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
                 LogAnalze logAnalze = fileStatus.setFinish(true);
                 if (logAnalze != null) {
                     //如果本次分析完整
+                    String objectSerializePath = analyseProcess1.getObjectSerializePath(dir);
                     try {
-                        String objectSerializePath = analyseProcess1.getObjectSerializePath(dir);
                         if (analyseProcess1.getUnSuccessFileMap().size() == 0) {
-                            File file1 = new File(objectSerializePath);
-                            if (file1.exists()&&file1.getParentFile().getParent().equals(analyseProcess.getUploadFileRootPath())) {
-                                file1.delete();
-                            }
+                            // File file1 = new File(objectSerializePath);
+                            FileUtil.deleteRootPathDir(new File(uploadFileRootPath), "_cut");
                         } else {
-                            FileUtil.ObjectOutputStreamDisk(analyseProcess,objectSerializePath);
+                            FileUtil.ObjectOutputStreamDisk(analyseProcess, objectSerializePath);
                         }
                         logAnalzeDao.updateLogAnalze(logAnalze);
                         map.remove(uuid);
@@ -183,14 +196,25 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     }
 
     @Override
-    public Response batchDeleteLogAnaylse(List<String> uuids) {
+    public Boolean batchDeleteLogAnaylse(List<String> uuids) {
         for (String uuid : uuids) {
-            if (map.containsKey(uuid)) {
-                map.remove(uuid);
+            try {
+                if (map.containsKey(uuid)) {
+                    map.remove(uuid);
+                }
+                LogAnalze oneLogAnalyse = logAnalzeDao.findOneLogAnalyse(uuid);
+                String projectLocation = oneLogAnalyse.getAddress();
+                String projectName = oneLogAnalyse.getProjectName();
+                Long createTime = oneLogAnalyse.getCreateTime();
+                String uploadFileRootPath = uploadLogPath + File.separator + projectLocation + File.separator + projectName + File.separator + createTime;
+                FileUtil.deleteRootPathDir(new File(uploadFileRootPath), "_cut");
+                logAnalzeDao.deleteLogAnalze(uuid);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-            logAnalzeDao.deleteLogAnalze(uuid);
         }
-        return null;
+        return true;
     }
 
 

@@ -37,6 +37,7 @@ public class LogAnalzeController {
     private String uploadLogPath;
     @Autowired
     private LogAnalyzeService logAnalyzeService;
+
     /**
      * 上传日志文件接口
      *
@@ -74,9 +75,6 @@ public class LogAnalzeController {
         int i = 0;
         for (MultipartFile multipartFile : multipartFiles) {
             i++;
-           /* if (multipartFile.getSize() > 10 * 1024 * 1024) {
-                return Response.error("上传文件最大支持 1MB ！");
-            }*/
             String fileName = multipartFile.getOriginalFilename();
             if (!fileName.toLowerCase().contains("cl.log")) {
                 return Response.error("文件命名格式应该为：cl.log*  ！");
@@ -265,9 +263,9 @@ public class LogAnalzeController {
                     operationTable.setLogLeave("中度");
                 } else if (errInfo.contains("CRIT")) {
                     operationTable.setLogLeave("重度");
-                }else if (errInfo.contains("WARN")) {
+                } else if (errInfo.contains("WARN")) {
                     operationTable.setLogLeave("轻度");
-                }else if (errInfo.contains("INFO")) {
+                } else if (errInfo.contains("INFO")) {
                     operationTable.setLogLeave("环境状态");
                 }
             }
@@ -292,8 +290,9 @@ public class LogAnalzeController {
         return Response.ok();
     }
 
+    @GetMapping("/restartAnalyse")
     public Response restartAnalyse(String pjName, String pjLocation, String createTime, String uuid) {
-        String pt = uploadLogPath + File.separator + pjName + File.separator + pjLocation + File.separator + createTime;
+        String pt = uploadLogPath + File.separator + pjLocation + File.separator + pjName + File.separator + createTime;
         AnalyseProcess analyseProcess = map.get(uuid);
         if (analyseProcess == null) {
             //从硬盘反序列化对象,重新放进map中
@@ -303,7 +302,7 @@ public class LogAnalzeController {
                 try {
                     analyseProcess = (AnalyseProcess) FileUtil.ObjectInputStreamDisk(serializePath);
                     map.put(uuid, analyseProcess);
-                    logAnalyzeService.upload(analyseProcess,pt);
+                    logAnalyzeService.upload(analyseProcess, pt);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

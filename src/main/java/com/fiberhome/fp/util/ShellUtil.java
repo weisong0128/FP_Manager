@@ -5,7 +5,6 @@ import com.fiberhome.fp.listener.event.FileStatus;
 import com.fiberhome.fp.pojo.LogAnalze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.Date;
@@ -22,7 +21,7 @@ public class ShellUtil {
 
     static Logger logging = LoggerFactory.getLogger(ShellUtil.class);
 
-    public static ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 25, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    public static ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
 
     /**
@@ -37,8 +36,14 @@ public class ShellUtil {
         return 0 == status;
     }
 
-
+    /**
+     * @description:
+     * @Param:
+     * @Return:
+     * @Auth:User on 2019/9/6 16:28
+     */
     public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
+
         logging.info(String.format("执行%s脚本", bashCommand));
         Process pro = null;
         try {
@@ -61,6 +66,7 @@ public class ShellUtil {
                     Integer progress = Integer.valueOf(split[split.length - 1]);
                     if (progress == 10) {
                         fileStatus.setSuccess(true);
+                        analyseProcess.getUnSuccessFileMap().remove(filePath);
                     } else if (progress == 5) {
                         fileStatus.setShow(true);
                     }
