@@ -134,7 +134,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     @Override
     public List<LogAnalze> findLogAnalyseList(LogAnalze param, Page page) {
         String querySql = "SELECT " + LogAnalze.getAllColumn() + " from fp_log_analyze where 1 = ? ";
-        // String querySql = "SELECT * from fp_log_analyze where 1 = ? ";
         String countSql = "SELECT count(*) from fp_log_analyze where 1 = ?  ";
         StringBuilder sql = new StringBuilder();
         ArrayList<Object> list = new ArrayList<>();
@@ -168,7 +167,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             list.add(param.getEndTime());
         }
         countSql += sql.toString();
-        String ordetAndLimitSql = " ORDER BY create_time  DESC LIMIT ? , ?  ";
+        String ordetAndLimitSql = " ORDER BY start_time  DESC LIMIT ? , ?  ";
         querySql = querySql + sql.toString() + ordetAndLimitSql;
         int start = page.getRowStart();
         int rowEnd = page.getRowEnd();
