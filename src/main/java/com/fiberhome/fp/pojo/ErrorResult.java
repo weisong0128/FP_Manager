@@ -52,6 +52,16 @@ public class ErrorResult {
     //是否去重查询  0 不去重  1 去重
     private Integer isDistinct;
 
+    private  String errorSqlType;
+
+    public String getErrorSqlType() {
+        return errorSqlType;
+    }
+
+    public void setErrorSqlType(String errorSqlType) {
+        this.errorSqlType = errorSqlType;
+    }
+
     public int getDate() {
         return date;
     }

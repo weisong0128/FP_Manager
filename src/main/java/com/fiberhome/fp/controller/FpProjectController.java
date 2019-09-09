@@ -70,8 +70,8 @@ public class FpProjectController {
      */
     @ApiOperation(value="业务分析模块",notes = "获取所有项目及对应地市接口")
     @GetMapping(value = "all")
-    public Response listProject(String pjName){
-        return Response.ok(fpProjectService.listProject(pjName));
+    public Response listProject(String pjName,Page page){
+        return Response.ok(fpProjectService.listProject(pjName,page),page);
     }
 
 

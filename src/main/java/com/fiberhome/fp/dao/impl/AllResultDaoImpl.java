@@ -132,8 +132,8 @@ public class AllResultDaoImpl implements AllResultDao {
      * @return
      */
     @Override
-    public AllResult getProportion(List<String> pjNames,List<String> pjLocations,String partition,String startTime,String endTime){
-        List<String> partitions = partitions(partition);
+    public AllResult getProportion(List<String> pjNames,List<String> pjLocations,String time,String startTime,String endTime){
+        List<String> partitions = partitions(time);
         if (startTime!=""&&startTime!=null&&endTime!=""&&endTime!=null){
             startTime=startTime+"000";
             endTime=endTime+"000";

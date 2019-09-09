@@ -1,6 +1,7 @@
 package com.fiberhome.fp.service;
 
 import com.fiberhome.fp.pojo.FpProject;
+import com.fiberhome.fp.util.Page;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +16,7 @@ public interface FpProjectService {
      * 获取所有项目及地市
      * @return
      */
-    List<FpProject> listProject(String pjName);
+    List<FpProject> listProject(String pjName, Page page);
 
 
     /**

@@ -5,6 +5,7 @@ import com.fiberhome.fp.dao.FpProjectDao;
 import com.fiberhome.fp.pojo.FpProject;
 import com.fiberhome.fp.service.FpProjectService;
 import com.fiberhome.fp.util.FileUtil;
+import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.ShellUtil;
 import com.fiberhome.fp.util.StrUtil;
 import org.apache.commons.lang.StringUtils;
@@ -46,8 +47,8 @@ public class FpProjectServiceImpl implements FpProjectService {
     String shellPath;
 
     @Override
-    public List<FpProject> listProject(String pjName) {
-        List<FpProject> projects = fpProjectDao.listProject(pjName);
+    public List<FpProject> listProject(String pjName, Page page) {
+        List<FpProject> projects = fpProjectDao.listProject(pjName,page);
         if (projects != null && projects.size()>0){
             for (FpProject project:projects){
                 project.setPjLocationList((List<String>)JSONObject.parse(project.getPjLocation()));
@@ -81,7 +82,7 @@ public class FpProjectServiceImpl implements FpProjectService {
         });
         //单启线程 操作服务器 添加或修改项目和地市信息
         pool.execute(() -> {
-            List<FpProject> projects = fpProjectDao.listProject(null);
+            List<FpProject> projects = fpProjectDao.listProject(null,null);
             boolean flag = false;
             String currentdate = String.valueOf(System.currentTimeMillis());
             if (projects != null && projects.size()>0){

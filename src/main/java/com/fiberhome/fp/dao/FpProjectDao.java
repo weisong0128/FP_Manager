@@ -1,6 +1,7 @@
 package com.fiberhome.fp.dao;
 
 import com.fiberhome.fp.pojo.FpProject;
+import com.fiberhome.fp.util.Page;
 
 import java.util.List;
 
@@ -15,5 +16,5 @@ public interface FpProjectDao {
      * 获取项目和项目地点集合
      * @return
      */
-    List<FpProject> listProject(String pjName);
+    List<FpProject> listProject(String pjName, Page page);
 }

@@ -1,5 +1,7 @@
 package com.fiberhome.fp.vo;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * sql类型比例
  * @author fengxiaochun
@@ -24,15 +26,17 @@ public class TagProporation {
 
     public void setTag(String tag) {
         this.tag = tag;
-        switch (tag) {
-            case "easy": this.name = "简单语句";
-                break;
-            case "comp": this.name = "复杂语句";
-                break;
-            case "insert": this.name = "导入导出语句";
-                break;
-            case "else": this.name = "其他语句";
-                break;
+        if (StringUtils.isNotBlank(tag)){
+            switch (tag) {
+                case "easy": this.name = "简单语句";
+                    break;
+                case "comp": this.name = "复杂语句";
+                    break;
+                case "insert": this.name = "导入导出语句";
+                    break;
+                case "else": this.name = "其他语句";
+                    break;
+            }
         }
     }
 

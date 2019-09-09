@@ -8,6 +8,7 @@ import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ public class BusinessDetailsController {
     public Response getBusinessDetails(String pjName,String pjLocations,String tableName, Page page){
         Map<String,Object> parames = new HashMap<>();
         List<String> pjLocation=null;
-        if(pjLocations !=null){
+        if(StringUtils.isNotBlank(pjLocations)){
             pjLocation = EntityMapTransUtils.StringToList(pjLocations);
             parames.put("pjLocations",pjLocation);
         }
@@ -41,8 +42,11 @@ public class BusinessDetailsController {
         partition = AllResultDaoImpl.partitions("half");
         parames.put("partition",partition);
         // }
-        if (tableName != null){
+        if (StringUtils.isNotBlank(tableName)){
             parames.put("tableName",tableName);
+        }
+        if (!StringUtils.isNotBlank(pjName)){
+            return Response.error("项目名称不能为空！");
         }
         parames.put("pjName",pjName);
         return Response.ok(businessDetailsService.getBusinessDetails(parames, page),page);

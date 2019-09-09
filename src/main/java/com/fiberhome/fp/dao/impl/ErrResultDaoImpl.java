@@ -72,7 +72,6 @@ public class ErrResultDaoImpl implements ErrResultDao {
             }
         }
 
-
         if (errorResult.getPjNameList() != null && errorResult.getPjNameList().size()>0 && !errorResult.getPjNameList().contains("all")){
             sql.append(" and  pjname in (:pjName)");
             countSql.append(" and  pjname in (:pjName)");
@@ -89,6 +88,18 @@ public class ErrResultDaoImpl implements ErrResultDao {
             paramMap.put("startTime",errorResult.getStartTime());
             paramMap.put("endTime",errorResult.getEndTime());
         }
+        if (errorResult.getKeyWord()!=null&& errorResult.getKeyWord()!=""){
+            sql.append(" and  SEARCH_ALL=:keyword ");
+            countSql.append(" and  SEARCH_ALL=:keyword  ");
+            paramMap.put("keyword",errorResult.getKeyWord());
+        }
+
+        if (errorResult.getErrorSqlType()!=""&&errorResult.getErrorSqlType()==null){
+            sql.append(" and  SEARCH_ALL=:errorSqlType ");
+            countSql.append(" and  SEARCH_ALL=:errorSqlType  ");
+            paramMap.put("errorSqlType",errorResult.getErrorSqlType());
+        }
+
 
         if (page != null){
             int total  = 0;
