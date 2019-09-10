@@ -396,10 +396,13 @@ public class FileUtil {
 
 
     public static void main(String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("222");
+        list.add("333");
+        if (list.contains("333")) {
 
-        String q = "sdagafg123";
-        int i = Integer.valueOf(q);
-        System.out.println(i);
+            System.out.println(111);
+        }
     }
 
     //此处修改了 返回 List<File>  成为  fileSize
@@ -537,16 +540,27 @@ public class FileUtil {
 
     public static void findAllSizeMore(File rootFile, Long size) {
         long size1 = FileUtil.getByteSize(1) + size;
+
         if (rootFile.exists() && rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
+            ArrayList<String> nameList = new ArrayList<>();
             for (File file : files) {
-                if (file.length() > size1) {
+                if (file.isDirectory()) {
+                    String name = file.getName().replace("_cut", "");
+                    nameList.add(name);
+                }
+            }
+            for (File file : files) {
+                if (file.isFile() && file.length() > size1 && !nameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, size);
                     logging.info("{}日志文件{}MB,执行切割成{}份,异步下发分析", file.getName(), file.length() / 1024 / 1024, cutFile.size());
                 }
             }
         }
     }
+
+
+
 
     //获取文件夹下所有小于 size大小的日志文件
     public static void getSizeLLesser(File rootFile, long size, List<File> fileList) {

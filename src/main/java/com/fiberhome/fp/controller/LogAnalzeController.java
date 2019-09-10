@@ -41,17 +41,6 @@ public class LogAnalzeController {
      * @return
      */
 
-    private boolean isLog(MultipartFile file) {
-        if (file.isEmpty()) {
-            logging.info("上传文件为空！");
-            return false;
-        }
-        if (file.getOriginalFilename().toLowerCase().indexOf(".log") >= 0) {
-            return true;
-        }
-        return false;
-    }
-
     @ApiOperation(value = "日志文件上传接口", notes = "上传单个日志文件")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "multipartFiles", value = "上传文件", required = true, dataType = "MultipartFile"),
@@ -60,8 +49,8 @@ public class LogAnalzeController {
             @ApiImplicitParam(name = "createTime", value = "时间戳,所有上传的日志用一个时间戳", required = true, dataType = "String")}
     )
     @PostMapping(value = "/batchLogUpload")
-    public Response batchLogUpload(@RequestParam("multipartFiles") MultipartFile[] multipartFiles, String projectName, String projectLocation, String createTime) {
-        int length = multipartFiles.length;
+    public Response batchLogUpload(@RequestParam("file") MultipartFile[] file, String projectName, String projectLocation, String createTime) {
+        int length = file.length;
         if (length > 10 || length == 0) {
             return Response.error("上传文件不能为空并且文件最多10个！！");
         }
@@ -70,7 +59,7 @@ public class LogAnalzeController {
             director.mkdirs();
         }
         int i = 0;
-        for (MultipartFile multipartFile : multipartFiles) {
+        for (MultipartFile multipartFile : file) {
             i++;
             String fileName = multipartFile.getOriginalFilename();
             if (!fileName.toLowerCase().contains("cl.log")) {
@@ -82,10 +71,10 @@ public class LogAnalzeController {
             if (!ptFile.exists()) {
                 ptFile.mkdirs();
             }
-            File file = new File(pt + File.separator + fileName);
+            File file1 = new File(pt + File.separator + fileName);
             try {
-                multipartFile.transferTo(file);
-                logging.info("日志文件上传至 {}", director);
+                multipartFile.transferTo(file1);
+                logging.info("日志文件上传至 {}", pt);
                 return Response.ok();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -121,7 +110,7 @@ public class LogAnalzeController {
         }
         try {
             try {
-                boolean b = logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
+                logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
             } catch (Exception e) {
                 logging.error("分析日志失败");
                 e.printStackTrace();
@@ -130,7 +119,9 @@ public class LogAnalzeController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Response.ok();
+        HashMap<String, String> map = new HashMap<>();
+        map.put("uuid", uuid);
+        return Response.ok(map);
     }
 
     public Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
@@ -139,11 +130,12 @@ public class LogAnalzeController {
      * 轮训查看进程
      */
     @ApiOperation(value = "轮训查看进程", notes = "轮训查看进程,用来返回进程和是否可查看结果   json字符串数组格式发送")
-    @GetMapping("/getAnalyseProcess")
-    public Response getAnalyseProcess(@RequestBody List<String> uuids) {
+    @PostMapping("/getAnalyseProcess")
+    public Response getAnalyseProcess(@RequestBody String uuids) {
+        String[] split = uuids.split(",");
         HashMap<String, Map<String, Object>> returnMap = new HashMap<>();
         try {
-            for (String uuid : uuids) {
+            for (String uuid : split) {
                 AnalyseProcess analyseProcess = map.get(uuid);
                 if (analyseProcess != null) {
                     HashMap<String, Object> map1 = new HashMap<>();
@@ -290,10 +282,15 @@ public class LogAnalzeController {
         return Response.ok(retMap);
     }
 
-    @GetMapping("/batchDeleteLogAnaylse")
-    public Response batchDeleteLogAnaylse(@RequestBody List<String> uuids) {
+    @PostMapping("/batchDeleteLogAnaylse")
+    public Response batchDeleteLogAnaylse(@RequestBody String uuids) {
+        String[] split = uuids.split(",");
+        ArrayList<String> list = new ArrayList<>();
+        for (String s : split) {
+            list.add(s);
+        }
         try {
-            logAnalyzeService.batchDeleteLogAnaylse(uuids);
+            logAnalyzeService.batchDeleteLogAnaylse(list);
         } catch (Exception e) {
             e.printStackTrace();
             return Response.error("删除失败");

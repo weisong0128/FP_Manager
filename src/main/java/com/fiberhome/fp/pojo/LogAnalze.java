@@ -3,6 +3,7 @@ package com.fiberhome.fp.pojo;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 日志分析实体
@@ -33,7 +34,13 @@ public class LogAnalze {
 
     private String timeTag;
 
-    public LogAnalze(String uuid, String projectName, String address, Date startTime, String parsingState, String progress, String result, Long createTime, Date updateTime) {
+    private String sort;
+
+    private List<String> projectNameList;
+
+    private List<String> addressList;
+
+    public LogAnalze(String uuid, String projectName, String address, Date startTime, String parsingState, String progress, String result, Long createTime, Date updateTime, String starTime, String endTime, String timeTag, String sort, List<String> projectNameList, List<String> addressList) {
         this.uuid = uuid;
         this.projectName = projectName;
         this.address = address;
@@ -43,6 +50,12 @@ public class LogAnalze {
         this.result = result;
         this.createTime = createTime;
         this.updateTime = updateTime;
+        this.starTime = starTime;
+        this.endTime = endTime;
+        this.timeTag = timeTag;
+        this.sort = sort;
+        this.projectNameList = projectNameList;
+        this.addressList = addressList;
     }
 
     public LogAnalze(String projectName, String address, Long createTime) {
@@ -98,6 +111,22 @@ public class LogAnalze {
         return startTime;
     }
 
+    public List<String> getProjectNameList() {
+        return projectNameList;
+    }
+
+    public void setProjectNameList(List<String> projectNameList) {
+        this.projectNameList = projectNameList;
+    }
+
+    public List<String> getAddressList() {
+        return addressList;
+    }
+
+    public void setAddressList(List<String> addressList) {
+        this.addressList = addressList;
+    }
+
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
@@ -116,6 +145,14 @@ public class LogAnalze {
 
     public void setProgress(String progress) {
         this.progress = progress;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
     }
 
     public String getResult() {
@@ -157,8 +194,7 @@ public class LogAnalze {
 
     //获取文件存储路径
     public String getDiskPath(String uploadLogPath) {
-        String dir = uploadLogPath + File.separator + getAddress() + File.separator + getProjectName() + File.separator + getCreateTime();
-        return dir;
+        return uploadLogPath + File.separator + getAddress() + File.separator + getProjectName() + File.separator + getCreateTime();
     }
 
     public String getTimeTag() {
