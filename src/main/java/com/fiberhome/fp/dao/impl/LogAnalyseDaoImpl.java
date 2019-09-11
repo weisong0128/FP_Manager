@@ -6,6 +6,7 @@ import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +42,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         param.add(logAnalze.getProjectName());
         param.add(logAnalze.getAddress());
         param.add(new Date());
-        param.add("");
+        param.add("3");
         param.add(0);
         param.add("");
         param.add(logAnalze.getCreateTime());
@@ -134,7 +135,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     @Override
     public List<LogAnalze> findLogAnalyseList(LogAnalze param, Page page) {
         String querySql = "SELECT " + LogAnalze.getAllColumn() + " from fp_log_analyze where 1 = ? ";
-        // String querySql = "SELECT * from fp_log_analyze where 1 = ? ";
         String countSql = "SELECT count(*) from fp_log_analyze where 1 = ?  ";
         StringBuilder sql = new StringBuilder();
         ArrayList<Object> list = new ArrayList<>();
@@ -151,24 +151,50 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 param.setEndTime(null);
             }
         }
-        if (param.getProjectName() != null && !param.getProjectName().equalsIgnoreCase("")) {
-            sql.append("and project_name = ? ");
-            list.add(param.getProjectName());
+        List<String> projectNameList = param.getProjectNameList();
+        if (projectNameList != null && projectNameList.size() > 0) {
+            // sql.append("and project_name = ? ");
+            sql.append("and project_name in ( ");
+            for (int i = 0; i < projectNameList.size(); i++) {
+                if (i == projectNameList.size() - 1) {
+                    sql.append(" ? ");
+                } else {
+                    sql.append(" ? ,");
+                }
+                list.add(projectNameList.get(i));
+            }
+            sql.append(" ) ");
         }
-        if (param.getAddress() != null && !param.getProjectName().equalsIgnoreCase("")) {
-            sql.append("and address = ? ");
-            list.add(param.getAddress());
+        List<String> addressList = param.getAddressList();
+        if (addressList != null && addressList.size() > 0) {
+            // sql.append("and project_name = ? ");
+            sql.append("and address in ( ");
+            for (int i = 0; i < addressList.size(); i++) {
+                if (i == addressList.size() - 1) {
+                    sql.append(" ? ");
+                } else {
+                    sql.append(" ? ,");
+                }
+                list.add(addressList.get(i));
+            }
+            sql.append(" ) ");
         }
-        if (param.getStartTime() != null && !param.getProjectName().equalsIgnoreCase("")) {
+        if (param.getStarTime() != null && !param.getStarTime().equalsIgnoreCase("")) {
             sql.append("and create_time > ? ");
-            list.add(param.getStartTime());
+            list.add(param.getStarTime());
         }
-        if (param.getEndTime() != null && !param.getProjectName().equalsIgnoreCase("")) {
+        if (param.getEndTime() != null && !param.getEndTime().equalsIgnoreCase("")) {
             sql.append("and create_time < ? ");
             list.add(param.getEndTime());
         }
+        if (param.getParsingState() != null && param.getParsingState().equals("1")) {
+            sql.append("and parsing_state !=  0 ");
+        } else if (param.getParsingState() != null && param.getParsingState().equals("0")) {
+            sql.append("and parsing_state != 1 ");
+        }
         countSql += sql.toString();
-        String ordetAndLimitSql = " ORDER BY create_time  DESC LIMIT ? , ?  ";
+        String sort = param.getSort();
+        String ordetAndLimitSql = " ORDER BY start_time  " + sort + "  LIMIT ? , ?  ";
         querySql = querySql + sql.toString() + ordetAndLimitSql;
         int start = page.getRowStart();
         int rowEnd = page.getRowEnd();
@@ -176,11 +202,12 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             Integer total = mysqlJdbcTemplate.queryForObject(countSql, Integer.class, list.toArray());
             list.add(start);
-            list.add(rowEnd);
+            list.add(page.getPageSize());
             logAnalzeList = mysqlJdbcTemplate.query(querySql, list.toArray(), new BeanPropertyRowMapper<>(LogAnalze.class));
             page.setTotalRows(total);
         } catch (DataAccessException e) {
             e.printStackTrace();
+            throw e;
         }
         return logAnalzeList;
     }
@@ -232,35 +259,29 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 countSql.append(" and date > :date ");
                 paramMap.put("date", TimeUtil.beforeFewDays(15));
             } else if (StringUtils.equals("customZone", errorResult.getTimeTag())) {
-                long startTime = TimeUtil.beforeFewDays(15);
-                long endTime = new Date().getTime() / 1000;
-                if (errorResult.getStartTime() != null) {
-                    startTime = Long.parseLong(errorResult.getStartTime());
-                }
-                if (errorResult.getEndTime() != null) {
-                    endTime = Long.parseLong(errorResult.getEndTime());
-                }
-                List<String> partitionList = TimeUtil.getMonthByLong(startTime, endTime);
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", partitionList);
+                paramMap.put("partition", TimeUtil.long2String(Long.valueOf(errorResult.getCaptureTime()), "yyyyMM"));
                 sql.append(" and date > :startTime ");
                 countSql.append(" and date > :startTime ");
-                paramMap.put("startTime", startTime);
+                paramMap.put("startTime", errorResult.getStartTime());
                 sql.append(" and date < :endTime ");
                 countSql.append(" and date < :endTime ");
-                paramMap.put("endTime", endTime);
+                paramMap.put("endTime", errorResult.getEndTime());
             } else if (StringUtils.equals("all", errorResult.getTimeTag())) {
                 sql.append(" and partition like '%' ");
                 countSql.append(" and partition like '%' ");
             }
-        } else {
+        }/* else {
             sql.append(" and partition in (:partition) ");
             countSql.append(" and partition in (:partition) ");
             paramMap.put("partition", TimeUtil.partitons("halfMonth"));
             sql.append(" and date > :date ");
             countSql.append(" and date > :date ");
             paramMap.put("date", TimeUtil.beforeFewDays(15));
+        }*/ else {
+            sql.append(" and partition like '%' ");
+            countSql.append(" and partition like '%' ");
         }
         //根据分析时间过滤
         if (errorResult.getCaptureTime() != null) {
@@ -287,7 +308,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorResult.getTagList());
         }
         //根据关键字过滤
-        if (errorResult.getKeyWord() != null) {
+        if (errorResult.getKeyWord() != null && !errorResult.getKeyWord().equalsIgnoreCase("")) {
             sql.append(" and SEARCH_ALL like :keyWord  ");
             countSql.append(" and SEARCH_ALL like :keyWord  ");
             paramMap.put("keyWord", errorResult.getKeyWord());
@@ -306,19 +327,26 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 count = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
             } catch (Exception e) {
                 e.printStackTrace();
+                throw e;
             }
             if (count != null && count.size() > 0 && count.get(0).getCount() != null) {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
+           /* if (errorResult.getSort() != null) {
+                sql.append(" ORDER BY date " + errorResult.getSort() + " limit " + page.getRowStart() + "," + page.getPageSize());
+            } else {
+                sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
+            }*/
             sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
 
         }
         List query = null;
         try {
             query = namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
-        } catch (DataAccessException e) {e.printStackTrace();
-
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw e;
         }
         return query;
     }

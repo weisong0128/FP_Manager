@@ -40,7 +40,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private FpProjectService fpProjectService;
 
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 35, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 60, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -76,6 +76,14 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Override
     public List<LogAnalze> findLogAnalyseList(LogAnalze param, Page page) {
+        if (StringUtils.isNotEmpty(param.getProjectName())) {
+            String[] arrays = param.getProjectName().split(",");
+            param.setProjectNameList(new ArrayList<>(Arrays.asList(arrays)));
+        }
+        if (StringUtils.isNotEmpty(param.getAddress())) {
+            String[] arrays = param.getAddress().split(",");
+            param.setAddressList(new ArrayList<>(Arrays.asList(arrays)));
+        }
         List<LogAnalze> logAnalyseList = logAnalzeDao.findLogAnalyseList(param, page);
         return logAnalyseList;
     }
@@ -155,22 +163,23 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+           // e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 
 
     @Override
     public List<ErrorResult> listErrorResult(Page page, ErrorResult errorResult) {
-        if (StringUtils.isNotEmpty(errorResult.getPjName())) {
+        if (StringUtils.isNotEmpty(errorResult.getPjName()) && !errorResult.getPjName().equalsIgnoreCase("")) {
             String[] pjNames = errorResult.getPjName().split(",");
             errorResult.setPjNameList(new ArrayList<>(Arrays.asList(pjNames)));
         }
-        if (StringUtils.isNotEmpty(errorResult.getPjLocation())) {
+        if (StringUtils.isNotEmpty(errorResult.getPjLocation()) && !errorResult.getPjLocation().equalsIgnoreCase("")) {
             String[] pjLocations = errorResult.getPjLocation().split(",");
             errorResult.setPjLocationList(new ArrayList<>(Arrays.asList(pjLocations)));
         }
-        if (StringUtils.isNotEmpty(errorResult.getTag())) {
+        if (StringUtils.isNotEmpty(errorResult.getTag()) && !errorResult.getTag().equalsIgnoreCase("")) {
             String[] tagList = errorResult.getTag().split(",");
             errorResult.setTagList(new ArrayList<>(Arrays.asList(tagList)));
         }
