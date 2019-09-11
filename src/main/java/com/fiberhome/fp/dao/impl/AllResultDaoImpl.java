@@ -113,6 +113,12 @@ public class AllResultDaoImpl implements AllResultDao {
             paramMap.put("endTime",allResult.getEndTime());
         }
 
+        if (allResult.getKeyWord()!=""&& allResult.getKeyWord()!=null){
+            sql.append(" and  SEARCH_ALL=:keyword ");
+            countSql.append(" and  SEARCH_ALL=:keyword  ");
+            paramMap.put("keyword",allResult.getKeyWord());
+        }
+
         if (page != null){
             int total = 0;
             List<AllResult> totalList = namedParameterJdbcTemplate.query(countSql.toString(),paramMap,new BeanPropertyRowMapper<>(AllResult.class));

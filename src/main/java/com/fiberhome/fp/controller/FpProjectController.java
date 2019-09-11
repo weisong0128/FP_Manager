@@ -188,7 +188,6 @@ public class FpProjectController {
     @ApiOperation(value="获取所有sql类别接口（暂时不用）",notes = "获取所有sql类别接口")
     @GetMapping(value = "tags")
     public Response tagList(){
-        Map<String, Object> retMap = new HashMap<>();
         return Response.ok(allResultService.tagList());
     }
 
@@ -262,8 +261,8 @@ public class FpProjectController {
     @Value("${upload.table.path}")
     String uploadTablePath;
 
-    @Value("${newTable.template.fileName}")
-    String  fileName;
+    @Value("${newTable.template.fileName2}")
+    String  fileName2;
     @Value("${newTable.template.filePath}")
     String filePath;
 
@@ -273,6 +272,7 @@ public class FpProjectController {
      * 上传excel接口
      * @return
      */
+    final  int count1=4;
     @ApiOperation(value="建表模块-》上传excel接口",notes = "上传excel接口")
     @PostMapping(value = "/uploadexcel")
     public Response uploadExcel(MultipartFile file){
@@ -287,9 +287,9 @@ public class FpProjectController {
         if (!isExcel){
             return Response.error("文件不是Excel格式！");
         }
-        String fileName = file.getOriginalFilename();
+        String fileName1 = file.getOriginalFilename();
 
-        if (fileName.split("_").length != 4){
+        if (fileName1.split("_").length != count1){
             return Response.error("文件命名格式应该为：地市_项目名称_业务调查表_日期.xls！");
         }
 
@@ -301,14 +301,14 @@ public class FpProjectController {
             director.mkdir();
         }
         try {
-            file.transferTo(new File(director.getPath() + File.separator + fileName));
+            file.transferTo(new File(director.getPath() + File.separator + fileName1));
             logging.info(String.format("文件上传至：%s",path));
         } catch (IOException e) {
             e.printStackTrace();
             return Response.error("文件上传失败！");
         }
         Map<String,Object> retMap = new HashMap<>();
-        retMap.put("fileName",fileName);
+        retMap.put("fileName",fileName1);
         retMap.put("path",path);
 
         return Response.ok(retMap);
@@ -322,7 +322,7 @@ public class FpProjectController {
     @ApiOperation(value="建表模块-》下载excel模板接口",notes = "下载excel模板接口")
     @GetMapping(value = "/downloadexcel")
     public void  downloadexcel(HttpServletResponse response) {
-        FileUtil.downloadFile(response,fileName,filePath);
+        FileUtil.downloadFile(response,fileName2,filePath);
     }
 
 
@@ -456,47 +456,47 @@ public class FpProjectController {
         File[] files = dictionary.listFiles();
         StringBuilder retMsg = new StringBuilder();
         for (File file : files){
-            String fileName = file.getName();
-            if (!sqlName.equals(fileName) && fileName.contains(".sql")){
+            String fileName2 = file.getName();
+            if (!sqlName.equals(fileName2) && fileName2.contains(".sql")){
                 try {
                     logging.info(String.format("执行建表入库命令：sh /opt/software/lsql/bin/load.sh -t CreateTable -p %s -tp sql -sp '\\t' -local -f %s" +
-                            " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript",partition,path + File.separator + fileName));
-                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t CreateTable -p "+partition+" -tp sql -sp '\\t' -local -f "+path + File.separator + fileName +
+                            " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript",partition,path + File.separator + fileName2));
+                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t CreateTable -p "+partition+" -tp sql -sp '\\t' -local -f "+path + File.separator + fileName2 +
                             " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript ");
                     if (ret){
-                        logging.info(String.format("%s表建表入库成功",fileName));
-                        retMsg.append(fileName+"表建表入库成功;");
+                        logging.info(String.format("%s表建表入库成功",fileName2));
+                        retMsg.append(fileName2+"表建表入库成功;");
                     }
                 } catch (IOException e) {
-                    logging.error(String.format("%s表建表入库失败",fileName),e);
-                    retMsg.append(fileName+"表建表入库失败;");
+                    logging.error(String.format("%s表建表入库失败",fileName2),e);
+                    retMsg.append(fileName2+"表建表入库失败;");
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    logging.error(String.format("%s表建表入库失败",fileName),e);
-                    retMsg.append(fileName+"表建表入库失败;");
+                    logging.error(String.format("%s表建表入库失败",fileName2),e);
+                    retMsg.append(fileName2+"表建表入库失败;");
                     e.printStackTrace();
                 }
 
             }
-            if (fileName.contains(".txt")){
+            if (fileName2.contains(".txt")){
                 try {
                     logging.info(String.format("执行元数据入库命令：sh /opt/software/lsql/bin/load.sh -t BusinessMet -p %s -tp txt -sp '\\t' -local -f  %s -fl " +
                             "ProjectName,LocalName,TableName,TableType,PhysicalName,FieldName,OldFieldType,FieldDes," +
-                            "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime ",partition,path + File.separator + fileName ));
-                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t BusinessMet -p "+partition+" -tp txt -sp '\\t' -local -f " + path + File.separator + fileName +
+                            "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime ",partition,path + File.separator + fileName2 ));
+                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t BusinessMet -p "+partition+" -tp txt -sp '\\t' -local -f " + path + File.separator + fileName2 +
                             " -fl ProjectName,LocalName,TableName,TableType,PhysicalName,FieldName,OldFieldType,FieldDes," +
                             "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime  ");
                     if (ret){
-                        logging.info(String.format("%s表元数据入库成功",fileName));
-                        retMsg.append(fileName+"表元数据入库成功;");
+                        logging.info(String.format("%s表元数据入库成功",fileName2));
+                        retMsg.append(fileName2+"表元数据入库成功;");
                     }
                 } catch (IOException e) {
-                    logging.error(String.format("%s表元数据入库失败",fileName),e);
-                    retMsg.append(fileName+"表元数据入库失败;");
+                    logging.error(String.format("%s表元数据入库失败",fileName2),e);
+                    retMsg.append(fileName2+"表元数据入库失败;");
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    logging.error(String.format("%s表元数据入库失败",fileName),e);
-                    retMsg.append(fileName+"表元数据入库失败;");
+                    logging.error(String.format("%s表元数据入库失败",fileName2),e);
+                    retMsg.append(fileName2+"表元数据入库失败;");
                     e.printStackTrace();
                 }
             }

@@ -26,6 +26,11 @@ public class CheckExcel {
      * @param file2 原始类型表
      * @throws IOException
      */
+
+    public static final int TWO=2;
+    public static final int FOUR=4;
+    public static final int TEN=10;
+
     public static List<CheckExcelModel> CheckExecl(File execl_file, File file2) throws IOException {
         List<CheckExcelModel>  resultList = new ArrayList<>();
         CheckExcelModel checkExcelModel = new CheckExcelModel();
@@ -50,12 +55,12 @@ public class CheckExcel {
                 }
                 String tablename = chechsheet.getCell(1, 0).getContents().trim();
                 String tabletype = chechsheet.getCell(1, 1).getContents().trim();
-                String physicaltable = chechsheet.getCell(1, 2).getContents().trim();
+                String physicaltable = chechsheet.getCell(1,TWO).getContents().trim();
                 if (StringUtils.isEmpty(tablename)){
                     checkExcelModel = new CheckExcelModel();
                     checkExcelModel.setFileName(execl_file.getName());
                     checkExcelModel.setSheetNum(sheetcheck);
-                    checkExcelModel.setErrType(2);
+                    checkExcelModel.setErrType(TWO);
                     checkExcelModel.setRow(0);
                     checkExcelModel.setCol(1);
                     checkExcelModel.setMsg("表名不能为空！");
@@ -67,7 +72,7 @@ public class CheckExcel {
                     checkExcelModel = new CheckExcelModel();
                     checkExcelModel.setFileName(execl_file.getName());
                     checkExcelModel.setSheetNum(sheetcheck);
-                    checkExcelModel.setErrType(2);
+                    checkExcelModel.setErrType(TWO);
                     checkExcelModel.setRow(1);
                     checkExcelModel.setCol(1);
                     checkExcelModel.setMsg("建表类型不能为空！");
@@ -79,7 +84,7 @@ public class CheckExcel {
                     checkExcelModel = new CheckExcelModel();
                     checkExcelModel.setFileName(execl_file.getName());
                     checkExcelModel.setSheetNum(sheetcheck);
-                    checkExcelModel.setErrType(2);
+                    checkExcelModel.setErrType(TWO);
                     checkExcelModel.setRow(1);
                     checkExcelModel.setCol(1);
                     checkExcelModel.setMsg("建表类型必须是物理表或者映射表！");
@@ -91,25 +96,25 @@ public class CheckExcel {
                     checkExcelModel = new CheckExcelModel();
                     checkExcelModel.setFileName(execl_file.getName());
                     checkExcelModel.setSheetNum(sheetcheck);
-                    checkExcelModel.setErrType(2);
-                    checkExcelModel.setRow(2);
+                    checkExcelModel.setErrType(TWO);
+                    checkExcelModel.setRow(TWO);
                     checkExcelModel.setCol(1);
                     checkExcelModel.setMsg("创建映射表时，对应的物理表名不能为空！");
                     //msgMap.put("mappingTable","创建映射表时，对应的物理表名不能为空！");
                     checkExcelModel.setSuccesss(false);
                     resultList.add(checkExcelModel);
                 }
-                for (int i = 0; i < chechsheet.getRows() - 10; i++) {
-                    String fieldname = chechsheet.getCell(0, i + 4).getContents().trim().toUpperCase();
-                    String fieldtype = chechsheet.getCell(1, i + 4).getContents().trim().toUpperCase();
+                for (int i = 0; i < chechsheet.getRows() - TEN; i++) {
+                    String fieldname = chechsheet.getCell(0, i + FOUR).getContents().trim().toUpperCase();
+                    String fieldtype = chechsheet.getCell(1, i + FOUR).getContents().trim().toUpperCase();
                     if (StringUtils.isNotEmpty(fieldname) && StringUtils.isEmpty(fieldtype)) {
                         checkExcelModel = new CheckExcelModel();
                         /*System.out.println("字段车型不能为空");
                         System.out.println("文件名："+execl_file.getName()+" ;sheet页："+sheetcheck +" ;错误类型：2；行号："+(i+4)+"；列号："+1+"；字段名："+fieldname+"；类型为空");*/
                         checkExcelModel.setFileName(execl_file.getName());
                         checkExcelModel.setSheetNum(sheetcheck);
-                        checkExcelModel.setErrType(2);
-                        checkExcelModel.setRow(i+4);
+                        checkExcelModel.setErrType(TWO);
+                        checkExcelModel.setRow(i+FOUR);
                         checkExcelModel.setCol(1);
                         checkExcelModel.setFieldName(fieldname);
                         checkExcelModel.setMsg(tablename+"表"+fieldname+"字段类型不能为空！");
@@ -153,15 +158,5 @@ public class CheckExcel {
             checkExcelModel.setFileName(execl_file.getName());
         }
         return resultList;
-    }
-
-
-    public  void  aad(){
-        Callable<FutureTask<CheckExcelModel>> callable = new Callable<FutureTask<CheckExcelModel>>() {
-            @Override
-            public FutureTask<CheckExcelModel> call() throws Exception {
-                return null;
-            }
-        };
     }
 }

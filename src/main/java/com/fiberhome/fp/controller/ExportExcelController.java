@@ -47,29 +47,30 @@ public class ExportExcelController {
 
         String[][] content= new String[allAuthManage.size()][];
         for (int i = 0; i < allAuthManage.size(); i++) {
+            int b=0;
             content[i] = new String[title.length];
             AuthManage authManage = allAuthManage.get(i);
-            content[i][0] = authManage.getUuid();
-            content[i][1] = authManage.getProjectName();
-            content[i][2] = authManage.getEnvirHead();
-            content[i][3] = authManage.getPhone();
-            content[i][4] = authManage.getProvinces();
-            content[i][5] = authManage.getCities();
-            content[i][6] = authManage.getAddress();
-            content[i][7] = authManage.getMac();
-            content[i][8] = authManage.getMasterIp();
-            content[i][9] = authManage.getDownloadTime();
+            content[i][b] = authManage.getUuid();
+            content[i][++b] = authManage.getProjectName();
+            content[i][++b] = authManage.getEnvirHead();
+            content[i][++b] = authManage.getPhone();
+            content[i][++b] = authManage.getProvinces();
+            content[i][++b] = authManage.getCities();
+            content[i][++b] = authManage.getAddress();
+            content[i][++b] = authManage.getMac();
+            content[i][++b] = authManage.getMasterIp();
+            content[i][++b] = authManage.getDownloadTime();
             String envirnote ="";
-            if("0".equals(authManage.getEnvirNote()))envirnote="线上生成环境";
-            if("1".equals(authManage.getEnvirNote()))envirnote="研发测试环境";
-            content[i][10] = envirnote;
-            content[i][11] = authManage.getSnFile();
+            if("0".equals(authManage.getEnvirNote())){envirnote="线上生成环境";}
+            if("1".equals(authManage.getEnvirNote())){envirnote="研发测试环境";}
+            content[i][++b] = envirnote;
+            content[i][++b] = authManage.getSnFile();
             String feedback ="";
-            if("0".equals(authManage.getFeedback()))feedback="已反馈";
-            if("1".equals(authManage.getFeedback()))feedback="未反馈";
-            content[i][12] = feedback;
-            content[i][13] = authManage.getCreateTime();
-           // content[i][14] = authManage.getUpdateTime();
+            if("0".equals(authManage.getFeedback())){feedback="已反馈";}
+            if("1".equals(authManage.getFeedback())){feedback="未反馈";}
+            content[i][++b] = feedback;
+            content[i][++b] = authManage.getCreateTime();
+            // content[i][14] = authManage.getUpdateTime();
         }
 
         //创建HSSFWorkbook

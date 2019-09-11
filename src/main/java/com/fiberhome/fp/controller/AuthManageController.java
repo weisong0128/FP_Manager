@@ -1,17 +1,17 @@
 package com.fiberhome.fp.controller;
 
-import com.fiberhome.fp.pojo.AuthManage;
-import com.fiberhome.fp.service.AuthManageService;
-import com.fiberhome.fp.util.EntityMapTransUtils;
-import com.fiberhome.fp.util.Page;
-import com.fiberhome.fp.util.Response;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+        import com.fiberhome.fp.pojo.AuthManage;
+        import com.fiberhome.fp.service.AuthManageService;
+        import com.fiberhome.fp.util.EntityMapTransUtils;
+        import com.fiberhome.fp.util.Page;
+        import com.fiberhome.fp.util.Response;
+        import io.swagger.annotations.Api;
+        import io.swagger.annotations.ApiImplicitParam;
+        import io.swagger.annotations.ApiOperation;
+        import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import java.util.*;
+        import javax.annotation.Resource;
+        import java.util.*;
 
 @Api(value = "授权管理",description = "授权管理")
 @RestController

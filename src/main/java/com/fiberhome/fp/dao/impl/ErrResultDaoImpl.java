@@ -3,6 +3,7 @@ package com.fiberhome.fp.dao.impl;
 import com.fiberhome.fp.dao.ErrResultDao;
 import com.fiberhome.fp.pojo.AllResult;
 import com.fiberhome.fp.pojo.ErrorResult;
+import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
 import org.apache.commons.lang.StringUtils;
@@ -94,10 +95,11 @@ public class ErrResultDaoImpl implements ErrResultDao {
             paramMap.put("keyword",errorResult.getKeyWord());
         }
 
-        if (errorResult.getErrorSqlType()!=""&&errorResult.getErrorSqlType()==null){
-            sql.append(" and  SEARCH_ALL=:errorSqlType ");
-            countSql.append(" and  SEARCH_ALL=:errorSqlType  ");
-            paramMap.put("errorSqlType",errorResult.getErrorSqlType());
+        if (errorResult.getErrorSqlType()!=""&&errorResult.getErrorSqlType()!=null){
+            List<String> errorSqlType = EntityMapTransUtils.StringToList(errorResult.getErrorSqlType());
+            sql.append(" and  SEARCH_ALL in (:errorSqlType) ");
+            countSql.append(" and  SEARCH_ALL in(:errorSqlType)  ");
+            paramMap.put("errorSqlType",errorSqlType);
         }
 
 

@@ -59,13 +59,10 @@ public class UserInfoController {
     @ApiOperation(value="根据条件查询用户信息(不加条件查询全部)",notes = "根据条件查询用户信息")
     @GetMapping(value = "getUserInfoByParames")
     public Response getUserInfoByParames(Page page,String keyWord,String userRole ,String userState ){
-        UserInfo userInfo =null;
-       if (keyWord!=null || keyWord!=null|| userRole!=null|| userState!=null){
-           userInfo= new UserInfo();
-           userInfo.setUserName(keyWord);
-           userInfo.setUserRole(userRole);
-           userInfo.setUserState(userState);
-       }
+        UserInfo userInfo= new UserInfo();
+        userInfo.setUserName(keyWord);
+        userInfo.setUserRole(userRole);
+        userInfo.setUserState(userState);
         return Response.ok(userInfoService.getAllUserInfo(page,userInfo),page);
     };
 

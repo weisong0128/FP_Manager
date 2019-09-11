@@ -8,9 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -25,12 +23,9 @@ public class LoginController {
     LoginServiceImpl loginService;
 
     @ApiOperation(value="登录方法",notes = "用户登录")
-    @GetMapping("login")
-    public Response login(String userName , String password) throws ExecutionException, InterruptedException {
-       UserInfo userInfo = new UserInfo();
-        userInfo.setUserName(userName);
-        userInfo.setUserPassword(password);
-        int count = loginService.login(userInfo.getUserName(), userInfo.getUserPassword());
+    @RequestMapping(value = "login",method = RequestMethod.POST)
+    public Response login(UserInfo userInfo) {
+        int count = loginService.login(userInfo.getUserName(),userInfo.getUserPassword());
         return Response.ok(count);
     }
 }

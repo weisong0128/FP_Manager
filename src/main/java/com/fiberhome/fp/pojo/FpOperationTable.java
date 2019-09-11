@@ -47,9 +47,8 @@ public class FpOperationTable {
     private String logLeave;
 
     private List<String> logLeaveList;
-
+//查询关键字
     private String keyWord;
-
 
     public String getEndTime() {
         return endTime;

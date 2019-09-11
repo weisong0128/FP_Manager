@@ -44,7 +44,7 @@ public class Table {
 		if (file.exists()) {
 			file.delete();
 		}
-		
+
 		FileWriter fWriter = new FileWriter(path + File.separator + sqlFileName, true);
 		map.put("sqlName",sqlFileName);
 		fWriter.write("--业务对接表结构设计" + "\r\n");
@@ -203,7 +203,7 @@ public class Table {
 					String definconvtxt = sheet.getCell(11, row + 4).getContents().trim();
 					// 自定义汇聚名称
 					String definconvtxtname = "";
-					
+
 					if ("是".equals(definconvtxt)) {
 						definconvtxtname = tablename + "_CUSTOM";
 					}
@@ -230,7 +230,7 @@ public class Table {
 						tablewrite.write(pjName+"\t"+pjLocation+"\t"+tablename+"\t"+tabletype+"\t"+physicaltable+"\t"
 								+fieldname+"\t"+datatypetemp+"\t"+fielddescript+"\t"+exhibition+"\t"+index
 								+"\t"+order+"\t"+count+"\t"+group+"\t"+like+"\t"+datam+"\t"+datalong+"\t"+definconvtxt+"\t"+System.currentTimeMillis()+"\r");
-						
+
 						// 获取字段类型转换
 						Sheet fieldsheet = field.getSheet(0);
 						String olddatatype = "";
@@ -545,7 +545,7 @@ public class Table {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 
 		} catch (FileNotFoundException e) {
@@ -556,7 +556,7 @@ public class Table {
 	}
 
 	// 定义休眠类
-	class Runner1 implements Runnable {
+	/*class Runner1 implements Runnable {
 		public void run() {
 			try {
 				Thread.sleep(20000);
@@ -566,5 +566,5 @@ public class Table {
 			}
 		}
 	}
-
+*/
 }

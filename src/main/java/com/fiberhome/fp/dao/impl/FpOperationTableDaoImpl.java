@@ -2,6 +2,7 @@ package com.fiberhome.fp.dao.impl;
 
 import com.fiberhome.fp.dao.FpOperationTableDao;
 import com.fiberhome.fp.pojo.FpOperationTable;
+import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
 import org.apache.commons.lang.StringUtils;
@@ -68,9 +69,17 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
         }
         String errLevel =fpOperationTable.getErrLevel();
         if (errLevel != null && errLevel !=""){
-            sql.append(" and errinfo  like : errLevel");
-            countSql.append(" and errinfo like : errLevel ");
-            paramMap.put("errLevel",errLevel);
+            List<String> errLevels = EntityMapTransUtils.StringToList(fpOperationTable.getErrLevel());
+            for (int i = 0; i < errLevels.size(); i++) {
+                if (i==0){
+                    sql.append(" and (errinfo  like '["+errLevels.get(i)+"-'");
+                    countSql.append(" and errinfo like '["+errLevels.get(i)+"-'");
+                }else {
+                    sql.append(" or errinfo  like '["+errLevels.get(i)+"-'");
+                    countSql.append(" or errinfo like '["+errLevels.get(i)+"-'");
+                }
+            }
+            sql.append(")");
         }
         if (fpOperationTable.getPjNameList() != null && fpOperationTable.getPjNameList().size()>0 && !fpOperationTable.getPjNameList().contains("all")){
             sql.append(" and  pjname in (:pjName)");
@@ -100,11 +109,11 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
         List fpOperationTables = namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(FpOperationTable.class));
         for (int i = 0; i < fpOperationTables.size(); i++) {
             FpOperationTable table = (FpOperationTable)fpOperationTables.get(i);
-            errLevel = table.getErrInfo().substring(table.getErrInfo().indexOf("[")+1, table.getErrInfo().indexOf("-"));
-            if ("CRIT".equals(errLevel))errLevel="重度";
-            if ("ERRO".equals(errLevel))errLevel="中度";
-            if ("WARN".equals(errLevel))errLevel="轻度";
-            if ("INFO".equals(errLevel))errLevel=" 环境状态";
+            errLevel = table.getErrInfo().substring(table.getErrInfo().indexOf("[")+1, table.getErrInfo().indexOf("-")+1);
+            if ("CRIT-".equals(errLevel))errLevel="重度";
+            if ("ERRO-".equals(errLevel))errLevel="中度";
+            if ("WARN-".equals(errLevel))errLevel="轻度";
+            if ("INFO-".equals(errLevel))errLevel=" 环境状态";
             table.setErrLevel(errLevel);
         }
         return fpOperationTables;

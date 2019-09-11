@@ -72,6 +72,17 @@ public class AllResult {
     // 查询开始时间
     private String startTime;
 
+    //关键字查询
+    private String keyWord;
+
+    public String getKeyWord() {
+        return keyWord;
+    }
+
+    public void setKeyWord(String keyWord) {
+        this.keyWord = keyWord;
+    }
+
     public AllResult(Integer time, String sqlResult, String pjLocation, String tagDescribe, String endTime, String startTime) {
         this.time = time;
         this.sqlResult = sqlResult;
