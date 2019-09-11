@@ -61,7 +61,7 @@ public class UserInfoDaoImpl implements UserInfoDao {
     @Override
     public UserInfo getUserInfoByUuid(String uuid) {
         String sql="select * from fp_user where uuid=?  and user_state !='2'";
-        List<UserInfo>  userInfos = jdbcTemplate.query(sql.toString(),new Object[]{uuid},new BeanPropertyRowMapper<>(UserInfo.class));
+        List<UserInfo>  userInfos = jdbcTemplate.query(sql,new Object[]{uuid},new BeanPropertyRowMapper<>(UserInfo.class));
         return userInfos.get(0);
     }
 
@@ -103,8 +103,8 @@ public class UserInfoDaoImpl implements UserInfoDao {
                 total= Integer.valueOf(count.get(0).get("totalrows").toString());
             }
             page.setTotalRows(total);
+            sql.append("  limit  " +page.getRowStart()+","+page.getPageSize());
         }
-        sql.append("  limit  " +page.getRowStart()+","+page.getPageSize());
         return namedParameterJdbcTemplate.query(sql.toString(),parames,new BeanPropertyRowMapper<UserInfo>(UserInfo.class));
     }
     /**

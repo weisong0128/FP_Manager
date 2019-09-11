@@ -32,7 +32,10 @@ public class FpProjectServiceImpl implements FpProjectService {
 
     Logger logging = LoggerFactory.getLogger(FpProjectServiceImpl.class);
 
-    public static ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    private static final int NUMBER_10=10;
+    private static final int NUMBER_20=20;
+    private static final long NUMBER_60=60L;
+    public static ThreadPoolExecutor pool = new ThreadPoolExecutor(NUMBER_10, NUMBER_20, NUMBER_60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
     @Autowired
     FpProjectDao fpProjectDao;

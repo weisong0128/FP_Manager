@@ -3,6 +3,7 @@ package com.fiberhome.fp.dao.impl;
 import com.fiberhome.fp.dao.FpProjectDao;
 import com.fiberhome.fp.pojo.FpProject;
 import com.fiberhome.fp.util.Page;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -30,7 +31,7 @@ public class FpProjectDaoImpl implements FpProjectDao{
       Object[] obj = new Object[1];
         StringBuilder sql = new StringBuilder("select pjname,pjlocation from fp_project where  pjname <> 'null' ");
         StringBuilder sqlCount = new StringBuilder(" select count(*) as totalrows from fp_project where  pjname <> 'null' ");
-        if (pjName!=null && pjName!=""){
+        if (StringUtils.isNotBlank(pjName)){
             obj[0]=pjName;
             sql.append("AND  pjname = ? ");
             sqlCount.append("AND  pjname = ?");
@@ -41,8 +42,8 @@ public class FpProjectDaoImpl implements FpProjectDao{
                 int total= Integer.valueOf(count.get(0).get("totalrows").toString());
                 page.setTotalRows(total);
             }
+            sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         }
-        sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         return jdbcTemplate.query(sql.toString(),obj,new BeanPropertyRowMapper<>(FpProject.class));
     }
 

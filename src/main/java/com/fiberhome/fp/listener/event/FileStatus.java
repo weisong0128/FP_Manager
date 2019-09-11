@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class FileStatus implements Serializable {
-
+    private static final  long serialVersionUID = 1L;
     private ConcurrentHashMap<String, AnalyseProcess> map = AnalyseProcess.map;
     private boolean isFinish;
     private boolean isShow;

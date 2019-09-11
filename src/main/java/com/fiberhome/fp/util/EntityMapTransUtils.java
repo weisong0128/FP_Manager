@@ -114,16 +114,16 @@ public class EntityMapTransUtils {
      * 字符串转集合
      */
     public static List<String> StringToList(String str){
+        List<String> list = new ArrayList<>();
        if (str !=null){
            if (str.indexOf("\"")!=0){
                str = str.replaceAll("\"","");
            }
+           String[] split = str.split(",");
+           for (int i = 0; i < split.length; i++) {
+               list.add(split[i].replaceAll("'",""));
+           }
        }
-        String[] split = str.split(",");
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < split.length; i++) {
-            list.add(split[i].replaceAll("'",""));
-        }
         return list;
     }
 

@@ -456,47 +456,47 @@ public class FpProjectController {
         File[] files = dictionary.listFiles();
         StringBuilder retMsg = new StringBuilder();
         for (File file : files){
-            String fileName2 = file.getName();
-            if (!sqlName.equals(fileName2) && fileName2.contains(".sql")){
+            String filename= file.getName();
+            if (!sqlName.equals(filename) && filename.contains(".sql")){
                 try {
                     logging.info(String.format("执行建表入库命令：sh /opt/software/lsql/bin/load.sh -t CreateTable -p %s -tp sql -sp '\\t' -local -f %s" +
-                            " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript",partition,path + File.separator + fileName2));
-                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t CreateTable -p "+partition+" -tp sql -sp '\\t' -local -f "+path + File.separator + fileName2 +
+                            " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript",partition,path + File.separator + filename));
+                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t CreateTable -p "+partition+" -tp sql -sp '\\t' -local -f "+path + File.separator + filename +
                             " -fl ProjectName,LocalName,TableName,UpdateTime,CreateScript ");
                     if (ret){
-                        logging.info(String.format("%s表建表入库成功",fileName2));
-                        retMsg.append(fileName2+"表建表入库成功;");
+                        logging.info(String.format("%s表建表入库成功",filename));
+                        retMsg.append(filename+"表建表入库成功;");
                     }
                 } catch (IOException e) {
-                    logging.error(String.format("%s表建表入库失败",fileName2),e);
-                    retMsg.append(fileName2+"表建表入库失败;");
+                    logging.error(String.format("%s表建表入库失败",filename),e);
+                    retMsg.append(filename+"表建表入库失败;");
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    logging.error(String.format("%s表建表入库失败",fileName2),e);
-                    retMsg.append(fileName2+"表建表入库失败;");
+                    logging.error(String.format("%s表建表入库失败",filename),e);
+                    retMsg.append(filename+"表建表入库失败;");
                     e.printStackTrace();
                 }
 
             }
-            if (fileName2.contains(".txt")){
+            if (filename.contains(".txt")){
                 try {
                     logging.info(String.format("执行元数据入库命令：sh /opt/software/lsql/bin/load.sh -t BusinessMet -p %s -tp txt -sp '\\t' -local -f  %s -fl " +
                             "ProjectName,LocalName,TableName,TableType,PhysicalName,FieldName,OldFieldType,FieldDes," +
-                            "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime ",partition,path + File.separator + fileName2 ));
-                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t BusinessMet -p "+partition+" -tp txt -sp '\\t' -local -f " + path + File.separator + fileName2 +
+                            "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime ",partition,path + File.separator + filename ));
+                    boolean ret = ShellUtil.shSuccess("sh /opt/software/lsql/bin/load.sh -t BusinessMet -p "+partition+" -tp txt -sp '\\t' -local -f " + path + File.separator + filename +
                             " -fl ProjectName,LocalName,TableName,TableType,PhysicalName,FieldName,OldFieldType,FieldDes," +
                             "Exhibition,IndexT,OrderT,CountT,GroupT,LikeT,Multivalued,SuperLong,FulText,UpdateTime  ");
                     if (ret){
-                        logging.info(String.format("%s表元数据入库成功",fileName2));
-                        retMsg.append(fileName2+"表元数据入库成功;");
+                        logging.info(String.format("%s表元数据入库成功",filename));
+                        retMsg.append(filename+"表元数据入库成功;");
                     }
                 } catch (IOException e) {
-                    logging.error(String.format("%s表元数据入库失败",fileName2),e);
-                    retMsg.append(fileName2+"表元数据入库失败;");
+                    logging.error(String.format("%s表元数据入库失败",filename),e);
+                    retMsg.append(filename+"表元数据入库失败;");
                     e.printStackTrace();
                 } catch (InterruptedException e) {
-                    logging.error(String.format("%s表元数据入库失败",fileName2),e);
-                    retMsg.append(fileName2+"表元数据入库失败;");
+                    logging.error(String.format("%s表元数据入库失败",filename),e);
+                    retMsg.append(filename+"表元数据入库失败;");
                     e.printStackTrace();
                 }
             }

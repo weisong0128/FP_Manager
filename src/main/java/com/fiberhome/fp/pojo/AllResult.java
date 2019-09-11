@@ -146,6 +146,7 @@ public class AllResult {
                     break;
                 case "else": this.tagDescribe = "其他语句";
                     break;
+                default:
             }
         }
 

@@ -1,11 +1,14 @@
 package com.fiberhome.fp.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Objects;
@@ -16,22 +19,23 @@ import java.util.Objects;
  */
 public class ExcelUtil {
 
+    private  static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
-
-     /* 给excel指定位置写入值
-      * @param path       写入文件在路径
- 	  * @param coordinate 写入内容的位置（例如:B4）
-      * @param value      写的值
- 	  */
+    /* 给excel指定位置写入值
+     * @param path       写入文件在路径
+     * @param coordinate 写入内容的位置（例如:B4）
+     * @param value      写的值
+     */
     public static void writeSpecifiedCell(String path,int sheetNum, String coordinate, String value) {
         //根据路径获取文件
         File file = new File(path);
         //定义输入流对象
         FileInputStream excelFileInputStream;
+        Workbook workbook=null;
         try {
             excelFileInputStream = new FileInputStream(file);
             // 拿到文件转化为JavaPoi可操纵类型
-            Workbook workbook = WorkbookFactory.create(excelFileInputStream);
+            workbook = WorkbookFactory.create(excelFileInputStream);
             excelFileInputStream.close();
             ////获取excel表格
             Sheet sheet = workbook.getSheetAt(sheetNum);
@@ -49,7 +53,8 @@ public class ExcelUtil {
             workbook.write(excelFileOutPutStream);
             excelFileOutPutStream.flush();
             excelFileOutPutStream.close();
-            System.out.println("指定单元格设置数据写入完成");
+            //System.out.println("指定单元格设置数据写入完成");
+            logger.info("指定单元格设置数据写入完成");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (EncryptedDocumentException e) {
@@ -58,6 +63,14 @@ public class ExcelUtil {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
             e.printStackTrace();
+        }finally {
+            if (workbook!=null){
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -70,10 +83,11 @@ public class ExcelUtil {
         File file = new File(fieldFile);
         //定义输入流对象
         FileInputStream excelFileInputStream;
+        Workbook workbook =null;
         try {
             excelFileInputStream = new FileInputStream(file);
             // 拿到文件转化为JavaPoi可操纵类型
-            Workbook workbook = WorkbookFactory.create(excelFileInputStream);
+            workbook = WorkbookFactory.create(excelFileInputStream);
 
             ////获取excel表格
             Sheet sheet = workbook.getSheetAt(sheetNum);
@@ -95,8 +109,8 @@ public class ExcelUtil {
             excelFileInputStream.close();
             excelFileOutPutStream.flush();
             excelFileOutPutStream.close();
-            System.out.println("指定单元格设置数据写入完成");
-
+            //System.out.println("指定单元格设置数据写入完成");
+            logger.info("指定单元格设置数据写入完成");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (EncryptedDocumentException e) {
@@ -105,6 +119,14 @@ public class ExcelUtil {
             e.printStackTrace();
         } catch (InvalidFormatException e) {
             e.printStackTrace();
+        }finally {
+            if (workbook!=null){
+                try {
+                    workbook.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

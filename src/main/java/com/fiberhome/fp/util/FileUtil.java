@@ -394,17 +394,6 @@ public class FileUtil {
         return cutFileList;
     }
 
-
-    public static void main(String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("222");
-        list.add("333");
-        if (list.contains("333")) {
-
-            System.out.println(111);
-        }
-    }
-
     //此处修改了 返回 List<File>  成为  fileSize
     public static List<File> cutFile(File orginalFile, Long oneFileLength) {
         ArrayList<File> cutFileList = new ArrayList<>();

@@ -36,6 +36,7 @@ public class TagProporation {
                     break;
                 case "else": this.name = "其他语句";
                     break;
+                default:
             }
         }
     }

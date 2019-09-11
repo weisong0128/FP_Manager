@@ -30,6 +30,8 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
+    private  final  int DAYS_7=7;
+    private  final  int DAYS_15=15;
     @Override
     public List<FpOperationTable> list(Page page, FpOperationTable fpOperationTable) {
         StringBuilder sql = new StringBuilder();
@@ -52,7 +54,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
                 paramMap.put("partition",TimeUtil.partitons("seven"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(7));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_7));
             }
             if (StringUtils.equals("halfMonth",fpOperationTable.getTimeTag())){
                 sql.append(" and partition in (:partition) ");
@@ -60,7 +62,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
                 paramMap.put("partition",TimeUtil.partitons("halfMonth"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(15));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_15));
             }
             if (StringUtils.equals("all",fpOperationTable.getTimeTag())){
                 sql.append(" and partition like '%' ");
@@ -68,7 +70,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             }
         }
         String errLevel =fpOperationTable.getErrLevel();
-        if (errLevel != null && errLevel !=""){
+        if (StringUtils.isNotBlank(errLevel)){
             List<String> errLevels = EntityMapTransUtils.StringToList(fpOperationTable.getErrLevel());
             for (int i = 0; i < errLevels.size(); i++) {
                 if (i==0){
@@ -91,7 +93,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             countSql.append(" and  pjlocation in (:pjLocation)");
             paramMap.put("pjLocation",fpOperationTable.getPjLocationList());
         }
-        if (fpOperationTable.getStartTime()!=null&&fpOperationTable.getStartTime()!=""&&fpOperationTable.getEndTime()!=""&&fpOperationTable.getEndTime()!=""){
+        if (StringUtils.isNotBlank(fpOperationTable.getStartTime())&&StringUtils.isNotBlank(fpOperationTable.getEndTime())){
             sql.append(" and date like '["+fpOperationTable.getStartTime()+" TO "+fpOperationTable.getEndTime()+" ]' ");
             countSql.append(" and date like '["+fpOperationTable.getStartTime()+" TO "+fpOperationTable.getEndTime()+"]' ");
             paramMap.put("startTime",fpOperationTable.getStartTime());
@@ -110,10 +112,10 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
         for (int i = 0; i < fpOperationTables.size(); i++) {
             FpOperationTable table = (FpOperationTable)fpOperationTables.get(i);
             errLevel = table.getErrInfo().substring(table.getErrInfo().indexOf("[")+1, table.getErrInfo().indexOf("-")+1);
-            if ("CRIT-".equals(errLevel))errLevel="重度";
-            if ("ERRO-".equals(errLevel))errLevel="中度";
-            if ("WARN-".equals(errLevel))errLevel="轻度";
-            if ("INFO-".equals(errLevel))errLevel=" 环境状态";
+            if ("CRIT-".equals(errLevel)){errLevel="重度";}
+            if ("ERRO-".equals(errLevel)){errLevel="中度";}
+            if ("WARN-".equals(errLevel)){errLevel="轻度";}
+            if ("INFO-".equals(errLevel)){errLevel=" 环境状态";}
             table.setErrLevel(errLevel);
         }
         return fpOperationTables;

@@ -556,7 +556,7 @@ public class Table {
 	}
 
 	// 定义休眠类
-	/*class Runner1 implements Runnable {
+	class Runner1 implements Runnable {
 		public void run() {
 			try {
 				Thread.sleep(20000);
@@ -566,5 +566,5 @@ public class Table {
 			}
 		}
 	}
-*/
+
 }

@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.time.Month;
 import java.util.*;
 
 /**
@@ -35,6 +36,8 @@ public class AllResultDaoImpl implements AllResultDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
+    private  final  int DAYS_7=7;
+    private  final  int DAYS_15=15;
     @Override
     public List<AllResult> listAllResult(Page page, AllResult allResult) {
         StringBuilder sql = new StringBuilder();
@@ -57,7 +60,7 @@ public class AllResultDaoImpl implements AllResultDao {
                 paramMap.put("partition",TimeUtil.partitons("seven"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(7));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_7));
             }
             if (StringUtils.equals("halfMonth",allResult.getTimeTag())){
                 sql.append(" and partition in (:partition) ");
@@ -65,7 +68,7 @@ public class AllResultDaoImpl implements AllResultDao {
                 paramMap.put("partition",TimeUtil.partitons("halfMonth"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(15));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_15));
             }
             if (StringUtils.equals("all",allResult.getTimeTag())){
                 sql.append(" and partition like '%' ");
@@ -83,17 +86,11 @@ public class AllResultDaoImpl implements AllResultDao {
                 sql.append(" and ( ");
                 countSql.append(" and ( ");
                 for (int i=0; i<durations.length;i++){
-                    if (i == 0){
-                        jointSql(sql,durations[i],i);
-                        jointSql(countSql,durations[i],i);
-                    }else {
-                        jointSql(sql,durations[i],i);
-                        jointSql(countSql,durations[i],i);
-                    }
+                    jointSql(sql,durations[i],i);
+                    jointSql(countSql,durations[i],i);
                 }
                 sql.append(" ) ");
                 countSql.append(" ) ");
-
             }
         }
         if (allResult.getPjNameList() != null && allResult.getPjNameList().size()>0 && !allResult.getPjNameList().contains("all")){
@@ -106,14 +103,14 @@ public class AllResultDaoImpl implements AllResultDao {
             countSql.append(" and  pjlocation in (:pjLocation)");
             paramMap.put("pjLocation",allResult.getPjLocationList());
         }
-        if (allResult.getStartTime()!=null&&allResult.getStartTime()!=""&&allResult.getEndTime()!=""&&allResult.getEndTime()!=""){
+        if (StringUtils.isNotBlank(allResult.getStartTime())&&StringUtils.isNotBlank(allResult.getEndTime())){
             sql.append(" and date like '["+allResult.getStartTime()+" TO "+allResult.getEndTime()+" ]' ");
             countSql.append(" and date like '["+allResult.getStartTime()+" TO "+allResult.getEndTime()+"]' ");
             paramMap.put("startTime",allResult.getStartTime());
             paramMap.put("endTime",allResult.getEndTime());
         }
 
-        if (allResult.getKeyWord()!=""&& allResult.getKeyWord()!=null){
+        if (StringUtils.isNotBlank(allResult.getKeyWord())){
             sql.append(" and  SEARCH_ALL=:keyword ");
             countSql.append(" and  SEARCH_ALL=:keyword  ");
             paramMap.put("keyword",allResult.getKeyWord());
@@ -132,7 +129,6 @@ public class AllResultDaoImpl implements AllResultDao {
         return list;
     }
 
-
     /**\
      * 业务分析sql占比表格数据
      * @return
@@ -140,7 +136,7 @@ public class AllResultDaoImpl implements AllResultDao {
     @Override
     public AllResult getProportion(List<String> pjNames,List<String> pjLocations,String time,String startTime,String endTime){
         List<String> partitions = partitions(time);
-        if (startTime!=""&&startTime!=null&&endTime!=""&&endTime!=null){
+        if (StringUtils.isNotBlank(startTime)&&StringUtils.isNotBlank(endTime)){
             startTime=startTime+"000";
             endTime=endTime+"000";
             partitions = TimeUtil.convertMonth(Long.valueOf((startTime)),Long.valueOf((endTime)));
@@ -225,16 +221,16 @@ public class AllResultDaoImpl implements AllResultDao {
 
     @Override
     public List<RowResult> rowResultList(Page page,RowResult rowResult){
-        List<String> pjNameList = new ArrayList<>();
-        List<String> pjLocationList = new ArrayList<>();
-        if (StringUtils.isNotEmpty(rowResult.getPjName())){
+     /*   List<String> pjNameList = new ArrayList<>();
+        List<String> pjLocationList = new ArrayList<>();*/
+       /* if (StringUtils.isNotEmpty(rowResult.getPjName())){
             String[] pjNames = rowResult.getPjName().split(",");
-            pjNameList = new ArrayList<>(Arrays.asList(pjNames));
+           // pjNameList = new ArrayList<>(Arrays.asList(pjNames));
         }
         if (StringUtils.isNotEmpty(rowResult.getPjLocation())){
             String[] pjLocations = rowResult.getPjLocation().split(",");
-            pjLocationList = new ArrayList<>(Arrays.asList(pjLocations));
-        }
+            //pjLocationList = new ArrayList<>(Arrays.asList(pjLocations));
+        }*/
         //时间分区
         /*List<String> partitions = partitions(rowResult.getSearchTime());*/
         List<String> partitions = partitions("three");
@@ -251,7 +247,7 @@ public class AllResultDaoImpl implements AllResultDao {
         comSql.append("with a as (select count(*) as cc from sql_tmp where   partition in (:partitions) and tag='fp_table' and table_name =:tableName  and  pjname =:pjname and  pjlocation =:pjlocation limit 1), " +
                 " b as (select row_name,count(*) as row_count from sql_tmp where  partition in (:partitions) and tag=:typePartition and  pjname =:pjname and  pjlocation =:pjlocation and table_name =:tableName  group by row_name ) " +
                 " select num,row_name, row_count,percent from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t  where ") ;
-        if(rowResult.getRowName()!=null&&rowResult.getRowName()!=""){
+        if(StringUtils.isNotBlank(rowResult.getRowName())){
             comSql.append("  row_name=:rowName  and ");
         }
         //统计总条数
@@ -259,7 +255,7 @@ public class AllResultDaoImpl implements AllResultDao {
         countSql.append("with a as (select count(*) as cc from sql_tmp where   partition in (:partitions) and tag='fp_table' and table_name =:tableName  and  pjname =:pjname and  pjlocation =:pjlocation limit 1), " +
                 " b as (select row_name,count(*) as row_count from sql_tmp where  partition in (:partitions) and tag=:typePartition and  pjname =:pjname and  pjlocation =:pjlocation and table_name =:tableName  group by row_name ) " +
                 " select count(*) as count from ( select row_number() OVER (order by row_count desc)  num,row_name, row_count,concat (round(b.row_count/a.cc*100,3),'%') as percent from b,a)t  ") ;
-        if(rowResult.getRowName()!=null&&rowResult.getRowName()!=""){
+        if(StringUtils.isNotBlank(rowResult.getRowName())){
             countSql.append(" where  row_name=:rowName ");
         }
 
@@ -270,8 +266,8 @@ public class AllResultDaoImpl implements AllResultDao {
                 total = totalList.get(0).getCount() ;
             }
             page.setTotalRows(total);
+            comSql.append("   num >"+page.getRowStart()+" and num <"+(page.getRowStart()+page.getPageSize())+" limit "+page.getPageSize()+" ");
         }
-        comSql.append("   num >"+page.getRowStart()+" and num <"+(page.getRowStart()+page.getPageSize())+" limit "+page.getPageSize()+" ");
         List<RowResult> list = namedParameterJdbcTemplate.query(comSql.toString(),paramMap,new BeanPropertyRowMapper<>(RowResult.class));
         return list;
     }
@@ -330,41 +326,46 @@ public class AllResultDaoImpl implements AllResultDao {
                 break;
             case "6" : partition = "fp_like";
                 break;
+            default:
         }
         return partition;
     }
 
+    private static final int MONTH_3 = 3;
+    private static final int MONTH_6 = 6;
+    private static final int MONTH_12= 12;
     public static List<String> partitions(String partition){
         List<String> partitions = null;
         switch (partition){
             case "one" : partitions = TimeUtil.partitions(1);
                 break;
-            case "three" : partitions = TimeUtil.partitions(3);
+            case "three" : partitions = TimeUtil.partitions(MONTH_3);
                 break;
-            case "half" : partitions = TimeUtil.partitions(6);
+            case "half" : partitions = TimeUtil.partitions(MONTH_6);
                 break;
-            case "year" : partitions = TimeUtil.partitions(12);
+            case "year" : partitions = TimeUtil.partitions(MONTH_12);
                 break;
+            default:
         }
         return partitions;
     }
 
     private  void concatSql(RowResult rowResult,StringBuilder comSql,Map paramMap,List<String> pjNameList,List<String> pjLocationList, List<String> partitions){
-        if(rowResult.getTableName()!=null && rowResult.getTableName()!=""){
+        if(StringUtils.isNotBlank(rowResult.getTableName())){
             comSql.append(" and table_name =:tableName ");
             paramMap.put("tableName",rowResult.getTableName());
         }
-        if(rowResult.getPartition()!=null && rowResult.getPartition()!=""){
+        if(StringUtils.isNotBlank(rowResult.getPartition())){
             comSql.append(" and row_partition in( :partitions ) ");
             paramMap.put("partitions",partitions);
         }
 
-        if(rowResult.getPjName()!=null && rowResult.getPjName()!=""){
+        if(StringUtils.isNotBlank(rowResult.getPjName())){
             comSql.append(" and  pjname in(:pjNameList) ");
             paramMap.put("pjNameList",pjNameList);
         }
 
-        if(rowResult.getPjLocation()!=null && rowResult.getPjLocation()!=""){
+        if(StringUtils.isNotBlank(rowResult.getPjLocation())){
             comSql.append(" and  pjlocation in(:pjLocationList) ");
             paramMap.put("pjLocationList",pjLocationList);
         }

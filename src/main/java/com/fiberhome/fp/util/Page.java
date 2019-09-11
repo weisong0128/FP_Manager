@@ -7,19 +7,20 @@ import java.io.Serializable;
  * @date 2017-6-21上午10:02:12
  */
 public class Page implements Serializable{
-
+	private static final long serialVersionUID = 1L;
 
 	private int totalRows;
 	private int pageSize;
 	private int pageNo;
 
+	private static  final int NUMBER_20=20;
 	public static Page createNotPaging() {
 		return new Page(-1, -1, -1);
 	}
 
 	public Page() {
 		this.totalRows = 0;
-		this.pageSize = 20;
+		this.pageSize = NUMBER_20;
 		this.pageNo = 1;
 	}
 

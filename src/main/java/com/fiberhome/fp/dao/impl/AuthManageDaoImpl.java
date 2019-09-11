@@ -4,6 +4,7 @@ import com.fiberhome.fp.dao.AuthManageDao;
 import com.fiberhome.fp.pojo.AuthManage;
 import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -49,7 +50,7 @@ public class AuthManageDaoImpl implements AuthManageDao {
     @Override
     public List<AuthManage> getAllAuthManage(Page page, AuthManage authManage) {
         StringBuilder sql = new StringBuilder("SELECT * FROM fp_auth_management where 1=1  and is_available != '1' ");
-        Map<String,Object> parames = new HashMap<>();
+        Map<String,Object> parames=null;
         Map<String, Object> map = concatSql(sql, authManage);
         sql = (StringBuilder) map.get("sql");
         parames= ( Map<String,Object>)map.get("parames");
@@ -63,8 +64,8 @@ public class AuthManageDaoImpl implements AuthManageDao {
                 int total= Integer.valueOf(count.get(0).get("totalrows").toString());
                 page.setTotalRows(total);
             }
+            sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         }
-        sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         return namedParameterJdbcTemplate.query(sql.toString(),parames,new BeanPropertyRowMapper<>(AuthManage.class));
     }
     @Override
@@ -115,35 +116,35 @@ public class AuthManageDaoImpl implements AuthManageDao {
         Map<String,Object> resultMap  = new HashMap<>();
         Map<String,Object> parames = new HashMap<>();
         if (authManage!=null){
-            if (authManage.getProjectName()!=null && authManage.getProjectName()!=""){
+            if (StringUtils.isNotBlank(authManage.getProjectName())){
                 sql.append(" and project_name in (:projectNames) ");
                 List<String> projectNames = EntityMapTransUtils.StringToList(authManage.getProjectName());
                 parames.put("projectNames",projectNames);
             }
-            if(authManage.getEnvirNote()!=null&& authManage.getEnvirNote()!=""){
+            if(StringUtils.isNotBlank(authManage.getEnvirNote())){
                 sql.append(" and envir_note =:envirNote ");
                 parames.put("envirNote",authManage.getEnvirNote());
             }
-            if (authManage.getCities()!=null&& authManage.getCities()!=""){
+            if (StringUtils.isNotBlank(authManage.getCities())){
                 sql.append(" and cities in (:cities) ");
                 List<String> cities = EntityMapTransUtils.StringToList(authManage.getCities());
                 parames.put("cities",cities);
             }
-            if (authManage.getFeedback()!=null&& authManage.getFeedback()!=""){
+            if (StringUtils.isNotBlank(authManage.getFeedback())){
                 sql.append(" and   feedback =:feedback ");
                 parames.put("feedback",authManage.getFeedback());
             }
 
-            if (authManage.getStartTime()!=null&&authManage.getEndTime()!=null&& authManage.getStartTime()!=""&&authManage.getEndTime()!=""){
+            if (StringUtils.isNotBlank(authManage.getStartTime())&&StringUtils.isNotBlank(authManage.getEndTime())){
                 sql.append(" and   download_time between :startTime  and  :endTime  ");
                 parames.put("startTime",authManage.getStartTime());
                 parames.put("endTime",authManage.getEndTime());
             }
-            if (authManage.getKeyWord()!=null&& authManage.getKeyWord()!=""){
+            if (StringUtils.isNotBlank(authManage.getKeyWord())){
                 sql.append(" and(project_name like concat('%',:keyWord,'%') or envir_head like concat('%',:keyWord,'%') or phone like concat('%',:keyWord,'%') or provinces like concat('%',:keyWord,'%') or cities like concat('%',:keyWord,'%') or master_ip like concat('%',:keyWord,'%') )  ");
                 parames.put("keyWord",authManage.getKeyWord());
             }
-            if (authManage.getSortField()!=null&& authManage.getSortField()!=""){
+            if (StringUtils.isNotBlank(authManage.getSortField())){
                 if ("desc".equals(authManage.getSortField())){
                     sql.append("  ORDER BY download_time DESC  ");
                 }else if("asc".equals(authManage.getSortField())){

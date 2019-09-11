@@ -14,8 +14,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class AnalyseProcess implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /*  public ConcurrentHashMap<String, List<Boolean>> hashMap = new ConcurrentHashMap();*/
-    Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
+    public static  Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
     public static ConcurrentHashMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
     //进程
     private int process;
@@ -126,9 +129,10 @@ public class AnalyseProcess implements Serializable {
         return showCount;
     }
 
+    private static  final int NUMBER_50 = 50;
     public void setShowCount(int showCount) {
         this.showCount = showCount;
-        this.process = ((successCount + this.showCount) * 50) / count;
+        this.process = ((successCount + this.showCount) * NUMBER_50) / count;
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
         if (this.showCount == count) {
             setShow(true);
@@ -176,9 +180,10 @@ public class AnalyseProcess implements Serializable {
         return finishCount;
     }
 
+    private static  final int NUMBER_100 = 100;
     public LogAnalze setFinishCount(int finishCount) {
         this.finishCount = finishCount;
-        if ((finishCount * 100 / count) == 100) {
+        if ((finishCount * NUMBER_100 / count) == NUMBER_100) {
             setFinish(true);
             LogAnalze logAnalze = adapt(this);
             logging.info("已全部分析完毕 ,更新数据{}", logAnalze);
@@ -229,8 +234,8 @@ public class AnalyseProcess implements Serializable {
 
     public void setSuccessCount(int successCount) {
         this.successCount = successCount;
-        setProcess(((successCount + showCount) * 50) / count);
-        if (process == 100) {
+        setProcess(((successCount + showCount) * NUMBER_50) / count);
+        if (process == NUMBER_100) {
             this.isFinish = true;
         }
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);

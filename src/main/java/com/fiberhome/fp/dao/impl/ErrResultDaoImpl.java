@@ -33,6 +33,8 @@ public class ErrResultDaoImpl implements ErrResultDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
+    private  final  int DAYS_7=7;
+    private  final  int DAYS_15=15;
     @Override
     public List<ErrorResult> ListErrResult(Page page, ErrorResult errorResult) {
 
@@ -40,7 +42,6 @@ public class ErrResultDaoImpl implements ErrResultDao {
         StringBuilder countSql = new StringBuilder();
         sql.append(" select  date,tag,alter_tag,sql_result,pjname,pjlocation from err_result  WHERE   syskv='nothing:1' ");
         countSql.append("select  count(*) as count  from err_result  WHERE   syskv='nothing:1' ");
-        List<Object> paramList = new ArrayList<>();
         Map paramMap = new HashMap();
         if (StringUtils.isNotEmpty(errorResult.getTimeTag())){
             if (StringUtils.equals("today",errorResult.getTimeTag())){
@@ -57,7 +58,7 @@ public class ErrResultDaoImpl implements ErrResultDao {
                 paramMap.put("partition",TimeUtil.partitons("seven"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(7));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_7));
             }
             if (StringUtils.equals("halfMonth",errorResult.getTimeTag())){
                 sql.append(" and partition in (:partition) ");
@@ -65,7 +66,7 @@ public class ErrResultDaoImpl implements ErrResultDao {
                 paramMap.put("partition",TimeUtil.partitons("halfMonth"));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date",TimeUtil.beforeFewDays(15));
+                paramMap.put("date",TimeUtil.beforeFewDays(DAYS_15));
             }
             if (StringUtils.equals("all",errorResult.getTimeTag())){
                 sql.append(" and partition like '%' ");
@@ -83,19 +84,19 @@ public class ErrResultDaoImpl implements ErrResultDao {
             countSql.append(" and  pjlocation in (:pjLocation)");
             paramMap.put("pjLocation",errorResult.getPjLocationList());
         }
-        if (errorResult.getStartTime()!=null&&errorResult.getStartTime()!=""&&errorResult.getEndTime()!=""&&errorResult.getEndTime()!=""){
+        if (StringUtils.isNotBlank(errorResult.getStartTime())&&StringUtils.isNotBlank(errorResult.getEndTime())){
             sql.append(" and date like '["+errorResult.getStartTime()+" TO "+errorResult.getEndTime()+" ]' ");
             countSql.append(" and date like '["+errorResult.getStartTime()+" TO "+errorResult.getEndTime()+"]' ");
             paramMap.put("startTime",errorResult.getStartTime());
             paramMap.put("endTime",errorResult.getEndTime());
         }
-        if (errorResult.getKeyWord()!=null&& errorResult.getKeyWord()!=""){
+        if (StringUtils.isNotBlank(errorResult.getKeyWord())){
             sql.append(" and  SEARCH_ALL=:keyword ");
             countSql.append(" and  SEARCH_ALL=:keyword  ");
             paramMap.put("keyword",errorResult.getKeyWord());
         }
 
-        if (errorResult.getErrorSqlType()!=""&&errorResult.getErrorSqlType()!=null){
+        if (StringUtils.isNotBlank(errorResult.getErrorSqlType())){
             List<String> errorSqlType = EntityMapTransUtils.StringToList(errorResult.getErrorSqlType());
             sql.append(" and  SEARCH_ALL in (:errorSqlType) ");
             countSql.append(" and  SEARCH_ALL in(:errorSqlType)  ");
@@ -110,11 +111,8 @@ public class ErrResultDaoImpl implements ErrResultDao {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
-
             sql.append(" ORDER BY date DESC limit "+page.getRowStart()+","+page.getPageSize());
-
         }
-
         return namedParameterJdbcTemplate.query(sql.toString(),paramMap,new BeanPropertyRowMapper<>(ErrorResult.class));
 
     }
