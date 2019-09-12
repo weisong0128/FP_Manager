@@ -3,6 +3,8 @@ package com.fiberhome.fp.createTable;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -15,19 +17,31 @@ public class Table {
 	static File execl_file = new File(business_execl);
 	static File FieldType_Conversion_file = new File(FieldType_Conversion);
 
-
+	private static  final Logger logger = LoggerFactory.getLogger(Table.class);
+	private static  final int NUMBER_1=1;
+	private static  final int NUMBER_2=2;
+	private static  final int NUMBER_3=3;
+	private static  final int NUMBER_4=4;
+	private static  final int NUMBER_5=5;
+	private static  final int NUMBER_6=6;
+	private static  final int NUMBER_7=7;
+	private static  final int NUMBER_8=8;
+	private static  final int NUMBER_9=9;
+	private static  final int NUMBER_10=10;
+	private static  final int NUMBER_11=11;
+	private static  final int NUMBER_30=30;
+	private static  final int NUMBER_2000=2000;
 	public Map<String,String> PublicMuilt(File file1, File file2,String path) throws BiffException, IOException {
 
 
 		//获取项目地市和创建时间数据
-		String fileName = file1.getName();
 		String pjLocation = file1.getName().split("_")[0];
 		String pjName = file1.getName().split("_")[1];
-		String createTime = file1.getName().split("_")[3];
+		String createTime = file1.getName().split("_")[NUMBER_3];
 		if (createTime.contains("xls")){
-			createTime = createTime.substring(0,createTime.length()-4);
+			createTime = createTime.substring(0,createTime.length()-NUMBER_4);
 		}else if(createTime.contains("xlsx")){
-			createTime = createTime.substring(0,createTime.length()-5);
+			createTime = createTime.substring(0,createTime.length()-NUMBER_5);
 		}
 
 
@@ -45,7 +59,10 @@ public class Table {
 			file.delete();
 		}
 
-		FileWriter fWriter = new FileWriter(path + File.separator + sqlFileName, true);
+		FileWriter fWriter=null;
+		FileWriter tablewrite=null;
+		FileWriter tableSqlWrite=null;
+		fWriter = new FileWriter(path + File.separator + sqlFileName, true);
 		map.put("sqlName",sqlFileName);
 		fWriter.write("--业务对接表结构设计" + "\r\n");
 		// fWriter.flush();
@@ -57,21 +74,22 @@ public class Table {
 			// 字段类型转换
 			Workbook field = Workbook.getWorkbook(fieldfilename);
 			int sheet_number = wb.getNumberOfSheets();
-            //公共变量
+			//公共变量
 			String tablename="";
 			// 循环每一个sheet表格
 			for (int sheetnum = 0; sheetnum < sheet_number; sheetnum++) {
 				Sheet sheet = wb.getSheet(sheetnum);
 
-                if (sheet.getRows() == 0){
-                    continue;
-                }
+				if (sheet.getRows() == 0){
+					continue;
+				}
 
 				String sheetname = wb.getSheet(sheetnum).getName();
-				System.out.println("正在生成" + sheetname + "的建表脚本");
+				//System.out.println("正在生成" + sheetname + "的建表脚本");
+				logger.info("正在生成{}的建表脚本",sheetname);
 				tablename = sheet.getCell(1, 0).getContents().trim().toUpperCase();
 				String tabletype = sheet.getCell(1, 1).getContents().trim();
-				String physicaltable = sheet.getCell(1, 2).getContents().trim();
+				String physicaltable = sheet.getCell(1, NUMBER_2).getContents().trim();
 				// 自定义汇聚序号
 				int zdynum = -1;
 				// 存储序列号
@@ -93,17 +111,19 @@ public class Table {
 				String txtFileName = tablename+".txt";
 				File tablefile = new File(path + File.separator + txtFileName);
 				if (tablefile.exists()) {
-					System.err.println("已经存在");
+					//System.err.println("已经存在");
+					logger.error("已经存在");
 					tablefile.delete();
 				}
 				File tableSqlFile = new File(path + File.separator + tablename + ".sql");
 				if (tableSqlFile.exists()) {
-					System.err.println("已经存在");
+					//System.err.println("已经存在");
+					logger.error("已经存在");
 					tableSqlFile.delete();
 				}
 				//为了入库每张表生成一个文件
-				FileWriter tablewrite=new FileWriter(path + File.separator + txtFileName, true);
-				FileWriter tableSqlWrite=new FileWriter(path + File.separator + tablename + ".sql", true);
+				tablewrite =new FileWriter(path + File.separator + txtFileName, true);
+				tableSqlWrite=new FileWriter(path + File.separator + tablename + ".sql", true);
 				map.put(txtFileName,txtFileName);
 				tableSqlWrite.write( pjName+"\t");
 				tableSqlWrite.write(pjLocation+"\t");
@@ -117,37 +137,32 @@ public class Table {
 					fWriter.write("create mapping " + tablename + "(\r\n");
 					tableSqlWrite.write("create mapping " + tablename + "( ");
 				} else {
-					System.out.println("表设计类型输入有误！请检查.....");
+					//System.out.println("表设计类型输入有误！请检查.....");
+					logger.error("表设计类型输入有误！请检查.....");
 				}
-				for (int m = 0; m < sheet.getRows() - 10; m++) {
+				for (int m = 0; m < sheet.getRows() - NUMBER_10; m++) {
 					String defname = tablename + "_CUSTOM";
-					String deftrue = sheet.getCell(11, m + 4).getContents().trim();
+					String deftrue = sheet.getCell(NUMBER_11, m + NUMBER_4).getContents().trim();
 					if ("是".equals(deftrue)) {
-						if (stringlist.contains(defname)) {
-
-						} else {
+						if (!stringlist.contains(defname)) {
 							stringlist.add(tablename + "_CUSTOM");
 						}
-
 					}
 				}
 				// 模糊检索汇聚列
-				for (int k = 0; k < sheet.getRows() - 10; k++) {
-					String liketrue = sheet.getCell(8, k + 4).getContents().trim();
-					String defconv = sheet.getCell(11, k + 4).getContents().trim();
+				for (int k = 0; k < sheet.getRows() - NUMBER_10; k++) {
+					String liketrue = sheet.getCell(NUMBER_8, k + NUMBER_4).getContents().trim();
+					String defconv = sheet.getCell(NUMBER_11, k + NUMBER_4).getContents().trim();
 					if ("是".equals(liketrue) && "".equals(defconv)) {
-						if (stringlist.contains(covlikename)) {
-
-						} else {
+						if (!stringlist.contains(covlikename)) {
 							stringlist.add(covlikename);
 						}
-
 					}
 				}
 				// 统计可展示字段(独立的)
 				int exhibitnum = 0;
-				for (int i = 0; i < sheet.getRows() - 10; i++) {
-					String exhibition_true = sheet.getCell(3, i + 4).getContents().trim();
+				for (int i = 0; i < sheet.getRows() - NUMBER_10; i++) {
+					String exhibition_true = sheet.getCell(NUMBER_3, i + NUMBER_4).getContents().trim();
 					// 统计要展示的字段个数
 					if ("是".equals(exhibition_true)) {
 						exhibitnum++;
@@ -155,8 +170,8 @@ public class Table {
 				}
 				// 空行统计
 				int nullcount = 0;
-				for (int i1 = 0; i1 < sheet.getRows() - 10; i1++) {
-					String fieldname1 = sheet.getCell(0, i1 + 4).getContents().trim().toUpperCase();
+				for (int i1 = 0; i1 < sheet.getRows() - NUMBER_10; i1++) {
+					String fieldname1 = sheet.getCell(0, i1 + NUMBER_4).getContents().trim().toUpperCase();
 					if (fieldname1.length() == 0) {
 						nullcount++;
 					}
@@ -164,43 +179,43 @@ public class Table {
 				/**
 				 * 确定汇聚方式
 				 */
-				for (int mapping = 0; mapping < sheet.getRows() - 10; mapping++) {
+				for (int mapping = 0; mapping < sheet.getRows() - NUMBER_10; mapping++) {
 					// 全文检索：是否默认汇聚列创建索引
 					// 可索引过滤
-					String storeindex = sheet.getCell(4, mapping + 4).getContents().trim();
+					String storeindex = sheet.getCell(NUMBER_4, mapping + NUMBER_4).getContents().trim();
 					// 可模糊检索
-					String storelike = sheet.getCell(8, mapping + 4).getContents().trim();
+					String storelike = sheet.getCell(NUMBER_8, mapping + NUMBER_4).getContents().trim();
 					if ("是".equals(storeindex) || "是".equals(storelike)) {
 						mapping_store = mapping_store + "_convindex";
 						break;
 					}
 				}
-				for (int row = 0; row < sheet.getRows() - 10; row++) {
+				for (int row = 0; row < sheet.getRows() - NUMBER_10; row++) {
 					// 字段名:全部转化成大写
-					String fieldname = sheet.getCell(0, row + 4).getContents().trim().toUpperCase();
+					String fieldname = sheet.getCell(0, row + NUMBER_4).getContents().trim().toUpperCase();
 					// 业务对接表中的字段类型
-					String datatypetemp = sheet.getCell(1, row + 4).getContents().trim().toLowerCase();
+					String datatypetemp = sheet.getCell(NUMBER_1, row + NUMBER_4).getContents().trim().toLowerCase();
 					String datatype = "";
 					//字段描述
-					String fielddescript=sheet.getCell(2, row + 4).getContents().trim();
+					String fielddescript=sheet.getCell(NUMBER_2, row + NUMBER_4).getContents().trim();
 					// 可视化展示
-					String exhibition = sheet.getCell(3, row + 4).getContents().trim();
+					String exhibition = sheet.getCell(NUMBER_3, row + NUMBER_4).getContents().trim();
 					// 可索引过滤
-					String index = sheet.getCell(4, row + 4).getContents().trim();
+					String index = sheet.getCell(NUMBER_4, row + NUMBER_4).getContents().trim();
 					// 可排序
-					String order = sheet.getCell(5, row + 4).getContents().trim();
+					String order = sheet.getCell(NUMBER_5, row + NUMBER_4).getContents().trim();
 					// 可聚合
-					String count = sheet.getCell(6, row + 4).getContents().trim();
+					String count = sheet.getCell(NUMBER_6, row + NUMBER_4).getContents().trim();
 					// 可分组
-					String group = sheet.getCell(7, row + 4).getContents().trim();
+					String group = sheet.getCell(NUMBER_7, row + NUMBER_4).getContents().trim();
 					// 可模糊检索
-					String like = sheet.getCell(8, row + 4).getContents().trim();
+					String like = sheet.getCell(NUMBER_8, row + NUMBER_4).getContents().trim();
 					// 多值列
-					String datam = sheet.getCell(9, row + 4).getContents().trim();
+					String datam = sheet.getCell(NUMBER_9, row + NUMBER_4).getContents().trim();
 					// 字段是否超长
-					String datalong = sheet.getCell(10, row + 4).getContents().trim();
+					String datalong = sheet.getCell(NUMBER_10, row + NUMBER_4).getContents().trim();
 					// 全文检索1
-					String definconvtxt = sheet.getCell(11, row + 4).getContents().trim();
+					String definconvtxt = sheet.getCell(NUMBER_11, row + NUMBER_4).getContents().trim();
 					// 自定义汇聚名称
 					String definconvtxtname = "";
 
@@ -266,10 +281,10 @@ public class Table {
 							} else if (("是".equals(order) || "是".equals(count) || "是".equals(group))
 									&& "是".equals(index)) {
 								fp_datatype = fp_datatype + "d";
-							} else if ("是".equals(exhibition) && exhibitnum > 8 && "".equals(order) && "".equals(count)
+							} else if ("是".equals(exhibition) && exhibitnum > NUMBER_8 && "".equals(order) && "".equals(count)
 									&& "".equals(group) && "".equals(datam)) {
 								fp_datatype = fp_datatype + "s";
-							} else if ("是".equals(exhibition) && exhibitnum > 8 && "".equals(order) && "".equals(count)
+							} else if ("是".equals(exhibition) && exhibitnum > NUMBER_8 && "".equals(order) && "".equals(count)
 									&& "".equals(group) && "是".equals(datam)) {
 								fp_datatype = fp_datatype + "d";
 							}
@@ -293,25 +308,26 @@ public class Table {
 								fp_datatype = fp_datatype + "m";
 							}
 						} else {
-							System.err.println("对于" + tablename + "业务表，您给出的建表类型，宝宝不认识，请检查下好吗");
+							//System.err.println("对于" + tablename + "业务表，您给出的建表类型，宝宝不认识，请检查下好吗");
+							logger.error("对于{}业务表，您给出的建表类型，宝宝不认识，请检查下好吗",tablename);
 						}
 						int field_len = fieldname.length();
 						int type_len = fp_datatype.length();
 						// 调整格式空白(字段后)
 						String spacestring = "";
-						for (int s = 0; s < (30 - field_len); s++) {
+						for (int s = 0; s < (NUMBER_30 - field_len); s++) {
 							spacestring = spacestring + " ";
 						}
 						// 调整格式空白(字段类型后)
 						String typespacestring = "";
-						for (int s1 = 0; s1 < (30 - type_len); s1++) {
+						for (int s1 = 0; s1 < (NUMBER_30 - type_len); s1++) {
 							typespacestring = typespacestring + " ";
 						}
 
 						// 拼接SQL--字段名
 						if ("物理表".equals(tabletype)) {
 
-							if (row == sheet.getRows() - 11 - nullcount
+							if (row == sheet.getRows() - NUMBER_11 - nullcount
 									&& (stringlist.size() == 0 || stringlist == null)) {
 
 								fWriter.write(fieldname + spacestring + fp_datatype);
@@ -328,7 +344,7 @@ public class Table {
 							 * 默认是进行默认汇聚，如果有选择不默认汇聚，那么就控制映射
 							 */
 							// 最后一个形式
-							if (row == sheet.getRows() - 11 - nullcount
+							if (row == sheet.getRows() - NUMBER_11 - nullcount
 									&& (stringlist.size() == 0 || stringlist == null)) {
 								if ("是".equals(order) || "是".equals(group) || "是".equals(count)) {
 									fWriter.write(fieldname + spacestring + fp_datatype + typespacestring
@@ -398,14 +414,13 @@ public class Table {
 					keys.clear();
 				}
 				int biaojie = 0;
-				likebh = "[" + likebh + "]";
+				//likebh = "[" + likebh + "]";
 				for (Entry<String, String> entry1 : indexmap.entrySet()) {
 					// 作用：（1）用于连续的数字使用~分割 序列合并
 					String teString = entry1.getValue().replace("[", "").replace("]", "").replace(" ", "").trim();
 
 					String[] teString1 = teString.split(",");
-					int[] NoNum = {};
-					NoNum = new int[teString1.length];
+					int[] NoNum = new int[teString1.length];
 					for (int wwww = 0; wwww < NoNum.length; wwww++) {
 						NoNum[wwww] = Integer.parseInt(teString1[wwww]);
 					}
@@ -414,7 +429,7 @@ public class Table {
 					String result = "";
 					for (int i = 0; i < NoNum.length; i++) {
 						if (i == NoNum.length - 1)
-							state = 2;
+							state = NUMBER_2;
 						if (state == 0) {
 							if (NoNum[i + 1] == NoNum[i] + 1) {
 								result += Integer.toString(NoNum[i]);
@@ -439,13 +454,13 @@ public class Table {
 					String defdatatype = "y_wildcard4_isp";
 					int defdata_len = defdatatype.length();
 					String defdataspace = "";
-					for (int s111 = 0; s111 < (30 - defdata_len); s111++) {
+					for (int s111 = 0; s111 < (NUMBER_30 - defdata_len); s111++) {
 						defdataspace = defdataspace + " ";
 					}
 					// 定义空白符(自定义汇聚列)
 					int def_len = entry1.getKey().length();
 					String defspace = "";
-					for (int s11 = 0; s11 < (30 - def_len); s11++) {
+					for (int s11 = 0; s11 < (NUMBER_30 - def_len); s11++) {
 						defspace = defspace + " ";
 					}
 					// 用于汇聚列计数
@@ -540,7 +555,7 @@ public class Table {
 				defindexmap.clear();
 				// 为了进度条效果，每次执行后，休眠2s
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(NUMBER_2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -551,12 +566,22 @@ public class Table {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally {
+			if (tableSqlWrite!=null){
+				tableSqlWrite.close();
+			}
+			if (tablewrite!=null){
+				tablewrite.close();
+			}
+			if (fWriter!=null){
+				fWriter.close();
+			}
 		}
 		return map;
 	}
 
 	// 定义休眠类
-	class Runner1 implements Runnable {
+/*	class Runner1 implements Runnable {
 		public void run() {
 			try {
 				Thread.sleep(20000);
@@ -565,6 +590,6 @@ public class Table {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 }

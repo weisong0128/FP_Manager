@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class FileUtil {
 
-    static Logger logging = LoggerFactory.getLogger(ShellUtil.class);
+    static Logger logging = LoggerFactory.getLogger(FileUtil.class);
 
     public static void creatDir(String path) {
         File file = new File(path);
@@ -45,7 +45,9 @@ public class FileUtil {
             e.printStackTrace();
         } finally {
             try {
-                bw.close();
+                if(bw!=null){
+                    bw.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -222,7 +224,7 @@ public class FileUtil {
                 str += relief + "\n";
             }
             if (oldAnalyseTime != null) {
-                str.replace(oldAnalyseTime, analyseTime);
+                str = str.replace(oldAnalyseTime, analyseTime);
             } else {
                 str += analyseTime + "\n";
             }
@@ -240,9 +242,13 @@ public class FileUtil {
             e.printStackTrace();
         } finally {
             try {
-                out.flush();
-                out.close();
-                in.close();
+                if (out!=null){
+                    out.flush();
+                    out.close();
+                }
+                if (in != null){
+                    in.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -338,7 +344,8 @@ public class FileUtil {
     /**
      * 此处不管文件大小，固定切割成5份
      */
-    public static List<File> cutFile(File orginalFile) {
+    private static final  int NUMBER_5=5;
+   /* public static List<File> cutFile(File orginalFile) {
         //  Pattern queryTimePatter = Pattern.compile("([01]?\\d|2[0-3]):[0-5]?\\d[0-5]?\\d");
         ArrayList<File> cutFileList = new ArrayList<>();
         BufferedReader bufferedReader = null;
@@ -348,7 +355,7 @@ public class FileUtil {
             long orginalFileLength = orginalFile.length();
             String orginalFileName = orginalFile.getName();
             String targetDirectPath = orginalFile.getParentFile().getPath() + File.separator + orginalFileName + ".cut";
-            long oneFileLength = orginalFileLength / 5;
+            long oneFileLength = orginalFileLength / NUMBER_5;
             if (!orginalFile.exists()) {
                 logging.error("原始文件不存在");
                 return null;
@@ -370,8 +377,8 @@ public class FileUtil {
                 length += line.getBytes().length;
                 if (length > oneFileLength) {
                     if (!line.startsWith("\tat ") && !line.contains("[ERROR]")) {
-                      /*  Matcher timeMatcher = queryTimePatter.matcher(line);
-                        if (!timeMatcher.find()) {*/
+                      *//*  Matcher timeMatcher = queryTimePatter.matcher(line);
+                        if (!timeMatcher.find()) {*//*
                         if (cutFileList.size() != 1) {
                             File file = cutFileList.get(i);
                             i++;
@@ -392,7 +399,7 @@ public class FileUtil {
             closeStream(bufferedReader);
         }
         return cutFileList;
-    }
+    }*/
 
     //此处修改了 返回 List<File>  成为  fileSize
     public static List<File> cutFile(File orginalFile, Long oneFileLength) {
@@ -405,7 +412,7 @@ public class FileUtil {
             String rootPath = orginalFile.getParentFile().getPath();
             if (!orginalFile.exists()) {
                 logging.error("原始文件不存在");
-                return null;
+                return new ArrayList<>();
             }
             long orginalFilelength = orginalFile.length();
             File targetDirect = new File(targetDirectPath);
@@ -426,15 +433,13 @@ public class FileUtil {
                 while ((line = bufferedReader.readLine()) != null) {
                     length += line.getBytes().length;
                     lenth2 += line.getBytes().length;
-                    if (length > oneFileLength && orginalFilelength - lenth2 > getByteSize(1)) {
-                        if (!line.startsWith("\tat ") && !line.contains("[ERROR]")) {
-                            i++;
-                            cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
-                            File file = cutFileList.get(i);
-                            closeStream(bufferedWriter);
-                            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-                            length = 0;
-                        }
+                    if (length > oneFileLength && orginalFilelength - lenth2 > getByteSize(1)&&!line.startsWith("\tat ") && !line.contains("[ERROR]")) {
+                        i++;
+                        cutFileList.add(new File(rootPath + File.separator + orginalFileName + "_cut" + File.separator + orginalFileName + "." + (i + 1)));
+                        File file = cutFileList.get(i);
+                        closeStream(bufferedWriter);
+                        bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+                        length = 0;
                     }
                     bufferedWriter.write(line + "\r\n");
                 }
@@ -442,8 +447,22 @@ public class FileUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            closeStream(bufferedWriter);
-            closeStream(bufferedReader);
+            //closeStream(bufferedWriter);
+            //closeStream(bufferedReader);
+            if (bufferedWriter!=null){
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bufferedReader!=null){
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return cutFileList;
     }
@@ -494,7 +513,7 @@ public class FileUtil {
             File[] files = rootFile.listFiles();
             if (files.length == 0) {
                 rootFile.delete();
-                if (rootFile.getParentFile().getPath() != path) {
+                if (!rootFile.getParentFile().getPath().equals(path) ) {
                     deleteEmptyDirect(rootFile.getParentFile(), path);
                 }
             } else {
@@ -527,6 +546,8 @@ public class FileUtil {
         }
     }
 
+    private  static  final int  NUMBER_1024 =1024;
+
     public static void findAllSizeMore(File rootFile, Long size) {
         long size1 = FileUtil.getByteSize(1) + size;
 
@@ -542,7 +563,7 @@ public class FileUtil {
             for (File file : files) {
                 if (file.isFile() && file.length() > size1 && !nameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, size);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,异步下发分析", file.getName(), file.length() / 1024 / 1024, cutFile.size());
+                    logging.info("{}日志文件{}MB,执行切割成{}份,异步下发分析", file.getName(), file.length() / NUMBER_1024 / NUMBER_1024, cutFile.size());
                 }
             }
         }
@@ -555,16 +576,14 @@ public class FileUtil {
     public static void getSizeLLesser(File rootFile, long size, List<File> fileList) {
         size += FileUtil.getByteSize(1);
         // ArrayList<File> newfiles = new ArrayList<>();
-        if (rootFile.exists()) {
-            if (rootFile.isDirectory()) {
-                File[] files = rootFile.listFiles();
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        getSizeLLesser(file, size, fileList);
-                    } else {
-                        if (file.getName().contains("cl.log") && file.length() < size) {
-                            fileList.add(file);
-                        }
+        if (rootFile.exists()&&rootFile.isDirectory()) {
+            File[] files = rootFile.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getSizeLLesser(file, size, fileList);
+                } else {
+                    if (file.getName().contains("cl.log") && file.length() < size) {
+                        fileList.add(file);
                     }
                 }
             }
@@ -592,7 +611,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * 1024 * 1024);
+        return (long) (sizeMB * NUMBER_1024 * NUMBER_1024);
     }
 
 
@@ -673,9 +692,9 @@ public class FileUtil {
         if (!isSql) {
             return Response.error("文件不是一个.sql格式！");
         }
-        System.out.println("文件大小----------:" + file.getSize());
+        //System.out.println("文件大小----------:" + file.getSize());
+        logging.info("文件大小----------:{}",file.getSize());
         String fileName = file.getOriginalFilename();
-
         String currentdate = String.valueOf(System.currentTimeMillis());
 //        String path  = uploadTablePath + File.separator  + "uploadCreateTable" + currentdate;
         String path = uploadPath + File.separator + currentdate;
@@ -720,7 +739,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[NUMBER_1024];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {

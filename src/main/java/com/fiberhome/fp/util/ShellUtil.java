@@ -166,7 +166,7 @@ public class ShellUtil {
     }
 
 
-    public static boolean execSh(String bashCommand, String uuid, String filePath, String ww) throws IOException, InterruptedException {
+   /* public static boolean execSh(String bashCommand, String uuid, String filePath, String ww) throws IOException, InterruptedException {
         Process pro = Runtime.getRuntime().exec(bashCommand);
 //        String path = "/home/analysis/fptool";
         pool.execute(() -> errorMsg(pro.getErrorStream()));
@@ -186,7 +186,7 @@ public class ShellUtil {
         pro.waitFor();
         Thread.sleep(2000);//2秒等待输出内容写完在读取
         return false;
-    }
+    }*/
 
 
     public static void errorMsg(InputStream errorStream, FileStatus fileStatus) {
