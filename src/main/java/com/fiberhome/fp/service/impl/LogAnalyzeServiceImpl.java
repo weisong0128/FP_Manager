@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Service
 public class LogAnalyzeServiceImpl implements LogAnalyzeService {
@@ -38,9 +35,12 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private LogAnalzeDao logAnalzeDao;
     @Autowired
+
     private FpProjectService fpProjectService;
 
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 60, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    //  private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 60, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    //private ThreadPoolExecutor pool = Executors.newCachedThreadPool();
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -148,7 +148,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                             FileUtil.ObjectOutputStreamDisk(analyseProcess, objectSerializePath);
                         }
                         logAnalzeDao.updateLogAnalze(logAnalze);
-                        map.remove(uuid);
+                       // map.remove(uuid);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -163,7 +163,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-           // e.printStackTrace();
+            // e.printStackTrace();
             Thread.currentThread().interrupt();
         }
     }

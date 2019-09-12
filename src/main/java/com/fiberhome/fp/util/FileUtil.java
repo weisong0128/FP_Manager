@@ -326,14 +326,6 @@ public class FileUtil {
 
     }
 
-    public static int getDirectSize(String path) {
-        File file = new File(path);
-        if (file.exists() && file.isDirectory()) {
-            return file.listFiles().length;
-        }
-        return 0;
-    }
-
 
     /**
      * 此处不管文件大小，固定切割成5份
@@ -395,15 +387,6 @@ public class FileUtil {
     }
 
 
-    public static void main(String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("222");
-        list.add("333");
-        if (list.contains("333")) {
-
-            System.out.println(111);
-        }
-    }
 
     //此处修改了 返回 List<File>  成为  fileSize
     public static List<File> cutFile(File orginalFile, Long oneFileLength) {
@@ -488,7 +471,7 @@ public class FileUtil {
                 if (file.isDirectory()) {
                     deleteDirect(file);
                 }
-                deleteFile(file.getParentFile().getPath(), file.getName());
+                file.delete();
             }
             rootFile.delete();
         } else {
@@ -540,8 +523,7 @@ public class FileUtil {
 
     public static void findAllSizeMore(File rootFile, Long size) {
         long size1 = FileUtil.getByteSize(1) + size;
-
-        if (rootFile.exists() && rootFile.isDirectory()) {
+        if ( rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
             ArrayList<String> nameList = new ArrayList<>();
             for (File file : files) {
@@ -558,8 +540,6 @@ public class FileUtil {
             }
         }
     }
-
-
 
 
     //获取文件夹下所有小于 size大小的日志文件
@@ -582,22 +562,14 @@ public class FileUtil {
         }
     }
 
-    public static void deleteAllDirect(File rootFile) {
-        if (rootFile.exists() && rootFile.isDirectory()) {
-            File[] files = rootFile.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirect(file.getPath());
-                }
-            }
-        }
-    }
 
     public static void deleteRootPathDir(File rootFile, String rex) {
         File[] files = rootFile.listFiles();
-        for (File file : files) {
-            if (file.isDirectory() && file.getName().contains(rex)) {
-                deleteDirect(file);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory() && file.getName().contains(rex)) {
+                    deleteDirect(file);
+                }
             }
         }
     }

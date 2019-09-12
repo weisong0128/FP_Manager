@@ -6,7 +6,6 @@ import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,7 +35,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
 
     @Override
     public boolean createLogAnalze(LogAnalze logAnalze) {
-        String sql = "INSERT INTO fp_log_analyze VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO fp_log_analyze VALUES (?,?,?,?,?,?,?,?,?,?)";
         ArrayList<Object> param = new ArrayList<>();
         param.add(logAnalze.getUuid());
         param.add(logAnalze.getProjectName());
@@ -47,6 +46,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         param.add("");
         param.add(logAnalze.getCreateTime());
         param.add(new Date());
+        param.add(logAnalze.getUserId());
         try {
             mysqlJdbcTemplate.update(sql, param.toArray());
             return true;
@@ -122,7 +122,10 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         String sql = "SELECT " + LogAnalze.getAllColumn() + "from fp_log_analyze where uuid= ?";
         LogAnalze logAnalze = null;
         try {
-            logAnalze = mysqlJdbcTemplate.queryForObject(sql, LogAnalze.class, uuid);
+            List<LogAnalze> query = mysqlJdbcTemplate.query(sql, new String[]{uuid}, new BeanPropertyRowMapper<>(LogAnalze.class));
+            if (query != null && query.isEmpty()) {
+                logAnalze = query.get(0);
+            }
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
@@ -153,7 +156,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         List<String> projectNameList = param.getProjectNameList();
         if (projectNameList != null && projectNameList.size() > 0) {
-            // sql.append("and project_name = ? ");
             sql.append("and project_name in ( ");
             for (int i = 0; i < projectNameList.size(); i++) {
                 if (i == projectNameList.size() - 1) {
@@ -167,7 +169,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         List<String> addressList = param.getAddressList();
         if (addressList != null && addressList.size() > 0) {
-            // sql.append("and project_name = ? ");
             sql.append("and address in ( ");
             for (int i = 0; i < addressList.size(); i++) {
                 if (i == addressList.size() - 1) {
@@ -183,6 +184,11 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             sql.append("and create_time > ? ");
             list.add(param.getStarTime());
         }
+        String userId = param.getUserId();
+        if (!"0".equals(userId)) {
+            sql.append(" and user_id = ? ");
+            list.add(userId);
+        }
         if (param.getEndTime() != null && !param.getEndTime().equalsIgnoreCase("")) {
             sql.append("and create_time < ? ");
             list.add(param.getEndTime());
@@ -197,7 +203,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         String ordetAndLimitSql = " ORDER BY start_time  " + sort + "  LIMIT ? , ?  ";
         querySql = querySql + sql.toString() + ordetAndLimitSql;
         int start = page.getRowStart();
-        int rowEnd = page.getRowEnd();
         List<LogAnalze> logAnalzeList = null;
         try {
             Integer total = mysqlJdbcTemplate.queryForObject(countSql, Integer.class, list.toArray());
@@ -233,9 +238,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             sql.append(" and partition in (:partition) ");
             countSql.append(" and partition in (:partition) ");
             paramMap.put("partition", TimeUtil.partitons("seven"));
-          /*  sql.append(" and date > :date ");
-            countSql.append(" and date > :date ");
-            paramMap.put("date", TimeUtil.beforeFewDays(7));*/
         } else if (StringUtils.isNotEmpty(errorResult.getTimeTag())) {
             if (StringUtils.equals("today", errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
@@ -272,14 +274,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 sql.append(" and partition like '%' ");
                 countSql.append(" and partition like '%' ");
             }
-        }/* else {
-            sql.append(" and partition in (:partition) ");
-            countSql.append(" and partition in (:partition) ");
-            paramMap.put("partition", TimeUtil.partitons("halfMonth"));
-            sql.append(" and date > :date ");
-            countSql.append(" and date > :date ");
-            paramMap.put("date", TimeUtil.beforeFewDays(15));
-        }*/ else {
+        } else {
             sql.append(" and partition like '%' ");
             countSql.append(" and partition like '%' ");
         }
@@ -333,11 +328,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
-           /* if (errorResult.getSort() != null) {
-                sql.append(" ORDER BY date " + errorResult.getSort() + " limit " + page.getRowStart() + "," + page.getPageSize());
-            } else {
-                sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
-            }*/
             sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
 
         }
