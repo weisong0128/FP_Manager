@@ -1,9 +1,11 @@
 package com.fiberhome.fp.service;
 
+import com.fiberhome.fp.pojo.UserInfo;
+
 public interface LoginService {
     /**
      * 用户登录
      * @return
      */
-    int login(String userName, String passWord);
+    UserInfo login(String userName, String passWord);
 }

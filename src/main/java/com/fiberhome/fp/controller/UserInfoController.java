@@ -72,8 +72,9 @@ public class UserInfoController {
      */
     @ApiOperation(value="查询单个用户",notes = "查询单个用户信息")
     @GetMapping(value = "getUserInfoByUuid")
-    public Response getUserInfoByUuid(String uuid){
-        return Response.ok(userInfoService.getUserInfoByUuid(uuid));
+    public Response getUserInfoByUuid(HttpServletRequest request,String uuid){
+        UserInfo userInfo = (UserInfo)request.getSession().getAttribute(uuid);
+        return Response.ok(userInfo);
     }
 
     /**

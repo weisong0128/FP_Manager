@@ -10,6 +10,6 @@ public interface LoginDao {
      * 用户登录
      * @return
      */
-    int login(String userName, String passWord);
+    UserInfo login(String userName, String passWord);
 
 }
