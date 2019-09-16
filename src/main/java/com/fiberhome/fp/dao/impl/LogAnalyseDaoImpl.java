@@ -7,6 +7,8 @@ import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
@@ -28,6 +30,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     @Qualifier("mysqlJdbcTemplate")
     JdbcTemplate mysqlJdbcTemplate;
 
+    static Logger logging = LoggerFactory.getLogger(LogAnalyseDaoImpl.class);
 
     @Autowired
     @Qualifier("hiveNamedParameterJdbcTemplate")
@@ -51,7 +54,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             mysqlJdbcTemplate.update(sql, param.toArray());
             return true;
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         return false;
     }
@@ -79,13 +82,13 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             update = mysqlJdbcTemplate.update(builder.toString(), list.toArray());
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         return update;
     }
 
     public int updateLogAnalze(LogAnalze logAnalze) {
-        String sql = ("UPDATE fp_log_analyze SET project_name=? ,address=? , parsing_state=?,progress=?,result=?,create_time=?,update_time=? WHERE uuid=?");
+        String sql = "UPDATE fp_log_analyze SET project_name=? ,address=? , parsing_state=?,progress=?,result=?,create_time=?,update_time=? WHERE uuid=?";
         ArrayList<Object> list = new ArrayList<>();
         list.add(logAnalze.getProjectName());
         list.add(logAnalze.getAddress());
@@ -99,7 +102,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             update = mysqlJdbcTemplate.update(sql, list.toArray());
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         return update;
     }
@@ -112,7 +115,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             update = mysqlJdbcTemplate.update(sql, uuid);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         return update;
     }
@@ -123,11 +126,11 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         LogAnalze logAnalze = null;
         try {
             List<LogAnalze> query = mysqlJdbcTemplate.query(sql, new String[]{uuid}, new BeanPropertyRowMapper<>(LogAnalze.class));
-            if (query != null && query.isEmpty()) {
+            if (query != null && !query.isEmpty()) {
                 logAnalze = query.get(0);
             }
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         return logAnalze;
     }
@@ -155,7 +158,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             }
         }
         List<String> projectNameList = param.getProjectNameList();
-        if (projectNameList != null && projectNameList.size() > 0) {
+        if (projectNameList != null && !projectNameList.isEmpty()) {
             sql.append("and project_name in ( ");
             for (int i = 0; i < projectNameList.size(); i++) {
                 if (i == projectNameList.size() - 1) {
@@ -168,7 +171,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             sql.append(" ) ");
         }
         List<String> addressList = param.getAddressList();
-        if (addressList != null && addressList.size() > 0) {
+        if (addressList != null && !addressList.isEmpty()) {
             sql.append("and address in ( ");
             for (int i = 0; i < addressList.size(); i++) {
                 if (i == addressList.size() - 1) {
@@ -211,7 +214,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             logAnalzeList = mysqlJdbcTemplate.query(querySql, list.toArray(), new BeanPropertyRowMapper<>(LogAnalze.class));
             page.setTotalRows(total);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
             throw e;
         }
         return logAnalzeList;
@@ -221,7 +224,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
      * sql错误页面
      */
     @Override
-    public List<ErrorResult> ListErrResult(Page page, ErrorResult errorResult) {
+    public List<ErrorResult> listErrResult(Page page, ErrorResult errorResult) {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         //是否去重
@@ -263,7 +266,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             } else if (StringUtils.equals("customZone", errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.long2String(Long.valueOf(errorResult.getCaptureTime()), "yyyyMM"));
+                paramMap.put("partition", TimeUtil.long2String(errorResult.getCaptureTime(), "yyyyMM"));
                 sql.append(" and date > :startTime ");
                 countSql.append(" and date > :startTime ");
                 paramMap.put("startTime", errorResult.getStartTime());
@@ -286,20 +289,20 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
 
         //根据项目名称过滤
-        if (errorResult.getPjNameList() != null && errorResult.getPjNameList().size() > 0 && !errorResult.getPjNameList().contains("all")) {
+        if (errorResult.getPjNameList() != null && !errorResult.getPjNameList().isEmpty() && !errorResult.getPjNameList().contains("all")) {
             sql.append(" and  pjname in (:pjName)");
             countSql.append(" and  pjname in (:pjName)");
             paramMap.put("pjName", errorResult.getPjNameList());
         }
         //根据项目地点过滤
-        if (errorResult.getPjLocationList() != null && errorResult.getPjLocationList().size() > 0 && !errorResult.getPjLocationList().contains("all")) {
+        if (errorResult.getPjLocationList() != null && !errorResult.getPjLocationList().isEmpty() && !errorResult.getPjLocationList().contains("all")) {
             sql.append(" and  pjlocation in (:pjLocation) ");
             countSql.append(" and  pjlocation in (:pjLocation) ");
             paramMap.put("pjLocation", errorResult.getPjLocationList());
         }
 
         //根据错误类型过滤
-        if (errorResult.getTagList() != null && errorResult.getTagList().size() > 0 && !errorResult.getTagList().contains("all")) {
+        if (errorResult.getTagList() != null && !errorResult.getTagList().isEmpty() && !errorResult.getTagList().contains("all")) {
             getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorResult.getTagList());
         }
         //根据关键字过滤
@@ -321,10 +324,10 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             try {
                 count = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
             } catch (Exception e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(), e);
                 throw e;
             }
-            if (count != null && count.size() > 0 && count.get(0).getCount() != null) {
+            if (count != null && !count.isEmpty() && count.get(0).getCount() != null) {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
@@ -335,7 +338,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             query = namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
             throw e;
         }
         return query;
@@ -362,9 +365,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             sql.append(" and partition in (:partition) ");
             countSql.append(" and partition in (:partition) ");
             paramMap.put("partition", TimeUtil.partitons("seven"));
-          /*  sql.append(" and date > :date ");
-            countSql.append(" and date > :date ");
-            paramMap.put("date", TimeUtil.beforeFewDays(7));*/
         } else if (StringUtils.isNotEmpty(fpOperationTable.getTimeTag())) {
             if (StringUtils.equals("today", fpOperationTable.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
@@ -423,7 +423,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             paramMap.put("date", TimeUtil.beforeFewDays(15));
         }
         //日志等级条件
-        if (fpOperationTable.getLogLeaveList() != null && fpOperationTable.getLogLeaveList().size() > 0 && !fpOperationTable.getLogLeaveList().contains("all")) {
+        if (fpOperationTable.getLogLeaveList() != null && !fpOperationTable.getLogLeaveList().isEmpty() && !fpOperationTable.getLogLeaveList().contains("all")) {
             List<String> logLeaveList = fpOperationTable.getLogLeaveList();
             sql.append(" and (");
             countSql.append(" and (");
@@ -445,13 +445,13 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
 
         //项目名称条件
-        if (fpOperationTable.getPjNameList() != null && fpOperationTable.getPjNameList().size() > 0 && !fpOperationTable.getPjNameList().contains("all")) {
+        if (fpOperationTable.getPjNameList() != null && !fpOperationTable.getPjNameList().isEmpty() && !fpOperationTable.getPjNameList().contains("all")) {
             sql.append(" and  pjname in (:pjName)");
             countSql.append(" and  pjname in (:pjName)");
             paramMap.put("pjName", fpOperationTable.getPjNameList());
         }
         //项目地市条件
-        if (fpOperationTable.getPjLocationList() != null && fpOperationTable.getPjLocationList().size() > 0 && !fpOperationTable.getPjLocationList().contains("all")) {
+        if (fpOperationTable.getPjLocationList() != null && !fpOperationTable.getPjLocationList().isEmpty() && !fpOperationTable.getPjLocationList().contains("all")) {
             sql.append(" and  pjlocation in (:pjLocation)");
             countSql.append(" and  pjlocation in (:pjLocation)");
             paramMap.put("pjLocation", fpOperationTable.getPjLocationList());
@@ -472,7 +472,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         if (page != null) {
             int total = 0;
             List<FpOperationTable> count = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(FpOperationTable.class));
-            if (count != null && count.size() > 0 && count.get(0).getCount() != null) {
+            if (count != null && !count.isEmpty() && count.get(0).getCount() != null) {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);

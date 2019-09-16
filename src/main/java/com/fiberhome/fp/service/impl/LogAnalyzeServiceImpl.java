@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,16 +30,14 @@ import java.util.concurrent.*;
 public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
 
-    Logger logging = LoggerFactory.getLogger(LogAnalyzeServiceImpl.class);
+    static Logger logging = LoggerFactory.getLogger(LogAnalyzeServiceImpl.class);
     @Autowired
     private LogAnalzeDao logAnalzeDao;
     @Autowired
 
     private FpProjectService fpProjectService;
 
-    //  private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, 60, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-    //private ThreadPoolExecutor pool = Executors.newCachedThreadPool();
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -60,17 +57,16 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     String cutfilesize;
 
 
-    public Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
+    private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
     @Override
-    public Response getLogListByParam(Page page, LogAnalze LogAnalze) {
+    public Response getLogListByParam(Page page, LogAnalze logAnalze) {
         return null;
     }
 
 
     @Override
     public boolean createLogAnalze(LogAnalze logAnalze) {
-        //  startAnalyse(logAnalze.getProjectName(), logAnalze.getAddress(), uuid);
         return logAnalzeDao.createLogAnalze(logAnalze);
     }
 
@@ -84,33 +80,31 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             String[] arrays = param.getAddress().split(",");
             param.setAddressList(new ArrayList<>(Arrays.asList(arrays)));
         }
-        List<LogAnalze> logAnalyseList = logAnalzeDao.findLogAnalyseList(param, page);
-        return logAnalyseList;
+        return logAnalzeDao.findLogAnalyseList(param, page);
     }
 
 
     @Override
     public boolean startAnalyse(String project, String location, String uuid, Long analyseTime) {
         String dir = uploadLogPath + File.separator + location + File.separator + project + File.separator + analyseTime;
-       /* FileUtil.replacerConf(uploadLogPath + File.separator + config,
-                "cl_dir=" + dir + File.separator,
-                "business=" + project,
-                "relief=" + location,
-                "analyseTime=" + analyseTime,
-                config);*/
         File direct = new File(dir);
         ArrayList<File> fileArrayList1 = new ArrayList<>();
         Long byteSize = FileUtil.getByteSize(Integer.valueOf(cutfilesize));
-        FileUtil.findAllSizeMore(direct, byteSize);
-        FileUtil.getSizeLLesser(direct, byteSize, fileArrayList1);
+        AnalyseProcess.fileSizeInit(uuid, byteSize);
+        FileUtil.findAllSizeMore(direct, uuid);
+        FileUtil.getSizeLLesser(direct, fileArrayList1, uuid);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
-        upload(map.get(uuid), dir);
+        upload(map.get(uuid));
         return true;
     }
 
 
-    public void upload(AnalyseProcess analyseProcess, String dir) {
-        ConcurrentHashMap<String, FileStatus> fileMap;
+    public void upload(AnalyseProcess analyseProcess) {
+        String dir = uploadLogPath + File.separator +
+                analyseProcess.getProjectLocation() + File.separator +
+                analyseProcess.getProjectName() + File.separator +
+                analyseProcess.getCreateTime();
+        ConcurrentMap<String, FileStatus> fileMap;
         if (analyseProcess.getFileMap().size() != analyseProcess.getUnSuccessFileMap().size()) {
             fileMap = analyseProcess.getUnSuccessFileMap();
             int finishCount = analyseProcess.getFinishCount();
@@ -132,7 +126,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                 //调用脚本方法
                 String bashCommand = "sh " + shellPath + File.separator + "fp_analysis.sh  " + filePath + " " + projectName + " " + projectLocation + " " + createTime;
                 //   if (!j.equals("1")) {
-                boolean upload = ShellUtil.newShSuccess(bashCommand, uuid, filePath);
+                ShellUtil.newShSuccess(bashCommand, uuid, filePath);
                 //   }
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
@@ -145,16 +139,15 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                             // File file1 = new File(objectSerializePath);
                             FileUtil.deleteRootPathDir(new File(uploadFileRootPath), "_cut");
                         } else {
-                            FileUtil.ObjectOutputStreamDisk(analyseProcess, objectSerializePath);
+                            FileUtil.objectOutputStreamDisk(analyseProcess, objectSerializePath);
                         }
                         logAnalzeDao.updateLogAnalze(logAnalze);
-                       // map.remove(uuid);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logging.error(e.getMessage(), e);
                     }
                 }
             });
-            sleep(1000);
+            sleep(1100);
         }
     }
 
@@ -163,7 +156,6 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            // e.printStackTrace();
             Thread.currentThread().interrupt();
         }
     }
@@ -183,7 +175,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             String[] tagList = errorResult.getTag().split(",");
             errorResult.setTagList(new ArrayList<>(Arrays.asList(tagList)));
         }
-        return logAnalzeDao.ListErrResult(page, errorResult);
+        return logAnalzeDao.listErrResult(page, errorResult);
     }
 
     @Override
@@ -219,8 +211,8 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                 FileUtil.deleteRootPathDir(new File(uploadFileRootPath), "_cut");
                 logAnalzeDao.deleteLogAnalze(uuid);
             } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                logging.error(e.getMessage(), e);
+                return false;
             }
         }
         return true;
@@ -237,5 +229,10 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         }
         return list;
     }
+
+    public LogAnalze findOneLogAnalyse(String uuid) {
+        return logAnalzeDao.findOneLogAnalyse(uuid);
+    }
+
 
 }

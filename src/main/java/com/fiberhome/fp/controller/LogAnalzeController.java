@@ -8,7 +8,6 @@ import com.fiberhome.fp.service.LogAnalyzeService;
 import com.fiberhome.fp.util.FileUtil;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.Response;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +25,9 @@ import java.util.*;
 @RequestMapping("/log/")
 public class LogAnalzeController {
 
-    Logger logging = LoggerFactory.getLogger(FpProjectController.class);
+   static Logger logging = LoggerFactory.getLogger(FpProjectController.class);
+
+    private   Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
 
     @Value("${upload.log.path}")
@@ -70,7 +71,8 @@ public class LogAnalzeController {
                 logging.info("日志文件上传至 {}", pt);
                 return Response.ok();
             } catch (Exception e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(),e);
+                logging.error(e.toString());
                 return Response.error("上传失败！");
             }
         }
@@ -99,7 +101,8 @@ public class LogAnalzeController {
             logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
         } catch (Exception e) {
             logging.error("分析日志失败");
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
+            logging.error(e.getCause().toString());
             return Response.error("分析日志失败");
         }
 
@@ -108,7 +111,6 @@ public class LogAnalzeController {
         return Response.ok(returnMap);
     }
 
-    public Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
     /**
      * 轮训查看进程
@@ -122,7 +124,7 @@ public class LogAnalzeController {
         try {
             for (String uuid : split) {
                 AnalyseProcess analyseProcess = map.get(uuid);
-                if (analyseProcess != null) {
+                if (analyseProcess != null && analyseProcess.getFileMap() != null) {
                     HashMap<String, Object> map1 = new HashMap<>();
                     int process = analyseProcess.getProcess();
                     boolean show = analyseProcess.isShow();
@@ -142,7 +144,8 @@ public class LogAnalzeController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
+            logging.error(e.getCause().toString());
             Response.error();
         }
         return Response.ok(returnMap);
@@ -167,7 +170,7 @@ public class LogAnalzeController {
         for (Map.Entry<String, AnalyseProcess> entry : map.entrySet()) {
             String uuid = entry.getKey();
             AnalyseProcess analyseProcess = entry.getValue();
-            if (analyseProcess.isFinish()||analyseProcess.getProcess() == 100) {
+            if (analyseProcess.isFinish() || analyseProcess.getProcess() == 100) {
                 map.remove(uuid);
                 continue;
             }
@@ -179,7 +182,7 @@ public class LogAnalzeController {
             hashMap.put("page", page);
             hashMap.put("data", logAnalyseList);
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
             Response.error();
         }
         return Response.ok(hashMap);
@@ -213,7 +216,7 @@ public class LogAnalzeController {
             retMap.put("page", page);
             retMap.put("errResult", logAnalyzeService.listErrorResult(page, errorResult));
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
             Response.error();
         }
         return Response.ok(retMap);
@@ -261,7 +264,7 @@ public class LogAnalzeController {
             retMap.put("page", page);
             retMap.put("operation", fpOperationTables);
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
             Response.error();
         }
         return Response.ok(retMap);
@@ -276,16 +279,21 @@ public class LogAnalzeController {
             list.add(s);
         }
         try {
-            logAnalyzeService.batchDeleteLogAnaylse(list);
+            Boolean aBoolean = logAnalyzeService.batchDeleteLogAnaylse(list);
+            if (!aBoolean) {
+                return Response.error("删除失败");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(),e);
             return Response.error("删除失败");
         }
+
         return Response.ok();
     }
 
     @GetMapping("/restartAnalyse")
     public Response restartAnalyse(String pjName, String pjLocation, String createTime, String uuid) {
+        //  LogAnalze logAnalyse = logAnalyzeService.findOneLogAnalyse(uuid);
         String pt = uploadLogPath + File.separator + pjLocation + File.separator + pjName + File.separator + createTime;
         AnalyseProcess analyseProcess = map.get(uuid);
         if (analyseProcess == null) {
@@ -294,11 +302,11 @@ public class LogAnalzeController {
             boolean fileExixts = FileUtil.isFileExixts(serializePath);
             if (fileExixts) {
                 try {
-                    analyseProcess = (AnalyseProcess) FileUtil.ObjectInputStreamDisk(serializePath);
+                    analyseProcess = (AnalyseProcess) FileUtil.objectInputStreamDisk(serializePath);
                     map.put(uuid, analyseProcess);
-                    logAnalyzeService.upload(analyseProcess, pt);
+                    logAnalyzeService.upload(analyseProcess);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logging.error(e.getMessage(),e);
                     logging.error("重新分析失败");
 
                 }

@@ -2,21 +2,22 @@ package com.fiberhome.fp.listener.event;
 
 
 import com.fiberhome.fp.pojo.LogAnalze;
-import com.fiberhome.fp.service.impl.LogAnalyzeServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+/**
+ *
+ */
 @Component
 public class AnalyseProcess implements Serializable {
-    /*  public ConcurrentHashMap<String, List<Boolean>> hashMap = new ConcurrentHashMap();*/
-    Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
-    public static ConcurrentHashMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
+    static Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
+    public static final ConcurrentMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
     //进程
     private int process;
     private boolean isFinish;
@@ -26,30 +27,32 @@ public class AnalyseProcess implements Serializable {
     private int finishCount;
     private int showCount;
     private int successCount;
-    private ConcurrentHashMap<String, FileStatus> fileMap;
-    private ConcurrentHashMap<String, String> errorResultMap;
-
+    private ConcurrentMap<String, FileStatus> fileMap;
+    private ConcurrentMap<String, FileStatus> unSuccessFileMap;
+    private ConcurrentMap<String, String> errorResultMap;
     private String projectName;
     private String projectLocation;
     private Long createTime;
     private String uuid;
     private String uploadFileRootPath;
-    private ConcurrentHashMap<String, FileStatus> unSuccessFileMap;
+
+    private Long cutfilesize;
 
 
-    public static ConcurrentHashMap<String, AnalyseProcess> getMap() {
+    public static ConcurrentMap<String, AnalyseProcess> getMap() {
         return map;
     }
 
-    public static void setMap(ConcurrentHashMap<String, AnalyseProcess> map) {
-        AnalyseProcess.map = map;
+    public static void fileSizeInit(String uuid, Long cutfilesize) {
+        AnalyseProcess analyseProcess = new AnalyseProcess();
+        analyseProcess.setCutfilesize(cutfilesize);
+        map.put(uuid, analyseProcess);
     }
 
     public static void init(String uuid, List<File> fileList, String projectName, String projectLocation, Long createTime, String rootPath) {
-
         ConcurrentHashMap<String, FileStatus> statusHashMap = new ConcurrentHashMap<>();
         ConcurrentHashMap<String, FileStatus> statusHashMap2 = new ConcurrentHashMap<>();
-        AnalyseProcess analyseProcess = new AnalyseProcess();
+        AnalyseProcess analyseProcess = map.get(uuid);
         for (File file : fileList) {
             FileStatus fileStatus = new FileStatus();
             fileStatus.setUuid(uuid);
@@ -74,7 +77,6 @@ public class AnalyseProcess implements Serializable {
         analyseProcess.setUuid(uuid);
         analyseProcess.setUnSuccessFileMap(statusHashMap2);
         analyseProcess.setUploadFileRootPath(rootPath);
-        map.put(uuid, analyseProcess);
     }
 
     public List<String> getErrorResultList() {
@@ -89,7 +91,7 @@ public class AnalyseProcess implements Serializable {
     }
 
     public void setProcess(int process) {
-        synchronized (this.getClass()) {
+        synchronized (AnalyseProcess.class) {
             this.process = process;
         }
     }
@@ -113,11 +115,11 @@ public class AnalyseProcess implements Serializable {
         isShow = show;
     }
 
-    public ConcurrentHashMap<String, FileStatus> getFileMap() {
+    public ConcurrentMap<String, FileStatus> getFileMap() {
         return fileMap;
     }
 
-    public void setFileMap(ConcurrentHashMap<String, FileStatus> fileMap) {
+    public void setFileMap(ConcurrentMap<String, FileStatus> fileMap) {
         this.fileMap = fileMap;
     }
 
@@ -136,7 +138,15 @@ public class AnalyseProcess implements Serializable {
         }
     }
 
-    public ConcurrentHashMap<String, String> getErrorResultMap() {
+    public Long getCutfilesize() {
+        return cutfilesize;
+    }
+
+    public void setCutfilesize(Long cutfilesize) {
+        this.cutfilesize = cutfilesize;
+    }
+
+    public ConcurrentMap<String, String> getErrorResultMap() {
         return errorResultMap;
     }
 
@@ -148,7 +158,7 @@ public class AnalyseProcess implements Serializable {
         this.uploadFileRootPath = uploadFileRootPath;
     }
 
-    public void setErrorResultMap(ConcurrentHashMap<String, String> errorResultMap) {
+    public void setErrorResultMap(ConcurrentMap<String, String> errorResultMap) {
         this.errorResultMap = errorResultMap;
     }
 
@@ -160,11 +170,11 @@ public class AnalyseProcess implements Serializable {
         this.count = count;
     }
 
-    public ConcurrentHashMap<String, FileStatus> getUnSuccessFileMap() {
+    public ConcurrentMap<String, FileStatus> getUnSuccessFileMap() {
         return unSuccessFileMap;
     }
 
-    public void setUnSuccessFileMap(ConcurrentHashMap<String, FileStatus> unSuccessFileMap) {
+    public void setUnSuccessFileMap(ConcurrentMap<String, FileStatus> unSuccessFileMap) {
         this.unSuccessFileMap = unSuccessFileMap;
     }
 
@@ -262,8 +272,7 @@ public class AnalyseProcess implements Serializable {
     }
 
     public String getObjectSerializePath(String rootPath) {
-        String path = rootPath + File.separator + uuid + "_Serialize";
-        return path;
+        return rootPath + File.separator + uuid + "_Serialize";
     }
 
     @Override
