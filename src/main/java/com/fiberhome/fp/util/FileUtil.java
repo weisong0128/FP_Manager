@@ -412,7 +412,7 @@ public class FileUtil {
             String rootPath = orginalFile.getParentFile().getPath();
             if (!orginalFile.exists()) {
                 logging.error("原始文件不存在");
-                return new ArrayList<>();
+                return null;
             }
             long orginalFilelength = orginalFile.length();
             File targetDirect = new File(targetDirectPath);

@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.*;
 
-@Api(value = "日志分析", description = "日志文件分析结果处理")
 @RestController
 @RequestMapping("/log/")
 public class LogAnalzeController {
@@ -50,17 +49,11 @@ public class LogAnalzeController {
     )
     @PostMapping(value = "/batchLogUpload")
     public Response batchLogUpload(@RequestParam("file") MultipartFile[] file, String projectName, String projectLocation, String createTime) {
-        int length = file.length;
-        if (length > 10 || length == 0) {
-            return Response.error("上传文件不能为空并且文件最多10个！！");
-        }
         File director = new File(uploadLogPath);
         if (!director.exists()) {
             director.mkdirs();
         }
-        int i = 0;
         for (MultipartFile multipartFile : file) {
-            i++;
             String fileName = multipartFile.getOriginalFilename();
             if (!fileName.toLowerCase().contains("cl.log")) {
                 return Response.error("文件命名格式应该为：cl.log*  ！");
@@ -95,33 +88,24 @@ public class LogAnalzeController {
             @ApiImplicitParam(name = "createTime", value = "时间戳,与日志上传用一个时间戳", required = true, dataType = "String")}
     )
     @GetMapping("/startAnalyse")
-    public Response startAnalyse(String projectName, String projectLocation, String createTime) {
+    public Response startAnalyse(String projectName, String projectLocation, String createTime, String userId) {
         String uuid = UUID.randomUUID().toString();
         long timeLong = Long.parseLong(createTime);
-        LogAnalze logAnalze = new LogAnalze(projectName, projectLocation, timeLong);
+        LogAnalze logAnalze = new LogAnalze(projectName, projectLocation, timeLong, userId);
         logAnalze.setUuid(uuid);
 
         try {
             logAnalyzeService.createLogAnalze(logAnalze);
+            logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
         } catch (Exception e) {
-            logging.error("创建数据失败");
+            logging.error("分析日志失败");
             e.printStackTrace();
-            return Response.error("创建数据失败");
+            return Response.error("分析日志失败");
         }
-        try {
-            try {
-                logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
-            } catch (Exception e) {
-                logging.error("分析日志失败");
-                e.printStackTrace();
-                return Response.error("分析日志失败");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        HashMap<String, String> map = new HashMap<>();
-        map.put("uuid", uuid);
-        return Response.ok(map);
+
+        HashMap<String, String> returnMap = new HashMap<>();
+        returnMap.put("uuid", uuid);
+        return Response.ok(returnMap);
     }
 
     public Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
@@ -132,6 +116,7 @@ public class LogAnalzeController {
     @ApiOperation(value = "轮训查看进程", notes = "轮训查看进程,用来返回进程和是否可查看结果   json字符串数组格式发送")
     @PostMapping("/getAnalyseProcess")
     public Response getAnalyseProcess(@RequestBody String uuids) {
+        uuids = uuids.replace("\"", "");
         String[] split = uuids.split(",");
         HashMap<String, Map<String, Object>> returnMap = new HashMap<>();
         try {
@@ -147,14 +132,6 @@ public class LogAnalzeController {
                     map1.put("show", show);
                     map1.put("isError", analyseError);
                     ArrayList<String> list = new ArrayList<>();
-                 /*    for (String s : errorResultList) {
-                        String[] split = s.split("\r\n");
-                        for (String sp1 : split) {
-                            if (!list.contains(sp1)) {
-                                list.add(sp1);
-                            }
-                        }
-                    }*/
                     for (String s : errorResultList) {
                         if (!list.contains(s)) {
                             list.add(s);
@@ -187,6 +164,14 @@ public class LogAnalzeController {
     )
     @GetMapping("/getLogListByParam")
     public Response getLogListByParam(Page page, LogAnalze logAnalze) {
+        for (Map.Entry<String, AnalyseProcess> entry : map.entrySet()) {
+            String uuid = entry.getKey();
+            AnalyseProcess analyseProcess = entry.getValue();
+            if (analyseProcess.isFinish()||analyseProcess.getProcess() == 100) {
+                map.remove(uuid);
+                continue;
+            }
+        }
         HashMap<String, Object> hashMap = null;
         try {
             List<LogAnalze> logAnalyseList = logAnalyzeService.findLogAnalyseList(logAnalze, page);
@@ -284,6 +269,7 @@ public class LogAnalzeController {
 
     @PostMapping("/batchDeleteLogAnaylse")
     public Response batchDeleteLogAnaylse(@RequestBody String uuids) {
+        uuids = uuids.replace("\"", "");
         String[] split = uuids.split(",");
         ArrayList<String> list = new ArrayList<>();
         for (String s : split) {
@@ -313,6 +299,8 @@ public class LogAnalzeController {
                     logAnalyzeService.upload(analyseProcess, pt);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    logging.error("重新分析失败");
+
                 }
             } else {
                 return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");

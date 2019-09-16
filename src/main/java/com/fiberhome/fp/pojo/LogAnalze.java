@@ -28,6 +28,8 @@ public class LogAnalze {
     //修改时间
     private Date updateTime;
 
+    private String userId;
+
     private String starTime;
 
     private String endTime;
@@ -40,7 +42,7 @@ public class LogAnalze {
 
     private List<String> addressList;
 
-    public LogAnalze(String uuid, String projectName, String address, Date startTime, String parsingState, String progress, String result, Long createTime, Date updateTime, String starTime, String endTime, String timeTag, String sort, List<String> projectNameList, List<String> addressList) {
+    public LogAnalze(String uuid, String projectName, String address, Date startTime, String parsingState, String progress, String result, Long createTime, Date updateTime, String userId, String starTime, String endTime, String timeTag, String sort, List<String> projectNameList, List<String> addressList) {
         this.uuid = uuid;
         this.projectName = projectName;
         this.address = address;
@@ -50,6 +52,7 @@ public class LogAnalze {
         this.result = result;
         this.createTime = createTime;
         this.updateTime = updateTime;
+        this.userId = userId;
         this.starTime = starTime;
         this.endTime = endTime;
         this.timeTag = timeTag;
@@ -58,10 +61,12 @@ public class LogAnalze {
         this.addressList = addressList;
     }
 
-    public LogAnalze(String projectName, String address, Long createTime) {
+
+    public LogAnalze(String projectName, String address, Long createTime,String userId) {
         this.projectName = projectName;
         this.address = address;
         this.createTime = createTime;
+        this.userId = userId;
     }
 
     public LogAnalze() {
@@ -125,6 +130,14 @@ public class LogAnalze {
 
     public void setAddressList(List<String> addressList) {
         this.addressList = addressList;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public void setStartTime(Date startTime) {
