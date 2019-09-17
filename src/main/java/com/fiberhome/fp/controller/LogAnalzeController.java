@@ -11,6 +11,7 @@ import com.fiberhome.fp.util.Response;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/log/")
 public class LogAnalzeController {
 
-   static Logger logging = LoggerFactory.getLogger(FpProjectController.class);
+    static Logger logging = LoggerFactory.getLogger(LogAnalzeController.class);
 
-    private   Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
+    private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
 
     @Value("${upload.log.path}")
@@ -50,6 +52,9 @@ public class LogAnalzeController {
     )
     @PostMapping(value = "/batchLogUpload")
     public Response batchLogUpload(@RequestParam("file") MultipartFile[] file, String projectName, String projectLocation, String createTime) {
+        if (StringUtils.isEmpty(projectName) || StringUtils.isEmpty(projectLocation) || StringUtils.isEmpty(createTime)) {
+            return Response.error("请检查传入参数是否为空!");
+        }
         File director = new File(uploadLogPath);
         if (!director.exists()) {
             director.mkdirs();
@@ -59,7 +64,6 @@ public class LogAnalzeController {
             if (!fileName.toLowerCase().contains("cl.log")) {
                 return Response.error("文件命名格式应该为：cl.log*  ！");
             }
-
             String pt = uploadLogPath + File.separator + projectLocation + File.separator + projectName + File.separator + createTime;
             File ptFile = new File(pt);
             if (!ptFile.exists()) {
@@ -71,7 +75,7 @@ public class LogAnalzeController {
                 logging.info("日志文件上传至 {}", pt);
                 return Response.ok();
             } catch (Exception e) {
-                logging.error(e.getMessage(),e);
+                logging.error(e.getMessage(), e);
                 logging.error(e.toString());
                 return Response.error("上传失败！");
             }
@@ -91,6 +95,9 @@ public class LogAnalzeController {
     )
     @GetMapping("/startAnalyse")
     public Response startAnalyse(String projectName, String projectLocation, String createTime, String userId) {
+        if (StringUtils.isEmpty(projectName) || StringUtils.isEmpty(projectLocation) || StringUtils.isEmpty(createTime)) {
+            return Response.error("请检查传入参数是否为空");
+        }
         String uuid = UUID.randomUUID().toString();
         long timeLong = Long.parseLong(createTime);
         LogAnalze logAnalze = new LogAnalze(projectName, projectLocation, timeLong, userId);
@@ -100,9 +107,7 @@ public class LogAnalzeController {
             logAnalyzeService.createLogAnalze(logAnalze);
             logAnalyzeService.startAnalyse(projectName, projectLocation, uuid, timeLong);
         } catch (Exception e) {
-            logging.error("分析日志失败");
-            logging.error(e.getMessage(),e);
-            logging.error(e.getCause().toString());
+            logging.error(e.getMessage(), e);
             return Response.error("分析日志失败");
         }
 
@@ -120,37 +125,44 @@ public class LogAnalzeController {
     public Response getAnalyseProcess(@RequestBody String uuids) {
         uuids = uuids.replace("\"", "");
         String[] split = uuids.split(",");
-        HashMap<String, Map<String, Object>> returnMap = new HashMap<>();
+        ArrayList<Object> arrayList = new ArrayList<>();
         try {
             for (String uuid : split) {
                 AnalyseProcess analyseProcess = map.get(uuid);
                 if (analyseProcess != null && analyseProcess.getFileMap() != null) {
-                    HashMap<String, Object> map1 = new HashMap<>();
+                    Map<String, Object> returnMap = new LinkedHashMap<>();
                     int process = analyseProcess.getProcess();
                     boolean show = analyseProcess.isShow();
                     List<String> errorResultList = analyseProcess.getErrorResultList();
                     boolean analyseError = analyseProcess.isAnalyseError();
-                    map1.put("process", process);
-                    map1.put("show", show);
-                    map1.put("isError", analyseError);
-                    ArrayList<String> list = new ArrayList<>();
-                    for (String s : errorResultList) {
-                        if (!list.contains(s)) {
-                            list.add(s);
-                        }
-                    }
-                    map1.put("errorResultList", list);
-                    returnMap.put(uuid, map1);
+                    returnMap.put("uuid", uuid);
+                    returnMap.put("process", process);
+                    returnMap.put("show", show);
+                    returnMap.put("isError", analyseError);
+                    returnMap.put("finish", analyseProcess.isFinish());
+                    List<String> list = deDuplicationList(errorResultList);
+                    returnMap.put("errorResultList", list);
+                    arrayList.add(returnMap);
                 }
             }
         } catch (Exception e) {
-            logging.error(e.getMessage(),e);
-            logging.error(e.getCause().toString());
+            logging.error(e.getMessage(), e);
             Response.error();
         }
-        return Response.ok(returnMap);
+        return Response.ok(arrayList);
     }
 
+    private List<String> deDuplicationList(List<String> list1) {
+        ArrayList<String> list = new ArrayList<>();
+        if (list1 != null && !list1.isEmpty()) {
+            for (String s : list1) {
+                if (!list.contains(s)) {
+                    list.add(s);
+                }
+            }
+        }
+        return list;
+    }
 
     /**
      * 根据条件返回分析list
@@ -167,6 +179,7 @@ public class LogAnalzeController {
     )
     @GetMapping("/getLogListByParam")
     public Response getLogListByParam(Page page, LogAnalze logAnalze) {
+        logAnalze.setUserId("0");
         for (Map.Entry<String, AnalyseProcess> entry : map.entrySet()) {
             String uuid = entry.getKey();
             AnalyseProcess analyseProcess = entry.getValue();
@@ -182,7 +195,7 @@ public class LogAnalzeController {
             hashMap.put("page", page);
             hashMap.put("data", logAnalyseList);
         } catch (Exception e) {
-            logging.error(e.getMessage(),e);
+            logging.error(e.getMessage(), e);
             Response.error();
         }
         return Response.ok(hashMap);
@@ -216,7 +229,7 @@ public class LogAnalzeController {
             retMap.put("page", page);
             retMap.put("errResult", logAnalyzeService.listErrorResult(page, errorResult));
         } catch (Exception e) {
-            logging.error(e.getMessage(),e);
+            logging.error(e.getMessage(), e);
             Response.error();
         }
         return Response.ok(retMap);
@@ -264,7 +277,7 @@ public class LogAnalzeController {
             retMap.put("page", page);
             retMap.put("operation", fpOperationTables);
         } catch (Exception e) {
-            logging.error(e.getMessage(),e);
+            logging.error(e.getMessage(), e);
             Response.error();
         }
         return Response.ok(retMap);
@@ -284,7 +297,7 @@ public class LogAnalzeController {
                 return Response.error("删除失败");
             }
         } catch (Exception e) {
-            logging.error(e.getMessage(),e);
+            logging.error(e.getMessage(), e);
             return Response.error("删除失败");
         }
 
@@ -293,7 +306,9 @@ public class LogAnalzeController {
 
     @GetMapping("/restartAnalyse")
     public Response restartAnalyse(String pjName, String pjLocation, String createTime, String uuid) {
-        //  LogAnalze logAnalyse = logAnalyzeService.findOneLogAnalyse(uuid);
+        if (StringUtils.isEmpty(pjName) || StringUtils.isEmpty(pjLocation) || StringUtils.isEmpty(createTime) || StringUtils.isEmpty(uuid)) {
+            return Response.error("请检查传入参数是否为空");
+        }
         String pt = uploadLogPath + File.separator + pjLocation + File.separator + pjName + File.separator + createTime;
         AnalyseProcess analyseProcess = map.get(uuid);
         if (analyseProcess == null) {
@@ -303,12 +318,15 @@ public class LogAnalzeController {
             if (fileExixts) {
                 try {
                     analyseProcess = (AnalyseProcess) FileUtil.objectInputStreamDisk(serializePath);
+                    analyseProcess.setFinishCount(analyseProcess.getFinishCount() - analyseProcess.getUnSuccessFileMap().size());
+                    analyseProcess.setFinish(false);
+                    analyseProcess.setErrorResultMap(new ConcurrentHashMap<>());
+                    analyseProcess.setAnalyseError(false);
                     map.put(uuid, analyseProcess);
                     logAnalyzeService.upload(analyseProcess);
                 } catch (Exception e) {
-                    logging.error(e.getMessage(),e);
+                    logging.error(e.getMessage(), e);
                     logging.error("重新分析失败");
-
                 }
             } else {
                 return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");

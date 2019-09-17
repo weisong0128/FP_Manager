@@ -1,13 +1,13 @@
 package com.fiberhome.fp.listener.event;
 
 import com.fiberhome.fp.pojo.LogAnalze;
+
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class FileStatus implements Serializable {
-
+    private static final long serialVersionUID = -7763702119598597148L;
     private ConcurrentMap<String, AnalyseProcess> map = AnalyseProcess.map;
     private boolean isFinish;
     private boolean isShow;
