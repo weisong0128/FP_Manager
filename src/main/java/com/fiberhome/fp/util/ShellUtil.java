@@ -2,12 +2,10 @@ package com.fiberhome.fp.util;
 
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.listener.event.FileStatus;
-import com.fiberhome.fp.pojo.LogAnalze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,7 +19,9 @@ public class ShellUtil {
 
     static Logger logging = LoggerFactory.getLogger(ShellUtil.class);
 
-    public static ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    private static String encodedType = "utf-8";
+
+    public static final ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
 
     /**
@@ -36,6 +36,9 @@ public class ShellUtil {
         return 0 == status;
     }
 
+    private ShellUtil() {
+    }
+
     /**
      * @description:
      * @Param:
@@ -44,12 +47,12 @@ public class ShellUtil {
      */
     public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
 
-        logging.info(String.format("执行%s脚本", bashCommand));
         Process pro = null;
+        logging.debug(String.format("执行{}命令", bashCommand));
         try {
             pro = Runtime.getRuntime().exec(bashCommand);
         } catch (IOException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
         int success = -1;
         try {
@@ -60,10 +63,9 @@ public class ShellUtil {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), "utf-8");
+                line = new String(line.getBytes(), encodedType);
                 if (line.contains("analyse progress")) {
-                    String[] split = line.split(" ");
-                    Integer progress = Integer.valueOf(split[split.length - 1]);
+                    Integer progress = Integer.valueOf(line.substring(line.lastIndexOf(' ') + 1));
                     if (progress == 10) {
                         fileStatus.setSuccess(true);
                         analyseProcess.getUnSuccessFileMap().remove(filePath);
@@ -74,18 +76,9 @@ public class ShellUtil {
             }
             success = pro.waitFor();
         } catch (Exception e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
-        if (success == 0) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean shSuccess(String bashCommand, String logPath, String configPath) throws IOException, InterruptedException {
-        Process pro = Runtime.getRuntime().exec(bashCommand);
-        int status = pro.waitFor();
-        return 0 == status;
+        return success == 0 ? true : false;
     }
 
 
@@ -94,10 +87,7 @@ public class ShellUtil {
      */
     public static boolean execSh(String bashCommand, String successFlag, String path) throws IOException, InterruptedException {
         Process pro = Runtime.getRuntime().exec(bashCommand);
-        String currentdate = String.valueOf(new Date().getTime());
-        // String fileName = "temp" + currentdate + ".txt";
         String fileName = "temp" + UUID.randomUUID() + ".txt";
-//        String path = "/home/analysis/fptool";
         pool.execute(() -> errorMsg(pro.getErrorStream()));
         pool.execute(() -> {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
@@ -106,22 +96,16 @@ public class ShellUtil {
             try {
                 fWriter = new FileWriter(path + File.separator + fileName, true);
             } catch (IOException e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(), e);
             }
             while (true) {
                 try {
-                    if (!((line = bufferedReader.readLine()) != null)) break;
-                    line = new String(line.getBytes(), "utf-8");
+                    if (((line = bufferedReader.readLine()) == null)) break;
+                    line = new String(line.getBytes(), encodedType);
                     logging.info(String.format("执行%s脚本：输出%s", bashCommand, line));
-                    try {
-
-                        fWriter.write(line + "\r\n");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
+                    fWriter.write(line + "\r\n");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logging.error(e.getMessage(), e);
                 }
             }
             try {
@@ -130,93 +114,55 @@ public class ShellUtil {
                 logging.info(String.format("输出内容写入文件%s", fileName));
                 bufferedReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(), e);
             }
         });
         pro.waitFor();
         Thread.sleep(2000);//2秒等待输出内容写完在读取
         logging.info(String.format("读取%s文件", fileName));
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName))));
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            line = new String(line.getBytes(), "utf-8");
-            logging.info(String.format("读取%s文件内容%s", fileName, line));
-            if (line.contains(successFlag)) {
-                FileUtil.deleteFile(path, fileName);
-                logging.info(String.format("删除%s文件", fileName));
-                return true;
-            }
-           /* if (line.contains("ShowErrorAnalyse")) {
-
-            }*/
-        }
-        br.close();
-        return false;
-//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-//        String line = null;
-//        while ((line = bufferedReader.readLine()) != null) {
-//            line = new String(line.getBytes(), "utf-8");
-//            logging.info(String.format("执行%s脚本：输出%s",bashCommand,line));
-//            if (line.contains(successFlag)){
-//                return true;
-//            }
-//        }
-//        bufferedReader.close();
-//        return false;
-    }
-
-
-   /* public static boolean execSh(String bashCommand, String uuid, String filePath, String ww) throws IOException, InterruptedException {
-        Process pro = Runtime.getRuntime().exec(bashCommand);
-//        String path = "/home/analysis/fptool";
-        pool.execute(() -> errorMsg(pro.getErrorStream()));
-        pool.execute(() -> {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName))));
+        ) {
             String line = null;
-            while (true) {
-                try {
-                    if (!((line = bufferedReader.readLine()) != null)) break;
-                    line = new String(line.getBytes(), "utf-8");
-                    logging.info(String.format("执行%s脚本：输出%s", bashCommand, line));
-                } catch (Exception e) {
-                    e.printStackTrace();
+            while ((line = br.readLine()) != null) {
+                line = new String(line.getBytes(), encodedType);
+                logging.info(String.format("读取%s文件内容%s", fileName, line));
+                if (line.contains(successFlag)) {
+                    FileUtil.deleteFile(path, fileName);
+                    logging.info(String.format("删除%s文件", fileName));
+                    return true;
                 }
             }
-        });
-        pro.waitFor();
-        Thread.sleep(2000);//2秒等待输出内容写完在读取
+        }
         return false;
-    }*/
-
+    }
 
     public static void errorMsg(InputStream errorStream, FileStatus fileStatus) {
         StringBuilder builder = new StringBuilder();
-        // logging.info("执行错误输出流");
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(errorStream));
         try {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), "utf-8");
+                line = new String(line.getBytes(), encodedType);
                 builder.append(line + "\r\n");
             }
             if (builder.length() > 0) {
                 fileStatus.setErrorResult(builder.toString());
-                logging.info("错误输出流结果：" + builder.toString());
+                logging.info("错误输出流结果：{}", builder.toString());
             }
             bufferedReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         } finally {
             try {
                 errorStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(), e);
             }
         }
         try {
             errorStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
     }
 
@@ -226,48 +172,24 @@ public class ShellUtil {
         try {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), "utf-8");
-                logging.info("执行错误输出流输出：" + line);
+                line = new String(line.getBytes(), encodedType);
+                logging.info("执行错误输出流输出：{}", line);
             }
             bufferedReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         } finally {
             try {
                 errorStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logging.error(e.getMessage(), e);
             }
         }
         try {
             errorStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logging.error(e.getMessage(), e);
         }
     }
-
-
-//    public static void write(){
-//        String currentdate = String.valueOf(new Date().getTime());
-//        String fileName = "temp"+currentdate+"txt";
-//        String path = "D:\\zgd\\test";
-////        File file = new File(path + File.separator + fileName);
-//        FileWriter fWriter = null;
-//        try {
-//            fWriter = new FileWriter(path + File.separator + fileName, true);
-//            for (int i=0;i<5;i++){
-//                fWriter.write("11111111" + "\r\n");
-//            }
-//            fWriter.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        write();
-//    }
-
-
 }
 

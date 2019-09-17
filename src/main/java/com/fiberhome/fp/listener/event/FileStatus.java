@@ -1,16 +1,14 @@
 package com.fiberhome.fp.listener.event;
 
 import com.fiberhome.fp.pojo.LogAnalze;
-import com.fiberhome.fp.util.FileUtil;
-
-import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class FileStatus implements Serializable {
-    private static final  long serialVersionUID = 1L;
-    private ConcurrentHashMap<String, AnalyseProcess> map = AnalyseProcess.map;
+
+    private ConcurrentMap<String, AnalyseProcess> map = AnalyseProcess.map;
     private boolean isFinish;
     private boolean isShow;
     private String errorResult;
@@ -25,11 +23,10 @@ public class FileStatus implements Serializable {
     }
 
     public LogAnalze setFinish(boolean finish) {
-        synchronized (this.getClass()) {
+        synchronized (FileStatus.class) {
             isFinish = finish;
             int finishCount = getAnalyseProcess().getFinishCount();
-            LogAnalze logAnalze = getAnalyseProcess().setFinishCount(finishCount + 1);
-            return logAnalze;
+            return getAnalyseProcess().setFinishCount(finishCount + 1);
         }
     }
 
@@ -38,7 +35,7 @@ public class FileStatus implements Serializable {
     }
 
     public void setShow(boolean show) {
-        synchronized (this.getClass()) {
+        synchronized (FileStatus.class) {
             isShow = show;
             int showCount = getAnalyseProcess().getShowCount();
             getAnalyseProcess().setShowCount(showCount + 1);
@@ -90,11 +87,10 @@ public class FileStatus implements Serializable {
     }
 
     public void setSuccess(boolean success) {
-        synchronized (this.getClass()) {
+        synchronized (FileStatus.class) {
             isSuccess = success;
             int successCount = getAnalyseProcess().getSuccessCount();
             getAnalyseProcess().setSuccessCount(successCount + 1);
-            //getAnalyseProcess().setUnSuccessFileMap(filePath,this);
         }
     }
 

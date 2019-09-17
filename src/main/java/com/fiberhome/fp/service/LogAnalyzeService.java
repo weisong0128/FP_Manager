@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface LogAnalyzeService {
 
-    Response getLogListByParam(Page page, LogAnalze LogAnalze);
+    Response getLogListByParam(Page page, LogAnalze logAnalze);
 
     boolean createLogAnalze(LogAnalze logAnalze);
 
@@ -25,5 +25,8 @@ public interface LogAnalyzeService {
 
     public Boolean batchDeleteLogAnaylse(List<String> uuids);
 
-    public void upload(AnalyseProcess analyseProcess,String dir);
+    public void upload(AnalyseProcess analyseProcess);
+
+    public LogAnalze findOneLogAnalyse(String uuid);
+
 }

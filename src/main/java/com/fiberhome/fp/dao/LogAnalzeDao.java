@@ -40,7 +40,7 @@ public interface LogAnalzeDao {
 
     public List<LogAnalze> findLogAnalyseList(LogAnalze param, Page page);
 
-    List<ErrorResult> ListErrResult(Page page, ErrorResult errorResult);
+    List<ErrorResult> listErrResult(Page page, ErrorResult errorResult);
 
     List<FpOperationTable> list(Page page, FpOperationTable fpOperationTable);
 
