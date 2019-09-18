@@ -33,6 +33,18 @@ public class UserInfo {
     @ApiModelProperty(value ="用户修改时间（不填，自动生成）" ,name = "updateTime",dataType = "String")
     private String updateTime;
 
+    public String getLoginStatus() {
+        return loginStatus;
+    }
+
+    public void setLoginStatus(String loginStatus) {
+        this.loginStatus = loginStatus;
+    }
+
+    //修改时间
+    @ApiModelProperty(value ="账号登录状态" ,name = "loginStatus",dataType = "String")
+    private String loginStatus;
+
     public UserInfo(String uuid, String userId, String userName, String userPassword, String userRole, String userState, String createTime, String updateTime) {
         this.uuid = uuid;
         this.userId = userId;
@@ -110,4 +122,8 @@ public class UserInfo {
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
+
+
+
+
 }
