@@ -22,6 +22,7 @@ public class FileUtil {
     private static String encodedType = "utf-8";
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
+    private static int MBsize = 1024;
 
 
     public static void creatDir(String path) {
@@ -44,7 +45,7 @@ public class FileUtil {
      */
     public static void creatAndWriteFile(String path, String fileName, String content) {
         creatDir(path);
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path + File.separator + fileName));){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path + File.separator + fileName));) {
             bw.write(content);
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
@@ -135,7 +136,6 @@ public class FileUtil {
     }
 
 
-
     public static void replacerConf(String filePath, String path, String business, String relief) {
         File file = new File(filePath);
         Long fileLength = file.length();
@@ -166,7 +166,7 @@ public class FileUtil {
 
 
         //替换新配置
-        try(FileInputStream in = new FileInputStream(filePath);) {
+        try (FileInputStream in = new FileInputStream(filePath);) {
             int count = 0;
             if ((count = in.read(fileContext)) > 0) {
                 // 避免出现中文乱码
@@ -352,7 +352,7 @@ public class FileUtil {
             for (File file : files) {
                 if (file.isFile() && file.length() > size1 && !nameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件大小{}MB,异步下发分析", file.getName(), file.length() / 1024 / 1024, cutFile.size(), cutFile.get(0).length() / 1024 / 1024);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件大小{}MB,异步下发分析", file.getName(), file.length() / MBsize / MBsize, cutFile.size(), cutFile.get(0).length() / MBsize / MBsize);
                 }
             }
         }
@@ -391,7 +391,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * 1024 * 1024);
+        return (long) (sizeMB * MBsize * MBsize);
     }
 
 
@@ -406,14 +406,14 @@ public class FileUtil {
         return false;
     }
 
-    public static Object objectInputStreamDisk(String filePath) {
+    public static Object objectInputStreamDisk(String filePath) throws IOException {
         try (FileInputStream fis = new FileInputStream(filePath);
              ObjectInputStream ops = new ObjectInputStream(fis);) {
             return ops.readObject();
         } catch (IOException | ClassNotFoundException e) {
             logging.error(e.getMessage(), e);
+            throw new IOException();
         }
-        return null;
     }
 
     /**
@@ -444,7 +444,7 @@ public class FileUtil {
         }
         try {
             file.transferTo(new File(director.getPath() + File.separator + fileName));
-            logging.info(String.format("文件上传至：%s", path));
+            logging.info("文件上传至：{}", path);
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
             return Response.error("文件上传失败！");
@@ -479,7 +479,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     logging.error(e.getMessage(), e);
                 }
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[MBsize];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {

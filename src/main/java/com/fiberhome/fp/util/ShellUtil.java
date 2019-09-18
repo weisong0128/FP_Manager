@@ -19,6 +19,7 @@ public class ShellUtil {
 
     static Logger logging = LoggerFactory.getLogger(ShellUtil.class);
 
+
     private static String encodedType = "utf-8";
 
     public static final ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
@@ -48,7 +49,8 @@ public class ShellUtil {
     public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
 
         Process pro = null;
-        logging.debug(String.format("执行{}命令", bashCommand));
+        logging.debug("执行{}命令", bashCommand);
+
         try {
             pro = Runtime.getRuntime().exec(bashCommand);
         } catch (IOException e) {
@@ -119,16 +121,16 @@ public class ShellUtil {
         });
         pro.waitFor();
         Thread.sleep(2000);//2秒等待输出内容写完在读取
-        logging.info(String.format("读取%s文件", fileName));
+        logging.info("读取{}文件", fileName);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName))));
         ) {
             String line = null;
             while ((line = br.readLine()) != null) {
                 line = new String(line.getBytes(), encodedType);
-                logging.info(String.format("读取%s文件内容%s", fileName, line));
+                logging.info("读取{}文件内容{}", fileName, line);
                 if (line.contains(successFlag)) {
                     FileUtil.deleteFile(path, fileName);
-                    logging.info(String.format("删除%s文件", fileName));
+                    logging.info("删除{}文件", fileName);
                     return true;
                 }
             }
@@ -146,8 +148,9 @@ public class ShellUtil {
                 builder.append(line + "\r\n");
             }
             if (builder.length() > 0) {
-                fileStatus.setErrorResult(builder.toString());
-                logging.info("错误输出流结果：{}", builder.toString());
+                String errorResult = builder.toString();
+                fileStatus.setErrorResult(errorResult);
+                logging.info("错误输出流结果：{}", errorResult);
             }
             bufferedReader.close();
         } catch (IOException e) {

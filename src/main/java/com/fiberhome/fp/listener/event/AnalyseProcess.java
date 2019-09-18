@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Component
 public class AnalyseProcess implements Serializable {
+    private static final long serialVersionUID = 1443815653844037869L;
     static Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
     public static final ConcurrentMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
     //进程
