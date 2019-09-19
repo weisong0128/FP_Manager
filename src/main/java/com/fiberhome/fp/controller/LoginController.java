@@ -29,21 +29,13 @@ public class LoginController {
     public Response login(UserInfo userInfo, HttpServletRequest request) {
         UserInfo userInfo1 = loginService.login(userInfo.getUserName(),userInfo.getUserPassword());
         if (userInfo1!=null){
-            boolean flag = getUserInfo(request, userInfo1);
-           if (!flag){
-               UserInfo userInfo2 = (UserInfo)request.getSession().getAttribute(userInfo1.getUuid());
-               if (userInfo2!=null){
-                   return   Response.error("该账号已登录，登录失败！");
-               }
-               Map map = new HashMap();
-               HttpSession session = request.getSession();
-               session.setAttribute(userInfo1.getUuid(),userInfo1);
-               map.put("uuid",userInfo1.getUuid());
-               map.put("userRole",userInfo1.getUserRole());
-               return Response.ok(map);
-           }else {
-               return Response.error("该账号已经登录，无法再次登录！");
-           }
+            Map map = new HashMap();
+            HttpSession session = request.getSession();
+            session.setAttribute(userInfo1.getUuid(),userInfo1);
+            map.put("uuid",userInfo1.getUuid());
+            map.put("userRole",userInfo1.getUserRole());
+            map.put("userName",userInfo1.getUserName());
+            return Response.ok(map);
         }
         return Response.error("用户不存在或用户，密码错误！");
     }
@@ -52,7 +44,7 @@ public class LoginController {
     @ApiOperation(value="退出",notes = "用户退出")
     public Response quit(HttpServletRequest request,String uuid){
         //UserInfo userInfo = (UserInfo)request.getSession().getAttribute(uuid);
-         request.getSession().removeAttribute(uuid);
+        request.getSession().removeAttribute(uuid);
         return Response.ok();
     }
 
@@ -60,17 +52,17 @@ public class LoginController {
     /**
      * 获取全部的用户信息
      */
-    public  boolean getUserInfo(HttpServletRequest request,UserInfo userInfo){
+  /*  public  boolean getUserInfo(HttpServletRequest request,UserInfo userInfo){
         boolean flag=false;
         Map<String,HttpSession> onlineUserList=(Map<String,HttpSession>)request.getSession().getServletContext().getAttribute("ONLINE_USERS");
         if(onlineUserList==null){
             onlineUserList=new LinkedHashMap<String,HttpSession>();
         }
         //如果当前用户存在其他session信息。那么就让旧的session失效
-       /* HttpSession oldSession=onlineUserList.get(userInfo.getUuid());
+       *//* HttpSession oldSession=onlineUserList.get(userInfo.getUuid());
         if(oldSession!=null){
             oldSession.invalidate();
-        }*/
+        }*//*
         if (!onlineUserList.containsKey(userInfo.getUuid())){
             //记录新的session,并记录到所有用户下
             onlineUserList.put(userInfo.getUuid(), request.getSession());
@@ -79,5 +71,5 @@ public class LoginController {
             flag=true;
         }
         return flag;
-    }
+    }*/
 }

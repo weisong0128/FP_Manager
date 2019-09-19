@@ -88,6 +88,11 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             countSql.append(" and  pjname in (:pjName)");
             paramMap.put("pjName",fpOperationTable.getPjNameList());
         }
+        if (fpOperationTable.getCaptureTime()!=null){
+            sql.append(" and  capture_time in (:pjName)");
+            countSql.append(" and  capture_time in (:pjName)");
+            paramMap.put("captureTime",fpOperationTable.getCaptureTime());
+        }
         if (fpOperationTable.getPjLocationList() != null && fpOperationTable.getPjLocationList().size()>0 && !fpOperationTable.getPjLocationList().contains("all")){
             sql.append(" and  pjlocation in (:pjLocation)");
             countSql.append(" and  pjlocation in (:pjLocation)");
@@ -99,6 +104,19 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             paramMap.put("startTime",fpOperationTable.getStartTime());
             paramMap.put("endTime",fpOperationTable.getEndTime());
         }
+        sql.append(" ORDER BY ");
+        if (StringUtils.isNotBlank(fpOperationTable.getSortName())){
+            if ("date".equals(fpOperationTable.getSortName())){
+                sql.append(" date ");
+            }
+            if ("desc".equals(fpOperationTable.getSort())){
+                sql.append(" desc ");
+            }
+            if ("asc".equals(fpOperationTable.getSort())){
+                sql.append(" asc ");
+            }
+        }
+
         if (page != null){
             int total  = 0;
             List<FpOperationTable> count = namedParameterJdbcTemplate.query(countSql.toString(),paramMap,new BeanPropertyRowMapper<>(FpOperationTable.class));
@@ -106,7 +124,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
-            sql.append(" ORDER BY date DESC limit "+page.getRowStart()+","+page.getPageSize());
+            sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         }
         List fpOperationTables = namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(FpOperationTable.class));
         for (int i = 0; i < fpOperationTables.size(); i++) {

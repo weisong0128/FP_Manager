@@ -5,6 +5,7 @@ import com.fiberhome.fp.pojo.BusinessDetails;
 import com.fiberhome.fp.pojo.FpHelp;
 import com.fiberhome.fp.pojo.RowResult;
 import com.fiberhome.fp.util.Page;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -39,7 +40,23 @@ public class BusinessDetailsDaoImpl implements BusinessDetailsDao {
         if (parames.get("tableName")!=null&& parames.get("tableName")!=""){
             sql.append(" AND table_name in (:tableName)  ");
         }
-        sql.append(" group by table_name,pjlocation order by cnt desc limit "+page.getRowStart()+","+page.getPageSize());
+        sql.append(" group by table_name,pjlocation order by ");//cnt desc limit "+page.getRowStart()+","+page.getPageSize());
+        if (StringUtils.isNotBlank((String) parames.get("sortName"))){
+            if ("cnt".equals(parames.get("sortName"))){
+                sql.append(" cnt ");
+            }
+            if ("date".equals(parames.get("sortName"))){
+                sql.append(" date ");
+            }
+            if ("desc".equals(parames.get("sort"))){
+                sql.append(" desc ");
+            }
+            if ("asc".equals(parames.get("sort"))){
+                sql.append(" asc ");
+            }
+        }
+        sql.append(" limit "+page.getRowStart()+","+page.getPageSize());
+
         if (page!=null){
             StringBuilder   totalRows = new StringBuilder(" select count(*) as totalrows from (select table_name,count(*) as cnt,pjlocation,max(date) as date from sql_tmp where  tag='fp_table'  ");
             if(parames.get("pjLocations")!=null && parames.get("pjLocations")!=""){

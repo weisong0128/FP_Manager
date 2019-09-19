@@ -115,7 +115,21 @@ public class AllResultDaoImpl implements AllResultDao {
             countSql.append(" and  SEARCH_ALL=:keyword  ");
             paramMap.put("keyword",allResult.getKeyWord());
         }
-
+        sql.append(" order by  ");
+        if (StringUtils.isNotBlank(allResult.getSortName())){
+            if ("date".equals(allResult.getSortName())){
+                sql.append(" date ");
+            }
+            if ("time".equals(allResult.getSortName())){
+                sql.append(" time ");
+            }
+            if ("desc".equals(allResult.getSort())){
+                sql.append(" desc ");
+            }
+            if ("asc".equals(allResult.getSort())){
+                sql.append(" asc ");
+            }
+        }
         if (page != null){
             int total = 0;
             List<AllResult> totalList = namedParameterJdbcTemplate.query(countSql.toString(),paramMap,new BeanPropertyRowMapper<>(AllResult.class));
@@ -123,7 +137,8 @@ public class AllResultDaoImpl implements AllResultDao {
                 total = totalList.get(0).getCount() ;
             }
             page.setTotalRows(total);
-            sql.append(" order by date desc limit "+page.getRowStart()+","+page.getPageSize());
+            System.out.println(page.getRowStart());
+            sql.append(" limit "+page.getRowStart()+","+page.getPageSize());
         }
         List<AllResult> list = namedParameterJdbcTemplate.query(sql.toString(),paramMap,new BeanPropertyRowMapper<>(AllResult.class));
         return list;

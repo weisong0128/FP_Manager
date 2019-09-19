@@ -29,7 +29,7 @@ public class BusinessDetailsController {
     @ApiOperation(value="表名使用频率",notes = "表名使用频率,  参数说明：pjname(项目名称)，pjLocations（安装地市字符串，如:(江苏南京,广西来宾)）,time(查询时间区间，" +
             "取值范围（one（近一个月），three（3个月），half（半年），year（一年））)")
     @GetMapping("getBusinessDetails")
-    public Response getBusinessDetails(String pjName,String pjLocations,String tableName, Page page){
+    public Response getBusinessDetails(String pjName,String pjLocations,String tableName,String sort,String sortName, Page page){
         Map<String,Object> parames = new HashMap<>();
         List<String> pjLocation=null;
         if(StringUtils.isNotBlank(pjLocations)){
@@ -47,6 +47,12 @@ public class BusinessDetailsController {
         }
         if (!StringUtils.isNotBlank(pjName)){
             return Response.error("项目名称不能为空！");
+        }
+        if (StringUtils.isNotBlank(sort)){
+            parames.put("sort",sort);
+        }
+        if (StringUtils.isNotBlank(sortName)){
+            parames.put("sortName",sortName);
         }
         parames.put("pjName",pjName);
         return Response.ok(businessDetailsService.getBusinessDetails(parames, page),page);

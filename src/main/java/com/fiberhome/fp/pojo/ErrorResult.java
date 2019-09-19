@@ -44,6 +44,26 @@ public class ErrorResult {
     private Integer count;
 
 
+    //排序值
+    private String sort;
+    //排序字段名
+    private String sortName;
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
+
+    public String getSortName() {
+        return sortName;
+    }
+
+    public void setSortName(String sortName) {
+        this.sortName = sortName;
+    }
 
     //日期格式化显示字段
     private String dateStr;

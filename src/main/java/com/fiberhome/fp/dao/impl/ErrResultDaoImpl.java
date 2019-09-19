@@ -103,6 +103,18 @@ public class ErrResultDaoImpl implements ErrResultDao {
             paramMap.put("errorSqlType",errorSqlType);
         }
 
+        sql.append(" ORDER BY ");
+        if (StringUtils.isNotBlank(errorResult.getSortName())){
+            if ("date".equals(errorResult.getSortName())){
+                sql.append(" date ");
+            }
+            if ("desc".equals(errorResult.getSort())){
+                sql.append(" desc ");
+            }
+            if ("asc".equals(errorResult.getSort())){
+                sql.append(" asc ");
+            }
+        }
 
         if (page != null){
             int total  = 0;
@@ -111,7 +123,7 @@ public class ErrResultDaoImpl implements ErrResultDao {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
-            sql.append(" ORDER BY date DESC limit "+page.getRowStart()+","+page.getPageSize());
+            sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         }
         return namedParameterJdbcTemplate.query(sql.toString(),paramMap,new BeanPropertyRowMapper<>(ErrorResult.class));
 
