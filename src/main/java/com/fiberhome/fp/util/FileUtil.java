@@ -1,6 +1,7 @@
 package com.fiberhome.fp.util;
 
 import com.fiberhome.fp.listener.event.AnalyseProcess;
+import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -195,6 +196,7 @@ public class FileUtil {
     public static List<File> cutFile(File orginalFile, String uuid) {
         AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
         Long oneFileLength = analyseProcess.getCutfilesize();
+        Integer cutFileMaxCount = analyseProcess.getCutFileMaxCount();
         ArrayList<File> cutFileList = new ArrayList<>();
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
@@ -206,8 +208,8 @@ public class FileUtil {
             return Collections.emptyList();
         }
         long orginalFilelength = orginalFile.length();
-        if (orginalFilelength / oneFileLength > 10) {
-            oneFileLength = orginalFilelength / 10;
+        if (orginalFilelength / oneFileLength > cutFileMaxCount) {
+            oneFileLength = orginalFilelength / cutFileMaxCount;
             analyseProcess.setCutfilesize(oneFileLength);
         }
         FileUtil.creatDir(targetDirectPath);
@@ -242,7 +244,6 @@ public class FileUtil {
         }
         return cutFileList;
     }
-
 
     public static void deleteDirect(File rootFile) {
         if (!rootFile.exists()) {
@@ -342,22 +343,32 @@ public class FileUtil {
         long size1 = FileUtil.getByteSize(1) + size;
         if (rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
-            ArrayList<String> nameList = new ArrayList<>();
+            ArrayList<String> dirNameList = new ArrayList<>();
+            ArrayList<File> fileList = new ArrayList<>();
             for (File file : files) {
                 if (file.isDirectory()) {
-                    String name = file.getName().replace(cutRex, "");
-                    nameList.add(name);
+                    dirNameList.add(file.getName().replace(cutRex, ""));
+                } else {
+                    fileList.add(file);
                 }
             }
-            for (File file : files) {
-                if (file.isFile() && file.length() > size1 && !nameList.contains(file.getName())) {
+            fileListLengthSort(fileList);
+            for (File file : fileList) {
+                if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件大小{}MB,异步下发分析", file.getName(), file.length() / MBsize / MBsize, cutFile.size(), cutFile.get(0).length() / MBsize / MBsize);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MBsize / MBsize, cutFile.size(), cutFile.get(0).length() / MBsize / MBsize);
                 }
             }
         }
     }
-
+    public static void fileListLengthSort(List<File> files) {
+        Collections.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                return (int) (o2.length() - o1.length());
+            }
+        });
+    }
 
     //获取文件夹下所有小于 size大小的日志文件
     public static void getSizeLLesser(File rootFile, List<File> fileList, String uuid) {

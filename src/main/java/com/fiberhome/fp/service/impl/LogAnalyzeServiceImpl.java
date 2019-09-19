@@ -55,6 +55,8 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Value("${cut.file.size}")
     int cutfilesize;
+    @Value("${cut.file.max.count}")
+    int cutFileMaxCount;
 
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
@@ -89,8 +91,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         String dir = uploadLogPath + File.separator + location + File.separator + project + File.separator + analyseTime;
         File direct = new File(dir);
         ArrayList<File> fileArrayList1 = new ArrayList<>();
-        Long byteSize = FileUtil.getByteSize(cutfilesize);
-        AnalyseProcess.fileSizeInit(uuid, byteSize);
+        AnalyseProcess.fileSizeInit(uuid, FileUtil.getByteSize(cutfilesize), cutFileMaxCount);
         FileUtil.findAllSizeMore(direct, uuid);
         FileUtil.getSizeLLesser(direct, fileArrayList1, uuid);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
@@ -102,13 +103,13 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     public void upload(AnalyseProcess analyseProcess) {
         String dir =
                 uploadLogPath + File.separator +
-                analyseProcess.getProjectLocation() + File.separator +
-                analyseProcess.getProjectName() + File.separator +
-                analyseProcess.getCreateTime();
+                        analyseProcess.getProjectLocation() + File.separator +
+                        analyseProcess.getProjectName() + File.separator +
+                        analyseProcess.getCreateTime();
         ConcurrentMap<String, FileStatus> fileMap =
                 analyseProcess.getFileMap().size() != analyseProcess.getUnSuccessFileMap().size() ?
-                analyseProcess.getUnSuccessFileMap() :
-                analyseProcess.getFileMap();
+                        analyseProcess.getUnSuccessFileMap() :
+                        analyseProcess.getFileMap();
         String uuid = analyseProcess.getUuid();
         String uploadFileRootPath = analyseProcess.getUploadFileRootPath();
         List<File> fileArrayList1 = map2FileList(fileMap);
@@ -149,6 +150,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
+            logging.error(e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
     }
@@ -163,6 +165,10 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         if (StringUtils.isNotEmpty(errorResult.getPjLocation()) && !errorResult.getPjLocation().equalsIgnoreCase("")) {
             String[] pjLocations = errorResult.getPjLocation().split(",");
             errorResult.setPjLocationList(new ArrayList<>(Arrays.asList(pjLocations)));
+        }
+        if (StringUtils.isNotEmpty(errorResult.getTag()) && !errorResult.getTag().equalsIgnoreCase("")) {
+            String[] tagList = errorResult.getTag().split(",");
+            errorResult.setTagList(new ArrayList<>(Arrays.asList(tagList)));
         }
         if (StringUtils.isNotEmpty(errorResult.getTag()) && !errorResult.getTag().equalsIgnoreCase("")) {
             String[] tagList = errorResult.getTag().split(",");

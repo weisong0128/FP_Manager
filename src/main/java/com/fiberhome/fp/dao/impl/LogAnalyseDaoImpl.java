@@ -4,6 +4,7 @@ import com.fiberhome.fp.dao.LogAnalzeDao;
 import com.fiberhome.fp.pojo.ErrorResult;
 import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
+import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
 import org.apache.commons.lang.StringUtils;
@@ -305,6 +306,16 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         if (errorResult.getTagList() != null && !errorResult.getTagList().isEmpty() && !errorResult.getTagList().contains("all")) {
             getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorResult.getTagList());
         }
+        if (StringUtils.isNotBlank(errorResult.getErrorSqlType())) {
+            List<String> errorSqlType = EntityMapTransUtils.StringToList(errorResult.getErrorSqlType());
+            if (errorSqlType != null && !errorSqlType.isEmpty() && !errorSqlType.contains("all")) {
+           /*     sql.append(" and  SEARCH_ALL in (:errorSqlType) ");
+                countSql.append(" and  SEARCH_ALL in(:errorSqlType)  ");
+                paramMap.put("errorSqlType", errorSqlType);
+*/
+                getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorSqlType);
+            }
+        }
         //根据关键字过滤
         if (errorResult.getKeyWord() != null && !errorResult.getKeyWord().equalsIgnoreCase("")) {
             sql.append(" and SEARCH_ALL like :keyWord  ");
@@ -331,7 +342,8 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 total = count.get(0).getCount();
             }
             page.setTotalRows(total);
-            sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
+            String sort = errorResult.getSort() != null ? errorResult.getSort() : "DESC";
+            sql.append(" ORDER BY date " + sort + " limit " + page.getRowStart() + "," + page.getPageSize());
 
         }
         List query = null;

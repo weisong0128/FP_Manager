@@ -5,6 +5,7 @@ import com.fiberhome.fp.pojo.LogAnalze;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
@@ -38,15 +39,17 @@ public class AnalyseProcess implements Serializable {
     private String uploadFileRootPath;
 
     private Long cutfilesize;
+    private Integer cutFileMaxCount;
 
 
     public static ConcurrentMap<String, AnalyseProcess> getMap() {
         return map;
     }
 
-    public static void fileSizeInit(String uuid, Long cutfilesize) {
+    public static void fileSizeInit(String uuid, Long cutfilesize, int cutFileMaxCount) {
         AnalyseProcess analyseProcess = new AnalyseProcess();
         analyseProcess.setCutfilesize(cutfilesize);
+        analyseProcess.setCutFileMaxCount(cutFileMaxCount);
         map.put(uuid, analyseProcess);
     }
 
@@ -110,6 +113,14 @@ public class AnalyseProcess implements Serializable {
 
     public boolean isShow() {
         return isShow;
+    }
+
+    public Integer getCutFileMaxCount() {
+        return cutFileMaxCount;
+    }
+
+    public void setCutFileMaxCount(Integer cutFileMaxCount) {
+        this.cutFileMaxCount = cutFileMaxCount;
     }
 
     public void setShow(boolean show) {
@@ -192,7 +203,7 @@ public class AnalyseProcess implements Serializable {
         if ((finishCount * 100 / count) == 100) {
             setFinish(true);
             LogAnalze logAnalze = adapt(this);
-            logging.info("已全部分析完毕 ,更新数据{}", logAnalze);
+            logging.info("项目名{},项目地市{} 已全部分析完毕 ,更新数据到数据库 ", projectName, projectLocation);
             return logAnalze;
         }
         return null;

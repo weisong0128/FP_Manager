@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -329,7 +329,8 @@ public class LogAnalzeController {
                     logging.error("重新分析失败");
                 }
             } else {
-                return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
+                logAnalyzeService.startAnalyse(pjName, pjLocation, uuid, Long.parseLong(createTime));
+               // return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
             }
         }
         return Response.ok();
