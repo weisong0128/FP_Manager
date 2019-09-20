@@ -137,7 +137,6 @@ public class AllResultDaoImpl implements AllResultDao {
                 total = totalList.get(0).getCount() ;
             }
             page.setTotalRows(total);
-            System.out.println(page.getRowStart());
             sql.append(" limit "+page.getRowStart()+","+page.getPageSize());
         }
         List<AllResult> list = namedParameterJdbcTemplate.query(sql.toString(),paramMap,new BeanPropertyRowMapper<>(AllResult.class));

@@ -89,8 +89,8 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             paramMap.put("pjName",fpOperationTable.getPjNameList());
         }
         if (fpOperationTable.getCaptureTime()!=null){
-            sql.append(" and  capture_time in (:pjName)");
-            countSql.append(" and  capture_time in (:pjName)");
+            sql.append(" and  capture_time in (:captureTime)");
+            countSql.append(" and  capture_time in (:captureTime)");
             paramMap.put("captureTime",fpOperationTable.getCaptureTime());
         }
         if (fpOperationTable.getPjLocationList() != null && fpOperationTable.getPjLocationList().size()>0 && !fpOperationTable.getPjLocationList().contains("all")){
