@@ -2,15 +2,11 @@ package com.fiberhome.fp.controller;
 
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.pojo.ErrorResult;
-import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.service.LogAnalyzeService;
 import com.fiberhome.fp.util.FileUtil;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.Response;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,14 +38,6 @@ public class LogAnalzeController {
      *
      * @return
      */
-
-    @ApiOperation(value = "日志文件上传接口", notes = "上传单个日志文件")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "multipartFiles", value = "上传文件", required = true, dataType = "MultipartFile"),
-            @ApiImplicitParam(name = "projectName", value = "项目名称", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "projectLocation", value = "项目地市", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "createTime", value = "时间戳,所有上传的日志用一个时间戳", required = true, dataType = "String")}
-    )
     @PostMapping(value = "/batchLogUpload")
     public Response batchLogUpload(@RequestParam("file") MultipartFile[] file, String projectName, String projectLocation, String createTime) {
         if (StringUtils.isEmpty(projectName) || StringUtils.isEmpty(projectLocation) || StringUtils.isEmpty(createTime)) {
@@ -87,12 +75,6 @@ public class LogAnalzeController {
      * 开始分析按钮
      */
 
-    @ApiOperation(value = "开始分析按钮", notes = "开始分析按钮")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "projectName", value = "项目名称", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "projectLocation", value = "项目地市", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "createTime", value = "时间戳,与日志上传用一个时间戳", required = true, dataType = "String")}
-    )
     @GetMapping("/startAnalyse")
     public Response startAnalyse(String projectName, String projectLocation, String createTime, String userId) {
         if (StringUtils.isEmpty(projectName) || StringUtils.isEmpty(projectLocation) || StringUtils.isEmpty(createTime)) {
@@ -120,7 +102,6 @@ public class LogAnalzeController {
     /**
      * 轮训查看进程
      */
-    @ApiOperation(value = "轮训查看进程", notes = "轮训查看进程,用来返回进程和是否可查看结果   json字符串数组格式发送")
     @PostMapping("/getAnalyseProcess")
     public Response getAnalyseProcess(@RequestBody String uuids) {
         uuids = uuids.replace("\"", "");
@@ -167,19 +148,8 @@ public class LogAnalzeController {
     /**
      * 根据条件返回分析list
      */
-    @ApiOperation(value = "根据条件返回分析分析list", notes = "根据条件返回分析list")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "projectName", value = "项目名称", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "address", value = "项目地市", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "starTime", value = "分析开始时间范围 时间戳的字符串形式", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "endTime", value = "分析开始结束范围 时间戳的字符串形式", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "pageSize", value = "分页大小", required = false, dataType = "int"),
-            @ApiImplicitParam(name = "pageNo", value = "现在页数", required = false, dataType = "int")
-    }
-    )
     @GetMapping("/getLogListByParam")
     public Response getLogListByParam(Page page, LogAnalze logAnalze) {
-        logAnalze.setUserId("0");
         for (Map.Entry<String, AnalyseProcess> entry : map.entrySet()) {
             String uuid = entry.getKey();
             AnalyseProcess analyseProcess = entry.getValue();
@@ -205,22 +175,6 @@ public class LogAnalzeController {
      * 根据条件获取分析错误sql列表
      * param 项目名称,项目地点 , 分析时间 , 关键字 ,时间范围,是否去重, sql错误类型
      */
-    @ApiOperation(value = "根据条件获取分析错误sql列表", notes = "根据条件获取分析错误sql列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "pjName", value = "项目名称", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "pjLocation", value = "项目地市", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "captureTime", value = "创建记录时间 ,由前一列表的createTime字段决定", required = true, dataType = "String"),
-
-            @ApiImplicitParam(name = "timeTag", value = "时间 today,seven,halfMonth,customZone,all ", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "startTime", value = "当timeTag为customZone时,starTime生效,  开始时间戳字符串 ", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "endTime", value = "当timeTag为customZone时,endTime生效,  开始时间戳字符串", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "tag", value = "不合格原因 未加limit,limit超限制 当传入多个时,用 , 分割", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "isDistinct", value = "是否去重  0 不去重 1 去重  此功能还未实现", required = false, dataType = "int"),
-            @ApiImplicitParam(name = "keyWord", value = "关键字过滤", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "pageSize", value = "分页大小", required = false, dataType = "int"),
-            @ApiImplicitParam(name = "pageNo", value = "现在页数", required = false, dataType = "int")
-    }
-    )
     @GetMapping("/getSqlErroListByParam")
     public Response getSqlErroListByParam(Page page, ErrorResult errorResult) {
         Map<String, Object> retMap = null;
@@ -228,54 +182,6 @@ public class LogAnalzeController {
             retMap = new HashMap<>();
             retMap.put("page", page);
             retMap.put("errResult", logAnalyzeService.listErrorResult(page, errorResult));
-        } catch (Exception e) {
-            logging.error(e.getMessage(), e);
-            Response.error();
-        }
-        return Response.ok(retMap);
-    }
-
-
-    /**
-     * 根据条件获取分析错误日志列表
-     * param 项目名称,项目地点 , 分析时间 , 关键字 ,时间范围,错误类型
-     */
-    @ApiOperation(value = "根据条件获取分析错误日志列表", notes = "根据条件返回分析list")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "projectName", value = "项目名称", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "projectLocation", value = "项目地市", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "captureTime", value = "创建记录时间 ,由前一列表的createTime字段决定", required = true, dataType = "String"),
-
-            @ApiImplicitParam(name = "timeTag", value = "时间 today,seven,halfMonth,customZone,all ", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "startTime", value = "当timeTag为customZone时,starTime生效,  开始时间戳字符串 ", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "endTime", value = "当timeTag为customZone时,endTime生效,  开始时间戳字符串", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "tag", value = "日志等级 CRIT ERRO WARN INFO  当传入多个时,用 , 分割", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "isDistinct", value = "是否去重  0 不去重 1 去重  此功能还未实现", required = false, dataType = "int"),
-            @ApiImplicitParam(name = "keyWord", value = "关键字过滤", required = false, dataType = "String"),
-            @ApiImplicitParam(name = "pageSize", value = "分页大小", required = false, dataType = "int"),
-            @ApiImplicitParam(name = "pageNo", value = "现在页数", required = false, dataType = "int")
-    }
-    )
-    @GetMapping("/getErroListByParam")
-    public Response getErroListByParam(Page page, FpOperationTable fpOperationTable) {
-        Map<String, Object> retMap = null;
-        try {
-            List<FpOperationTable> fpOperationTables = logAnalyzeService.listOperation(page, fpOperationTable);
-            for (FpOperationTable operationTable : fpOperationTables) {
-                String errInfo = operationTable.getErrInfo();
-                if (errInfo.contains("ERRO")) {
-                    operationTable.setLogLeave("中度");
-                } else if (errInfo.contains("CRIT")) {
-                    operationTable.setLogLeave("重度");
-                } else if (errInfo.contains("WARN")) {
-                    operationTable.setLogLeave("轻度");
-                } else if (errInfo.contains("INFO")) {
-                    operationTable.setLogLeave("环境状态");
-                }
-            }
-            retMap = new HashMap<>();
-            retMap.put("page", page);
-            retMap.put("operation", fpOperationTables);
         } catch (Exception e) {
             logging.error(e.getMessage(), e);
             Response.error();
@@ -329,10 +235,9 @@ public class LogAnalzeController {
                     logging.error("重新分析失败");
                 }
             } else {
-                logAnalyzeService.startAnalyse(pjName, pjLocation, uuid, Long.parseLong(createTime));
-               // return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
+                return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
             }
         }
-        return Response.ok();
+        return Response.ok(uuid);
     }
 }

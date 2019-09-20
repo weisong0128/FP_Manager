@@ -2,7 +2,6 @@ package com.fiberhome.fp.dao.impl;
 
 import com.fiberhome.fp.dao.LogAnalzeDao;
 import com.fiberhome.fp.pojo.ErrorResult;
-import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
@@ -189,7 +188,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             list.add(param.getStarTime());
         }
         String userId = param.getUserId();
-        if (!"0".equals(userId)) {
+        if (!"1".equals(userId)) {
             sql.append(" and user_id = ? ");
             list.add(userId);
         }
@@ -304,16 +303,14 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
 
         //根据错误类型过滤
         if (errorResult.getTagList() != null && !errorResult.getTagList().isEmpty() && !errorResult.getTagList().contains("all")) {
-            getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorResult.getTagList());
+            getOrSqlTemplate(sql, countSql, paramMap, "errorResult", errorResult.getTagList());
         }
         if (StringUtils.isNotBlank(errorResult.getErrorSqlType())) {
+            //此处替换前端发送的3000  数据库存储的3W
+            errorResult.setErrorSqlType(errorResult.getErrorSqlType().replace("limit超过30000", "3W"));
             List<String> errorSqlType = EntityMapTransUtils.StringToList(errorResult.getErrorSqlType());
             if (errorSqlType != null && !errorSqlType.isEmpty() && !errorSqlType.contains("all")) {
-           /*     sql.append(" and  SEARCH_ALL in (:errorSqlType) ");
-                countSql.append(" and  SEARCH_ALL in(:errorSqlType)  ");
-                paramMap.put("errorSqlType", errorSqlType);
-*/
-                getOrSqlTemplate(sql, countSql, paramMap, "SEARCH_ALL", errorSqlType);
+                getOrSqlTemplate(sql, countSql, paramMap, "errorSqlType", errorSqlType);
             }
         }
         //根据关键字过滤
@@ -356,157 +353,16 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         return query;
     }
 
-    /**
-     * 错误页面
-     */
-    @Override
-    public List<FpOperationTable> list(Page page, FpOperationTable fpOperationTable) {
-
-        StringBuilder sql = new StringBuilder();
-        StringBuilder countSql = new StringBuilder();
-        boolean isDistinct = false;
-        if (fpOperationTable.getIsDistinct() != null && (fpOperationTable.getIsDistinct() + "").equals("1")) {
-            isDistinct = true;
-        }
-        String date = isDistinct ? "max(date) as date" : " date ";
-        sql.append(" select  " + date + ",errcode,errinfo,pjname,pjlocation from fp_operation_table  WHERE   syskv='nothing:1' ");
-        countSql.append("select  count(*) as count  from fp_operation_table  WHERE  syskv='nothing:1' ");
-        Map paramMap = new HashMap();
-        //时间条件
-        if (isDistinct) {
-            sql.append(" and partition in (:partition) ");
-            countSql.append(" and partition in (:partition) ");
-            paramMap.put("partition", TimeUtil.partitons("seven"));
-        } else if (StringUtils.isNotEmpty(fpOperationTable.getTimeTag())) {
-            if (StringUtils.equals("today", fpOperationTable.getTimeTag())) {
-                sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("today"));
-                sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
-                paramMap.put("date", TimeUtil.beforeFewDays(0));
-            }
-            if (StringUtils.equals("seven", fpOperationTable.getTimeTag())) {
-                sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("seven"));
-                sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
-                paramMap.put("date", TimeUtil.beforeFewDays(7));
-            }
-            if (StringUtils.equals("halfMonth", fpOperationTable.getTimeTag())) {
-                sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("halfMonth"));
-                sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
-                paramMap.put("date", TimeUtil.beforeFewDays(15));
-            }
-            if (StringUtils.equals("all", fpOperationTable.getTimeTag())) {
-                sql.append(" and partition like '%' ");
-                countSql.append(" and partition like '%' ");
-            }
-            if (StringUtils.equals("customZone", fpOperationTable.getTimeTag())) {
-                long startTime = TimeUtil.beforeFewDays(30);
-                long endTime = new Date().getTime();
-                if (fpOperationTable.getStartTime() != null) {
-                    startTime = Long.parseLong(fpOperationTable.getStartTime());
-                }
-                if (fpOperationTable.getEndTime() != null) {
-                    endTime = Long.parseLong(fpOperationTable.getEndTime());
-                }
-                List<String> partitionList = TimeUtil.getMonthByLong(startTime, endTime);
-                sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", partitionList);
-                sql.append(" and date > :startTime ");
-                countSql.append(" and date > :startTime ");
-                paramMap.put("startTime", startTime);
-                sql.append(" and date < :endTime ");
-                countSql.append(" and date < :endTime ");
-                paramMap.put("endTime", endTime);
-            }
-        } else {
-            sql.append(" and partition in (:partition) ");
-            countSql.append(" and partition in (:partition) ");
-            paramMap.put("partition", TimeUtil.partitons("halfMonth"));
-            sql.append(" and date > :date ");
-            countSql.append(" and date > :date ");
-            paramMap.put("date", TimeUtil.beforeFewDays(15));
-        }
-        //日志等级条件
-        if (fpOperationTable.getLogLeaveList() != null && !fpOperationTable.getLogLeaveList().isEmpty() && !fpOperationTable.getLogLeaveList().contains("all")) {
-            List<String> logLeaveList = fpOperationTable.getLogLeaveList();
-            sql.append(" and (");
-            countSql.append(" and (");
-            for (int i = 0; i < logLeaveList.size(); i++) {
-                String s = i == logLeaveList.size() - 1 ? "errinfo like :errinfo" + "i " : "errinfo like :errinfo" + "i " + " or ";
-                sql.append(s);
-                countSql.append(s);
-                paramMap.put("errinfo" + i, logLeaveList.get(i));
-            }
-            sql.append(" )");
-            countSql.append(" )");
-        }
-
-        //根据关键字顾虑了
-        if (fpOperationTable.getKeyWord() != null) {
-            sql.append(" and errinfo like :keyWord ");
-            countSql.append(" and errinfo like :keyWord ");
-            paramMap.putIfAbsent("keyWord", fpOperationTable.getKeyWord());
-        }
-
-        //项目名称条件
-        if (fpOperationTable.getPjNameList() != null && !fpOperationTable.getPjNameList().isEmpty() && !fpOperationTable.getPjNameList().contains("all")) {
-            sql.append(" and  pjname in (:pjName)");
-            countSql.append(" and  pjname in (:pjName)");
-            paramMap.put("pjName", fpOperationTable.getPjNameList());
-        }
-        //项目地市条件
-        if (fpOperationTable.getPjLocationList() != null && !fpOperationTable.getPjLocationList().isEmpty() && !fpOperationTable.getPjLocationList().contains("all")) {
-            sql.append(" and  pjlocation in (:pjLocation)");
-            countSql.append(" and  pjlocation in (:pjLocation)");
-            paramMap.put("pjLocation", fpOperationTable.getPjLocationList());
-        }
-        //项目分析时间
-        if (fpOperationTable.getCaptureTime() != null) {
-            sql.append(" and  capture_time = :captureTime");
-            countSql.append(" and  capture_time = :captureTime ");
-            paramMap.put("captureTime", fpOperationTable.getCaptureTime());
-        }
-
-        //去重拼接sql
-        if (isDistinct) {
-            String distinctSql = " group by errcode,errinfo,pjname,pjlocation ";
-            sql.append(distinctSql);
-            countSql = new StringBuilder("select count(*) as count   from (" + sql.toString() + ")t");
-        }
-        if (page != null) {
-            int total = 0;
-            List<FpOperationTable> count = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(FpOperationTable.class));
-            if (count != null && !count.isEmpty() && count.get(0).getCount() != null) {
-                total = count.get(0).getCount();
-            }
-            page.setTotalRows(total);
-
-            sql.append(" ORDER BY date DESC limit " + page.getRowStart() + "," + page.getPageSize());
-
-        }
-
-        return namedParameterJdbcTemplate.query(sql.toString(), paramMap, new BeanPropertyRowMapper<>(FpOperationTable.class));
-
-    }
 
     //参数  sql  , paramMap , 字段 , 需要传入的list
     public void getOrSqlTemplate(StringBuilder sql, StringBuilder countSql, Map paramMap, String colums, List<String> list) {
         sql.append(" and (");
         countSql.append(" and (");
         for (int i = 0; i < list.size(); i++) {
-            String s = i == list.size() - 1 ? "" + colums + " like  :" + colums + "" + i : "" + colums + " like  :" + colums + "" + i + " or ";
+            String s = i == list.size() - 1 ? "SEARCH_ALL like  :" + colums + "" + i : "SEARCH_ALL like  :" + colums + "" + i + " or ";
             sql.append(s);
             countSql.append(s);
             String s1 = list.get(i);
-            s1 = s1.replace(" ", "");
             paramMap.put(colums + i, s1);
         }
         sql.append(" )");

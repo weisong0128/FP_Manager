@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -234,7 +235,7 @@ public class FileUtil {
                     bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
                     length = 0;
                 }
-                bufferedWriter.write(line + "\r\n");
+                bufferedWriter.write(line + "\n");
             }
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
@@ -266,6 +267,13 @@ public class FileUtil {
     public static void filesDelete(File file) {
         try {
             Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            logging.error(e.getMessage(), e);
+        }
+    }
+    public static void filesDelete(String path) {
+        try {
+            Files.deleteIfExists(Paths.get(path));
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         }

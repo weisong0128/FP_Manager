@@ -3,7 +3,9 @@ package com.fiberhome.fp.listener.event;
 import com.fiberhome.fp.pojo.LogAnalze;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 public class FileStatus implements Serializable {
@@ -16,7 +18,7 @@ public class FileStatus implements Serializable {
     private String filePath;
     private String originalLogFilePath;
     private boolean isSuccess;
-    private int process;
+    private int process = 1;
 
     public boolean isFinish() {
         return isFinish;
@@ -51,7 +53,6 @@ public class FileStatus implements Serializable {
         this.errorResult = errorResult;
         Map<String, String> errorResultMap = getAnalyseProcess().getErrorResultMap();
         errorResultMap.put(filePath, errorResult);
-
     }
 
     public String getUuid() {

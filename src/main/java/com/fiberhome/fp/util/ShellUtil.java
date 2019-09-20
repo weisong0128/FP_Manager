@@ -69,9 +69,11 @@ public class ShellUtil {
                 if (line.contains("analyse progress")) {
                     Integer progress = Integer.valueOf(line.substring(line.lastIndexOf(' ') + 1));
                     if (progress == 10) {
+                        fileStatus.setProcess(10);
                         fileStatus.setSuccess(true);
                         analyseProcess.getUnSuccessFileMap().remove(filePath);
                     } else if (progress == 5) {
+                        fileStatus.setProcess(5);
                         fileStatus.setShow(true);
                     }
                 }
@@ -152,20 +154,12 @@ public class ShellUtil {
                 fileStatus.setErrorResult(errorResult);
                 logging.info("错误输出流结果：{}", errorResult);
             }
-            bufferedReader.close();
+
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         } finally {
-            try {
-                errorStream.close();
-            } catch (IOException e) {
-                logging.error(e.getMessage(), e);
-            }
-        }
-        try {
-            errorStream.close();
-        } catch (IOException e) {
-            logging.error(e.getMessage(), e);
+            FileUtil.closeStream(bufferedReader);
+            FileUtil.closeStream(errorStream);
         }
     }
 

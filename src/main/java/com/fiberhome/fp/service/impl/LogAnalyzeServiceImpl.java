@@ -4,7 +4,6 @@ import com.fiberhome.fp.dao.LogAnalzeDao;
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.listener.event.FileStatus;
 import com.fiberhome.fp.pojo.ErrorResult;
-import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.service.FpProjectService;
 import com.fiberhome.fp.service.LogAnalyzeService;
@@ -120,19 +119,26 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             String projectName = analyseProcess.getProjectName();
             String projectLocation = analyseProcess.getProjectLocation();
             pool.execute(() -> {
-                //调用脚本方法
-                String bashCommand = "sh " + shellPath + File.separator + "fp_analysis.sh  " + filePath + " " + projectName + " " + projectLocation + " " + createTime;
-                ShellUtil.newShSuccess(bashCommand, uuid, filePath);
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
+                //调用脚本方法
+                String bashCommand = "sh " + shellPath + File.separator + "fp_analysis.sh  " +
+                        filePath + " " +
+                        projectName + " " +
+                        projectLocation + " " +
+                        createTime + " " +
+                        fileStatus.getProcess();
+                ShellUtil.newShSuccess(bashCommand, uuid, filePath);
                 LogAnalze logAnalze = fileStatus.setFinish(true);
                 if (logAnalze != null) {
                     //如果本次分析完整
                     String objectSerializePath = analyseProcess1.getObjectSerializePath(dir);
+                    FileUtil.filesDelete(objectSerializePath);
                     try {
                         if (analyseProcess1.getUnSuccessFileMap().size() == 0) {
                             FileUtil.deleteRootPathDir(new File(uploadFileRootPath), "_cut");
                         } else {
+                            //将错误对象序列化到硬盘
                             FileUtil.objectOutputStreamDisk(analyseProcess, objectSerializePath);
                         }
                         logAnalzeDao.updateLogAnalze(logAnalze);
@@ -177,23 +183,6 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         return logAnalzeDao.listErrResult(page, errorResult);
     }
 
-    @Override
-    public List<FpOperationTable> listOperation(Page page, FpOperationTable fpOperationTable) {
-        if (StringUtils.isNotEmpty(fpOperationTable.getPjName())) {
-            String[] pjNames = fpOperationTable.getPjName().split(",");
-            fpOperationTable.setPjNameList(new ArrayList<>(Arrays.asList(pjNames)));
-        }
-        if (StringUtils.isNotEmpty(fpOperationTable.getPjLocation())) {
-            String[] pjLocations = fpOperationTable.getPjLocation().split(",");
-            fpOperationTable.setPjLocationList(new ArrayList<>(Arrays.asList(pjLocations)));
-        }
-
-        if (StringUtils.isNotEmpty(fpOperationTable.getLogLeave())) {
-            String[] logLeaveList = fpOperationTable.getLogLeave().split(",");
-            fpOperationTable.setLogLeaveList(new ArrayList<>(Arrays.asList(logLeaveList)));
-        }
-        return logAnalzeDao.list(page, fpOperationTable);
-    }
 
     @Override
     public Boolean batchDeleteLogAnaylse(List<String> uuids) {

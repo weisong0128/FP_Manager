@@ -42,7 +42,7 @@ public interface LogAnalzeDao {
 
     List<ErrorResult> listErrResult(Page page, ErrorResult errorResult);
 
-    List<FpOperationTable> list(Page page, FpOperationTable fpOperationTable);
+
 
     public int updateLogAnalze(LogAnalze logAnalze);
 }
