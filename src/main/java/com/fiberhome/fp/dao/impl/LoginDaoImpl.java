@@ -18,7 +18,7 @@ public class LoginDaoImpl implements LoginDao {
 
     @Override
     public UserInfo login(String userName, String passWord) {
-        StringBuilder sql = new StringBuilder("select * from fp_user where user_state !='2' and user_name=? and user_password=?");
+        StringBuilder sql = new StringBuilder("select * from fp_user where user_state ='0' and user_name=? and user_password=?");
         List<UserInfo>  userInfos = jdbcTemplate.query(sql.toString(), new Object[]{userName,passWord},new BeanPropertyRowMapper<>(UserInfo.class));
         UserInfo userInfo=null;
         if (userInfos.size()>0){

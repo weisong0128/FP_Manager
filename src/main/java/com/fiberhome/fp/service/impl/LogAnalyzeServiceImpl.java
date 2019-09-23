@@ -33,7 +33,6 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private LogAnalzeDao logAnalzeDao;
     @Autowired
-
     private FpProjectService fpProjectService;
 
     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
