@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/login.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="login-wrapper">
+  <div class="login-container">
+    <div class="login">
+      <div class="login-module">
+        <div class="logo"></div>
+        <div class="subheading"></div>
+        <div class="form-default">
+          <form class="form-validate-dom login-form" id="loginForm">
+            <div class="form-group login-input">
+              <div class="user-icon inline-block"></div>
+              <input type="text" class="form-control" id="userName" name="userName" required=""
+                     accountname="true" autocomplete="off" placeholder="请输入账号">
+            </div>
+            <div class="form-group login-input">
+              <div class="password-icon inline-block"></div>
+              <input type="password" class="form-control" id="userPassword" name="userPassword" required=""
+                     password="true" autocomplete="off" placeholder="请输入密码">
+            </div>
+            <button type="button" class="btn btn-primary" data-action="login">登录</button>
+          </form>
+
+        </div>
+        <div class="login-footer">开通账号--请联系 郭涵睿 66777337</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-copyright">copyright &copy; 2017烽火星空通信</div>
+</div>
+<script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+<script src="../fh-ui/js/fh-ui.min.js"></script>
+<!-- validate -->
+<script src="../fh-ui/js/plugins/jquery-validate/jquery.validate.min.js"></script>
+<script src="../fh-ui/js/lib/require/require.js"></script>
+<script type="text/javascript">
+  require(['../assets/js/config.js'], function () {
+    require(['../assets/js/login/index.js'], function (app) {
+      app.init();
+    })
+  });
+</script>
+</body>
+</html>

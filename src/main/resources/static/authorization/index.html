@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/datatables/datatables.full.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/index.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header id="header"></header>
+  <div class="main-wrapper">
+    <div class="main-container">
+      <ol class="breadcrumb">
+        <li><span>当前位置：</span><a href="javascript:void(0)">授权管理</a></li>
+      </ol>
+      <div class="main-module authorize-module">
+        <div id="authorizeFilter" class="filter-warp"></div>
+        <h5 class="margin-bottom-base">授权管理列表</h5>
+        <div class="table-group">
+          <div class="btn-groups">
+            <button type="button" class="btn btn-default toggle-disabled" disabled="disabled"
+              data-action="delAuthorizes">批量删除</button>
+            <button type="button" class="btn btn-default" data-action="exportExcel"><a
+                id="exportExcel">导出Excel</a></button>
+            <button type="button" class="btn btn-primary" data-action="addAuthorize"><span
+                class="aidicon aidicon-plus margin-right-small-3"></span>新增授权
+            </button>
+          </div>
+          <table id="authorizeTable" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th width="30">
+                  <div id="select-checkbox" class="select-checkbox-item" data-action="select-all-event"></div>
+                </th>
+                <th width="200">项目名称</th>
+                <th>项目安装地市</th>
+                <th width="200">MAC</th>
+                <th width="150">主节点IP</th>
+                <th width="100">授权反馈</th>
+                <th width="100">环境信息</th>
+                <th width="200">下载证书日期</th>
+                <th width="150">手机号</th>
+                <th width="80">负责人</th>
+                <th>备注信息</th>
+                <th>对应sn文件</th>
+                <th width="200">操作</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+  <script src="../fh-ui/js/fh-ui.min.js"></script>
+  <!-- laydate -->
+  <script src="../fh-ui/js/plugins/laydate/laydate.min.js"></script>
+  <!-- echarts -->
+  <script src="../assets/js/plugins/echarts/echarts.min.js"></script>
+  <!-- datatables -->
+  <script src="../fh-ui/js/plugins/datatables/datatables.full.min.js"></script>
+  <!-- validate -->
+  <script src="../fh-ui/js/plugins/jquery-validate/jquery.validate.min.js"></script>
+  <!-- select2 -->
+  <script src="../fh-ui/js/plugins/select2/select2.full.min.js"></script>
+  <script src="../fh-ui/js/lib/require/require.js"></script>
+  <script type="text/javascript">
+    require(['../assets/js/config.js'], function () {
+      require(['../assets/js/authorization/index.js'], function (app) {
+        app.init();
+      })
+    });
+  </script>
+</body>
+
+</html>

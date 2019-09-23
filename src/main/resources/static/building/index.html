@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/datatables/datatables.full.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/index.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<header id="header"></header>
+<div class="main-wrapper">
+  <div class="main-container">
+    <div class="main-module current-module">
+      <div class="current-title">
+        <span>FP建表</span>
+      </div>
+      <div class="form-horizon building-form">
+        <div class="form-group clearfix">
+          <label class="left-label">上传业务调查表</label>
+          <div class="inline-block right-content clearfix" id="uploadFile-module">
+            <button id="uploadFile" type="button" class="btn btn-default" data-action="upload-file">
+              <span class="aidicon aidicon-upload margin-right-small-3"></span>文件上传
+            </button>
+            <button id="againUploadFile" type="button" class="btn btn-default" data-action="again-upload-file">
+              <span class="aidicon aidicon-upload margin-right-small-3"></span>文件上传
+            </button>
+            <div>
+              <i class="asterisk">*</i>
+              <a class="download" data-action="download-excel">模板下载</a>
+              <span class="tips">文件最大不超过1M, 最多上传1个文件, 文件名称格式为:地市_项目名称_业务调查表_日期, 支持扩展名:.xls,.xlsx</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label class="left-label">检验元数据</label>
+          <div class="inline-block right-content clearfix">
+            <div>
+              <button type="button" class="btn btn-primary" id="submitCheck" data-action="submit-check" disabled>
+                <div class="loading loading-min-style loading-building"></div>
+                <span>提交检测</span>
+              </button>
+              <div class="inline-block checking">
+                <div class="loading icon"></div>
+                <span>检测中，请耐心等待...</span>
+              </div>
+              <div class="inline-block checked">
+                <img src="./../assets/images/success-icon.png"/>
+                <span>检测通过</span>
+              </div>
+            </div>
+            <div class="checkList">
+              <label>检验项：</label>
+              <ul>
+                <li>表名是否为空</li>
+                <li>建表类型是否是映射表或者物理表</li>
+                <li>存储物理表名不能为空表</li>
+                <li>字段类型转换关系是否存在</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label class="left-label">生成建表脚本</label>
+          <div class="right-content inline-block clearfix">
+            <button type="submit" class="btn btn-primary" id="generateScript" data-action="generate-script" disabled>
+              <div class="loading loading-min-style loading-generating"></div>
+              <span>生成建表脚本</span>
+            </button>
+            <div class="inline-block generating">
+              <div class="loading icon"></div>
+              <span>脚本生成中，请耐心等待...</span>
+            </div>
+            <div class="inline-block generated">
+              <img src="./../assets/images/success-icon.png"/>
+              <span>脚本生成成功</span>
+              <a id="downloadScript" data-action="download-script">点击下载</a>
+            </div>
+            <p class="tips">建表脚本仅供参考，需要自行修改</p>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label class="left-label">上传脚本<p class="skip">(可跳过)</p></label>
+          <div class="right-content inline-block clearfix" id="uploadScript-module">
+            <button id="uploadScript" type="button" class="btn btn-primary" id="uploadScript"
+                    data-action="upload-script" disabled>
+              <span class="aidicon aidicon-upload margin-right-small-3"></span>上传脚本
+            </button>
+
+            <div>
+              <span class="tips">自行修改脚本后，可以在此上传</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <label class="left-label"></label>
+          <div class="right-content inline-block clearfix">
+            <button class="btn btn-primary btn-xl submit-btn" id="metadataStorage" data-action="metadata-storage"
+                    disabled>
+              <div class="loading loading-storage"></div>
+              <span>元数据入库</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+<script src="../fh-ui/js/fh-ui.min.js"></script>
+<!-- laydate -->
+<script src="../fh-ui/js/plugins/laydate/laydate.min.js"></script>
+<!-- echarts -->
+<script src="../assets/js/plugins/echarts/echarts.min.js"></script>
+<!-- datatables -->
+<script src="../fh-ui/js/plugins/datatables/datatables.full.min.js"></script>
+<!-- pluploaad -->
+<script src="../fh-ui/js/plugins/plupload/plupload.full.min.js"></script>
+<!-- validate -->
+<script src="../fh-ui/js/plugins/jquery-validate/jquery.validate.min.js"></script>
+<!-- select2 -->
+<script src="../fh-ui/js/plugins/select2/select2.full.min.js"></script>
+<script src="../fh-ui/js/lib/require/require.js"></script>
+<script type="text/javascript">
+  require(['../assets/js/config.js'], function () {
+    require(['../assets/js/building/index.js'], function (app) {
+      app.init();
+    })
+  });
+</script>
+</body>
+
+</html>

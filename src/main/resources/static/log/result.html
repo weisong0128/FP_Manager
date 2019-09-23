@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/datatables/datatables.full.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<header id="header"></header>
+<div class="main-wrapper">
+  <div class="main-container">
+    <ol class="breadcrumb">
+      <li><span>当前位置：</span><a href="../log/">日志检测</a></li>
+      <li><a href="javascript:void(0)"><span id="projectName"></span>详情</a></li>
+    </ol>
+    <div class="analysis-module">
+      <div class="analysis-container">
+        <div class="tab-nav nav-card-tabs-wrapper-line">
+          <ul class="nav nav-card-tabs nav-tabs-md">
+            <li class="tab tab-level-0" data-module="errorLog" data-child="false" data-action="chooseLogItem">
+              <a href="javascript:void(0)">错误日志信息</a>
+            </li>
+            <li class="tab tab-level-0" data-module="errorSqlLog" data-child="false" data-action="chooseLogItem">
+              <a href="javascript:void(0)">不合格sql详情</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="tab-content nav-content tab-content-0">
+          <div class="tab-pane tab-panel-0">
+            <div id="errorLogFilter" class="filter-warp"></div>
+            <div class="tab-module">
+              <div class="table-group">
+                <table id="errorLogTable" class="display" cellspacing="0" width="100%">
+                  <thead>
+                  <tr>
+                    <th>日志日期</th>
+                    <th>错误编码</th>
+                    <th>错误级别</th>
+                    <th>错误详情</th>
+                    <th>操作</th>
+                  </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+            <div class="tinker">
+              <div class="tinker-bell" data-action="tinker-detail"></div>
+              <div class="tinker-tips">报错小叮当</div>
+            </div>
+          </div>
+          <div class="tab-pane tab-panel-0">
+            <div id="errorSqlLogFilter" class="filter-warp"></div>
+            <div class="tab-module">
+              <div class="table-group">
+                <table id="errorSqlLogTable" class="display" cellspacing="0" width="100%">
+                  <thead>
+                  <tr>
+                    <th>日志日期</th>
+                    <th>不合格原因</th>
+                    <th>更正建议</th>
+                    <th>SQL详情</th>
+                    <th>操作</th>
+                  </tr>
+                  </thead>
+                </table>
+              </div>
+            </div>
+            <div class="tinker">
+              <div class="tinker-bell" data-action="tinker-detail"></div>
+              <div class="tinker-tips">报错小叮当</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="right-Modal"></div>
+<script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+<script src="../fh-ui/js/fh-ui.min.js"></script>
+<!-- laydate -->
+<script src="../fh-ui/js/plugins/laydate/laydate.min.js"></script>
+<!-- echarts -->
+<script src="../assets/js/plugins/echarts/echarts.min.js"></script>
+<!-- datatables -->
+<script src="../fh-ui/js/plugins/datatables/datatables.full.min.js"></script>
+<!-- select2 -->
+<script src="../fh-ui/js/plugins/select2/select2.full.min.js"></script>
+<script src="../fh-ui/js/lib/require/require.js"></script>
+<script type="text/javascript">
+  require(['../assets/js/config.js'], function () {
+    require(['../assets/js/log/result.js'], function (app) {
+      app.init();
+    })
+  });
+</script>
+</body>
+</html>

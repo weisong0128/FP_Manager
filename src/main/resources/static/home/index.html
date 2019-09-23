@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/datatables/datatables.full.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<header id="header"></header>
+
+<div class="main-wrapper">
+  <div class="main-container">
+    <div class="home-module">
+      <div class="home-header clearfix" id="headerCard"></div>
+      <div class="home-middle">
+        <div class="row">
+          <div class="col-sm-7">
+            <div class="panel">
+              <div class="panel-title">
+                <p>FP数据库全国热区</p>
+              </div> 
+              <div id="FPDatabaseMap" class="clearfix"></div>
+            </div>
+          </div>
+          <div class="col-sm-5">
+            <div class="panel">
+                <div class="panel-title">
+                  <p>各项目线上环境授权TOP10</p>
+                </div>
+                <div id="projectAuthorize"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="home-bottom">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="panel">
+                <div class="panel-title">
+                  <p>FP数据库地区分布TOP5</p>
+                </div>
+                <div id="FPDatabaseChart"></div>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <div class="panel">
+                <div class="panel-title">
+                    <p>开放授权趋势</p>
+                  </div>
+                  <div id="openAuthorizeTrend"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+<script src="../fh-ui/js/fh-ui.min.js"></script>
+<!-- laydate -->
+<script src="../fh-ui/js/plugins/laydate/laydate.min.js"></script>
+<!-- echarts -->
+<script src="../assets/js/plugins/echarts/echarts.min.js"></script>
+<!-- datatables -->
+<script src="../fh-ui/js/plugins/datatables/datatables.full.min.js"></script>
+<!-- select2 -->
+<script src="../fh-ui/js/plugins/select2/select2.full.min.js"></script>
+<script src="../fh-ui/js/lib/require/require.js"></script>
+<script type="text/javascript">
+  require(['../assets/js/config.js'], function () {
+    require(['../assets/js/home/index.js'], function (app) {
+      app.init();
+    })
+  });
+</script>
+</body>
+</html>

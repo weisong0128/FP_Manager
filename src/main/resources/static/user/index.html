@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>F-Pointer</title>
+  <link href="../fh-ui/css/fh-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/datatables/datatables.full.min.css" rel="stylesheet" type="text/css">
+  <link href="../fh-ui/js/plugins/select2/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="../assets/css/index.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header id="header"></header>
+  <div class="main-wrapper">
+    <div class="main-container">
+      <ol class="breadcrumb">
+        <li><span>当前位置：</span><a href="javascript:void(0)">用户管理</a></li>
+      </ol>
+      <div class="main-module user-module">
+        <div id="userFilter" class="filter-warp"></div>
+        <h5 class="margin-bottom-base">用户列表</h5>
+        <div class="table-group">
+          <div class="btn-groups">
+            <button type="button" class="btn btn-default toggle-disabled" id="btn-del" data-action="delUsers"
+              disabled="disabled">删除用户</button>
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button type="button" class="btn btn-default toggle-disabled" id="bth-enable" data-action="enableUsers"
+                disabled="disabled">启用</button>
+              <button type="button" class="btn btn-default toggle-disabled" id="btn-stop" data-action="stopUsers"
+                disabled="disabled">停用</button>
+            </div>
+
+            <button type="button" class="btn btn-primary" data-action="addUser"><span
+                class="aidicon aidicon-plus margin-right-small-3"></span>新增用户
+            </button>
+          </div>
+          <table id="userTable" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th width="30">
+                  <div id="select-checkbox" class="select-checkbox-user" data-action="select-all-event"></div>
+                </th>
+                <th>用户名</th>
+                <th>账号</th>
+                <th>密码</th>
+                <th>角色</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../fh-ui/js/lib/jquery/jquery.min.js"></script>
+  <script src="../fh-ui/js/fh-ui.min.js"></script>
+  <!-- laydate -->
+  <script src="../fh-ui/js/plugins/laydate/laydate.min.js"></script>
+  <!-- echarts -->
+  <script src="../assets/js/plugins/echarts/echarts.min.js"></script>
+  <!-- datatables -->
+  <script src="../fh-ui/js/plugins/datatables/datatables.full.min.js"></script>
+  <!-- validate -->
+  <script src="../fh-ui/js/plugins/jquery-validate/jquery.validate.min.js"></script>
+  <!-- select2 -->
+  <script src="../fh-ui/js/plugins/select2/select2.full.min.js"></script>
+  <script src="../fh-ui/js/lib/require/require.js"></script>
+  <script type="text/javascript">
+    require(['../assets/js/config.js'], function () {
+      require(['../assets/js/user/index.js'], function (app) {
+        app.init();
+      })
+    });
+  </script>
+</body>
+
+</html>
