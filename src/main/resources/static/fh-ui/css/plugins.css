@@ -631,8 +631,7 @@ body element.style { width: 1063px; }
 body { /** 全选checkbox样式 start**/ /** 全选checkbox样式 end**/ /** 强化表头 start**/ /** 强化表头 end**/ /** 不同行高表格 start**/ /** 不同行高表格 end**/ }
 body .dataTable th, body .dataTable td { outline: none; }
 body .dataTable thead tr, body .dataTable tfoot tr { font-size: 14px; color: #878D99; background-color: #ECF1F9; }
-body table.dataTable tbody tr { background-color: #F4F7FD; }
-body table.dataTable.stripe tbody tr.odd, body table.dataTable.display tbody tr.odd { background-color: #ffffff; }
+body table.dataTable.stripe tbody tr.odd, body table.dataTable.display tbody tr.odd { background-color: #F4F7FD; }
 body table.dataTable.stripe tbody tr.odd:hover, body table.dataTable.display tbody tr.odd:hover { background-color: #E9F3FE; }
 body table.dataTable thead .sorting, body table.dataTable thead .sorting_asc, body table.dataTable thead .sorting_desc, body table.dataTable thead .sorting_asc_disabled, body table.dataTable thead .sorting_desc_disabled { cursor: pointer; position: relative; background-position: center right; }
 body table.dataTable thead th, body table.dataTable thead td { padding: 10px 18px 10px 10px; border-bottom: 2px solid #C5CEDF; }
