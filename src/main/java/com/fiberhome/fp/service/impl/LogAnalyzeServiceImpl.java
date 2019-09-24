@@ -97,7 +97,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         FileUtil.findAllSizeMore(direct, uuid);
         FileUtil.getSizeLLesser(direct, fileArrayList1, uuid);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
-        changeAnalyseMsg(project,location);
+        changeAnalyseMsg(project, location);
         upload(map.get(uuid));
         return true;
     }
@@ -179,13 +179,11 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                                 if (ret) {
                                     FileUtil.deleteFile(path, fileName);
                                     logging.info("修改地市成功，并删除修改文件");
+                                    break;
                                 }
-                            } catch (IOException e) {
+                            } catch (IOException| InterruptedException e) {
                                 logging.error(String.format("修改地市%s失败", fileName), e);
-                                e.printStackTrace();
-                            } catch (InterruptedException e) {
-                                logging.error(String.format("修改地市%s失败", fileName), e);
-                                e.printStackTrace();
+                                logging.error(e.getMessage(), e);
                             }
                         }
                     }
@@ -204,12 +202,9 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                         FileUtil.deleteFile(path, fileName);
                         logging.info("添加项目成功，并删除添加文件");
                     }
-                } catch (IOException e) {
+                } catch (IOException | InterruptedException e) {
                     logging.error(String.format("添加项目%s失败", fileName), e);
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    logging.error(String.format("添加项目%s失败", fileName), e);
-                    e.printStackTrace();
+                    logging.error(e.getMessage(), e);
                 }
 
             }
