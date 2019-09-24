@@ -1,16 +1,16 @@
 package com.fiberhome.fp.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fiberhome.fp.dao.FpProjectDao;
 import com.fiberhome.fp.dao.LogAnalzeDao;
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.listener.event.FileStatus;
 import com.fiberhome.fp.pojo.ErrorResult;
+import com.fiberhome.fp.pojo.FpProject;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.service.FpProjectService;
 import com.fiberhome.fp.service.LogAnalyzeService;
-import com.fiberhome.fp.util.FileUtil;
-import com.fiberhome.fp.util.Page;
-import com.fiberhome.fp.util.Response;
-import com.fiberhome.fp.util.ShellUtil;
+import com.fiberhome.fp.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,9 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     static Logger logging = LoggerFactory.getLogger(LogAnalyzeServiceImpl.class);
     @Autowired
     private LogAnalzeDao logAnalzeDao;
+    @Autowired
+    public FpProjectDao fpProjectDao;
+
     @Autowired
     private FpProjectService fpProjectService;
 
@@ -93,6 +97,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         FileUtil.findAllSizeMore(direct, uuid);
         FileUtil.getSizeLLesser(direct, fileArrayList1, uuid);
         AnalyseProcess.init(uuid, fileArrayList1, project, location, analyseTime, dir);
+        changeAnalyseMsg(project,location);
         upload(map.get(uuid));
         return true;
     }
@@ -150,6 +155,66 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         }
     }
 
+    public void changeAnalyseMsg(String project, String location) {
+        pool.execute(() -> {
+            List<FpProject> projects = fpProjectDao.listProject(null, null);
+            boolean flag = false;
+            String currentdate = String.valueOf(System.currentTimeMillis());
+            if (projects != null && !projects.isEmpty()) {
+                for (FpProject dbpl : projects) {
+                    if (StringUtils.equals(dbpl.getPjName(), project)) {
+                        flag = true;
+                        List<String> locationList = StrUtil.json2List(dbpl.getPjLocation());
+                        if (!locationList.contains(location)) {
+
+                            String fileName = "update" + currentdate + ".txt";
+                            List<String> locations = (List<String>) JSONObject.parse(dbpl.getPjLocation());
+                            locations.add(location);
+                            String content = StrUtil.assemblyProject(project, locations);
+                            FileUtil.creatAndWriteFile(path, fileName, content);
+                            logging.info(String.format("修改%s项目地市命令：sh /opt/software/lsql/bin/load.sh -k pjname -t fp_project -tp txt -local -sp , -fl pjname,pjlocation -f %s", project, path + File.separator + fileName));
+                            boolean ret = false;
+                            try {
+                                ret = ShellUtil.shSuccess(" sh /opt/software/lsql/bin/load.sh -k pjname -t fp_project -tp txt -local -sp , -fl pjname,pjlocation -f  " + path + File.separator + fileName + "  ");
+                                if (ret) {
+                                    FileUtil.deleteFile(path, fileName);
+                                    logging.info("修改地市成功，并删除修改文件");
+                                }
+                            } catch (IOException e) {
+                                logging.error(String.format("修改地市%s失败", fileName), e);
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                logging.error(String.format("修改地市%s失败", fileName), e);
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!flag) {
+                String fileName = "insert" + currentdate + ".txt";
+                String content = project + "," + location;
+                FileUtil.creatAndWriteFile(path, fileName, content);
+                logging.info(String.format("添加%s项目%s地市命令：sh /opt/software/lsql/bin/load.sh  -t fp_project -tp txt -local -sp , -fl pjname,pjlocation -f %s", project, location, path + File.separator + fileName));
+                boolean ret = false;
+                try {
+                    ret = ShellUtil.shSuccess(" sh /opt/software/lsql/bin/load.sh  -t fp_project -tp txt -local -sp , -fl pjname,pjlocation -f " + path + File.separator + fileName + "  ");
+                    if (ret) {
+                        FileUtil.deleteFile(path, fileName);
+                        logging.info("添加项目成功，并删除添加文件");
+                    }
+                } catch (IOException e) {
+                    logging.error(String.format("添加项目%s失败", fileName), e);
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    logging.error(String.format("添加项目%s失败", fileName), e);
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
 
     public void sleep(int time) {
         try {
