@@ -46,6 +46,9 @@ public class ShellUtil {
      * @Return:
      * @Auth:User on 2019/9/6 16:28
      */
+    private  static  final  int NUMBER_10=10;
+    private  static  final  int NUMBER_5=5;
+    private  static  final  int NUMBER_2000=2000;
     public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
 
         Process pro = null;
@@ -62,18 +65,21 @@ public class ShellUtil {
             AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
             FileStatus fileStatus = analyseProcess.getFileMap().get(filePath);
             pool.execute(() -> errorMsg(finalPro.getErrorStream(), fileStatus));
+            if (pro==null){
+                return false;
+            }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
                 line = new String(line.getBytes(), encodedType);
                 if (line.contains("analyse progress")) {
                     Integer progress = Integer.valueOf(line.substring(line.lastIndexOf(' ') + 1));
-                    if (progress == 10) {
-                        fileStatus.setProcess(10);
+                    if (progress == NUMBER_10) {
+                        fileStatus.setProcess(NUMBER_10);
                         fileStatus.setSuccess(true);
                         analyseProcess.getUnSuccessFileMap().remove(filePath);
-                    } else if (progress == 5) {
-                        fileStatus.setProcess(5);
+                    } else if (progress == NUMBER_5) {
+                        fileStatus.setProcess(NUMBER_5);
                         fileStatus.setShow(true);
                     }
                 }
@@ -104,7 +110,7 @@ public class ShellUtil {
             }
             while (true) {
                 try {
-                    if (((line = bufferedReader.readLine()) == null)) break;
+                    if (((line = bufferedReader.readLine()) == null)){ break;};
                     line = new String(line.getBytes(), encodedType);
                     logging.info(String.format("执行%s脚本：输出%s", bashCommand, line));
                     fWriter.write(line + "\r\n");
@@ -122,7 +128,7 @@ public class ShellUtil {
             }
         });
         pro.waitFor();
-        Thread.sleep(2000);//2秒等待输出内容写完在读取
+        Thread.sleep(NUMBER_2000);//2秒等待输出内容写完在读取
         logging.info("读取{}文件", fileName);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName))));
         ) {

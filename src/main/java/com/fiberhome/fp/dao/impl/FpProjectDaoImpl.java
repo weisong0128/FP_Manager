@@ -4,9 +4,12 @@ import com.fiberhome.fp.dao.FpProjectDao;
 import com.fiberhome.fp.pojo.FpProject;
 import com.fiberhome.fp.util.Page;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -22,29 +25,30 @@ import java.util.Map;
 @Repository
 public class FpProjectDaoImpl implements FpProjectDao{
 
-    @Resource(name = "hiveJdbcTemplate")
-    JdbcTemplate jdbcTemplate;
+    @Autowired
+    @Qualifier("hiveNamedParameterJdbcTemplate")
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
     @Override
     public List<FpProject> listProject(String pjName, Page page){
-      Object[] obj = new Object[1];
-        StringBuilder sql = new StringBuilder("select pjname,pjlocation from fp_project where  pjname <> 'null' ");
-        StringBuilder sqlCount = new StringBuilder(" select count(*) as totalrows from fp_project where  pjname <> 'null' ");
+        Map<String,Object> map = new HashMap<>();
+        StringBuilder sql = new StringBuilder("select pjname,pjlocation from fp_project where  pjname is not null ");
+        StringBuilder sqlCount = new StringBuilder(" select count(*) as totalrows from fp_project where  pjname is not null ");
         if (StringUtils.isNotBlank(pjName)){
-            obj[0]=pjName;
-            sql.append("AND  pjname = ? ");
-            sqlCount.append("AND  pjname = ?");
+            map.put("pjName",pjName);
+            sql.append(" AND  pjname = :pjName ");
+            sqlCount.append(" AND  pjname = :pjName ");
         }
         if(page!=null){
-            List<Map<String, Object>> count = jdbcTemplate.queryForList(sqlCount.toString(), obj);
-            if(count.get(0).get("totalrows")!=null){
+            List<Map<String, Object>> count = namedParameterJdbcTemplate.queryForList(sql.toString(),map);
+            if(count.size()>0&&count.get(0).get("totalrows")!=null){
                 int total= Integer.valueOf(count.get(0).get("totalrows").toString());
                 page.setTotalRows(total);
             }
             sql.append("  limit "+page.getRowStart()+","+page.getPageSize());
         }
-        return jdbcTemplate.query(sql.toString(),obj,new BeanPropertyRowMapper<>(FpProject.class));
+        return namedParameterJdbcTemplate.query(sql.toString(),map,new BeanPropertyRowMapper<>(FpProject.class));
     }
 
 }

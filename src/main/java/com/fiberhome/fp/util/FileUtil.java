@@ -1,7 +1,6 @@
 package com.fiberhome.fp.util;
 
 import com.fiberhome.fp.listener.event.AnalyseProcess;
-import com.google.common.collect.Table;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -24,7 +22,7 @@ public class FileUtil {
     private static String encodedType = "utf-8";
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
-    private static int MBsize = 1024;
+    private static final int  MB_SIZE = 1024;
 
 
     public static void creatDir(String path) {
@@ -182,13 +180,8 @@ public class FileUtil {
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         } finally {
-            try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            } catch (Exception e) {
-                logging.error(e.getMessage(), e);
+            if (out!=null){
+                out.close();
             }
         }
 
@@ -240,8 +233,22 @@ public class FileUtil {
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         } finally {
-            closeStream(bufferedWriter);
-            closeStream(bufferedReader);
+            if (bufferedWriter!=null){
+                try {
+                    bufferedWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bufferedReader!=null){
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+          /*  closeStream(bufferedWriter);
+            closeStream(bufferedReader);*/
         }
         return cutFileList;
     }
@@ -288,7 +295,7 @@ public class FileUtil {
             File[] files = rootFile.listFiles();
             if (files.length == 0) {
                 filesDelete(rootFile);
-                if (rootFile.getParentFile().getPath() != path) {
+                if (rootFile.getParentFile().getPath().equals(path)) {
                     deleteEmptyDirect(rootFile.getParentFile(), path);
                 }
             } else {
@@ -364,7 +371,7 @@ public class FileUtil {
             for (File file : fileList) {
                 if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MBsize / MBsize, cutFile.size(), cutFile.get(0).length() / MBsize / MBsize);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MB_SIZE / MB_SIZE, cutFile.size(), cutFile.get(0).length() / MB_SIZE / MB_SIZE);
                 }
             }
         }
@@ -410,7 +417,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * MBsize * MBsize);
+        return (long) (sizeMB * MB_SIZE * MB_SIZE);
     }
 
 
@@ -451,7 +458,8 @@ public class FileUtil {
         if (!isSql) {
             return Response.error("文件不是一个.sql格式！");
         }
-        System.out.println("文件大小----------:" + file.getSize());
+       // System.out.println("文件大小----------:" + file.getSize());
+        logging.debug("文件大小----------:" + file.getSize());
         String fileName = file.getOriginalFilename();
 
         String currentdate = String.valueOf(System.currentTimeMillis());
@@ -498,7 +506,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     logging.error(e.getMessage(), e);
                 }
-                byte[] buffer = new byte[MBsize];
+                byte[] buffer = new byte[MB_SIZE];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {

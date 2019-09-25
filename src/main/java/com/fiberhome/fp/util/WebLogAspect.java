@@ -41,7 +41,7 @@ public class WebLogAspect {
             }
             try {
                 if(logger.isDebugEnabled()){
-                    logger.info(joinPoint.getTarget().getClass().getName()+"."+joinPoint.getSignature().getName()+" : request parameter : "+mapper.writeValueAsString(object));
+                    logger.debug(joinPoint.getTarget().getClass().getName()+"."+joinPoint.getSignature().getName()+" : request parameter : "+mapper.writeValueAsString(object));
                 }
             }catch (Exception e){
                 e.printStackTrace();
