@@ -63,6 +63,8 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
+    public static final int SLEEPTIME = 1050;
+
     @Override
     public Response getLogListByParam(Page page, LogAnalze logAnalze) {
         return null;
@@ -151,7 +153,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                     }
                 }
             });
-            sleep(1050);
+            sleep(SLEEPTIME);
         }
     }
 

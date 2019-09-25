@@ -22,7 +22,7 @@ public class FileUtil {
     private static String encodedType = "utf-8";
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
-    private static final int  MB_SIZE = 1024;
+    private static int mBsize = 1024;
 
 
     public static void creatDir(String path) {
@@ -95,37 +95,37 @@ public class FileUtil {
                     Long tempPoint = lastPoint;
                     for (long i = lastPoint; i < ponit; i++) {
                         raf.seek(tempPoint);
-                        raf.write(" ".getBytes());
+                        raf.write(" ".getBytes(encodedType));
                         tempPoint = raf.getFilePointer();
                     }
                     raf.seek(lastPoint);
                     raf.write(path.getBytes(encodedType));
                     raf.seek((ponit >= raf.getFilePointer()) ? ponit : raf.getFilePointer());
-                    raf.write("\n".getBytes());
+                    raf.write("\n".getBytes(encodedType));
                 }
                 if (line.contains("business")) {
                     Long tempPoint = lastPoint;
                     for (long i = lastPoint; i < ponit; i++) {
                         raf.seek(tempPoint);
-                        raf.write(" ".getBytes());
+                        raf.write(" ".getBytes(encodedType));
                         tempPoint = raf.getFilePointer();
                     }
                     raf.seek(lastPoint);
                     raf.write(business.getBytes(encodedType));
                     raf.seek((ponit >= raf.getFilePointer()) ? ponit : raf.getFilePointer());
-                    raf.write("\n".getBytes());
+                    raf.write("\n".getBytes(encodedType));
                 }
                 if (line.contains("relief")) {
                     Long tempPoint = lastPoint;
                     for (long i = lastPoint; i < ponit; i++) {
                         raf.seek(tempPoint);
-                        raf.write(" ".getBytes());
+                        raf.write(" ".getBytes(encodedType));
                         tempPoint = raf.getFilePointer();
                     }
                     raf.seek(lastPoint);
                     raf.write(relief.getBytes(encodedType));
                     raf.seek((ponit >= raf.getFilePointer()) ? ponit : raf.getFilePointer());
-                    raf.write("\n".getBytes());
+                    raf.write("\n".getBytes(encodedType));
                 }
                 lastPoint = raf.getFilePointer();
             }
@@ -146,10 +146,11 @@ public class FileUtil {
         String oldRelief = null;
         //读取修改之前的配置
         try (FileInputStream fileInputStream = new FileInputStream(filePath);
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));) {
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream, encodedType));) {
+
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), encodedType);
+                line = new String(line.getBytes(encodedType), encodedType);
                 if (line.contains(cldir)) {
                     oldDir = line;
                 }
@@ -180,8 +181,13 @@ public class FileUtil {
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         } finally {
-            if (out!=null){
-                out.close();
+            try {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            } catch (Exception e) {
+                logging.error(e.getMessage(), e);
             }
         }
 
@@ -192,7 +198,6 @@ public class FileUtil {
         Long oneFileLength = analyseProcess.getCutfilesize();
         Integer cutFileMaxCount = analyseProcess.getCutFileMaxCount();
         ArrayList<File> cutFileList = new ArrayList<>();
-        BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
         String orginalFileName = orginalFile.getName();
         String targetDirectPath = orginalFile.getParentFile().getPath();
@@ -214,18 +219,19 @@ public class FileUtil {
         String cutRootPath = rootPath + File.separator + orginalFileName + cutRex;
         creatDir(cutRootPath);
         cutFileList.add(new File(rootPath + File.separator + orginalFileName + cutRex + File.separator + orginalFileName + "." + (i + 1)));
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(orginalFile)));
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cutFileList.get(0))));
+        try (
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(orginalFile), encodedType));
+        ) {
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cutFileList.get(0)), encodedType));
             while ((line = bufferedReader.readLine()) != null) {
-                length += line.getBytes().length;
-                lenth2 += line.getBytes().length;
+                length += line.getBytes(encodedType).length;
+                lenth2 += line.getBytes(encodedType).length;
                 if (length > oneFileLength && orginalFilelength - lenth2 > getByteSize(1) && !line.startsWith("\tat ") && !line.contains("[ERROR]")) {
                     i++;
                     cutFileList.add(new File(rootPath + File.separator + orginalFileName + cutRex + File.separator + orginalFileName + "." + (i + 1)));
                     File file = cutFileList.get(i);
                     closeStream(bufferedWriter);
-                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
+                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), encodedType));
                     length = 0;
                 }
                 bufferedWriter.write(line + "\n");
@@ -233,22 +239,7 @@ public class FileUtil {
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         } finally {
-            if (bufferedWriter!=null){
-                try {
-                    bufferedWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (bufferedReader!=null){
-                try {
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-          /*  closeStream(bufferedWriter);
-            closeStream(bufferedReader);*/
+            closeStream(bufferedWriter);
         }
         return cutFileList;
     }
@@ -278,6 +269,7 @@ public class FileUtil {
             logging.error(e.getMessage(), e);
         }
     }
+
     public static void filesDelete(String path) {
         try {
             Files.deleteIfExists(Paths.get(path));
@@ -295,7 +287,7 @@ public class FileUtil {
             File[] files = rootFile.listFiles();
             if (files.length == 0) {
                 filesDelete(rootFile);
-                if (rootFile.getParentFile().getPath().equals(path)) {
+                if (!rootFile.getParentFile().getPath().equals(path)) {
                     deleteEmptyDirect(rootFile.getParentFile(), path);
                 }
             } else {
@@ -371,18 +363,16 @@ public class FileUtil {
             for (File file : fileList) {
                 if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MB_SIZE / MB_SIZE, cutFile.size(), cutFile.get(0).length() / MB_SIZE / MB_SIZE);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / mBsize / mBsize, cutFile.size(), cutFile.get(0).length() / mBsize / mBsize);
                 }
             }
         }
     }
+
     public static void fileListLengthSort(List<File> files) {
-        Collections.sort(files, new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                return (int) (o2.length() - o1.length());
-            }
-        });
+        Collections.sort(files, (o1, o2) ->
+                (int) (o2.length() - o1.length())
+        );
     }
 
     //获取文件夹下所有小于 size大小的日志文件
@@ -417,7 +407,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * MB_SIZE * MB_SIZE);
+        return (long) (sizeMB * mBsize * mBsize);
     }
 
 
@@ -458,8 +448,7 @@ public class FileUtil {
         if (!isSql) {
             return Response.error("文件不是一个.sql格式！");
         }
-       // System.out.println("文件大小----------:" + file.getSize());
-        logging.debug("文件大小----------:" + file.getSize());
+        logging.info("文件大小----------:" + file.getSize());
         String fileName = file.getOriginalFilename();
 
         String currentdate = String.valueOf(System.currentTimeMillis());
@@ -506,7 +495,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     logging.error(e.getMessage(), e);
                 }
-                byte[] buffer = new byte[MB_SIZE];
+                byte[] buffer = new byte[mBsize];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {

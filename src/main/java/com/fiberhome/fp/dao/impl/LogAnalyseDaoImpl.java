@@ -36,6 +36,14 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     @Qualifier("hiveNamedParameterJdbcTemplate")
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    public static final String TODAY = "today";
+    public static final String SEVEN = "seven";
+    public static final String HALFMONTH = "halfMonth";
+    public static final String ALL = "all";
+    public static final int SEVENNUM = 7;
+    public static final int HALFMONTHNUM = 15;
+
+
     @Override
     public boolean createLogAnalze(LogAnalze logAnalze) {
         String sql = "INSERT INTO fp_log_analyze VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -146,13 +154,13 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         ArrayList<Object> list = new ArrayList<>();
         list.add(1);
         if (StringUtils.isNotEmpty(param.getTimeTag())) {
-            if (StringUtils.equals("today", param.getTimeTag())) {
+            if (StringUtils.equals(TODAY, param.getTimeTag())) {
                 param.setStarTime(TimeUtil.beforeFewDays(0) + "");
-            } else if (StringUtils.equals("seven", param.getTimeTag())) {
-                param.setStarTime(TimeUtil.beforeFewDays(7) + "");
-            } else if (StringUtils.equals("halfMonth", param.getTimeTag())) {
-                param.setStarTime(TimeUtil.beforeFewDays(15) + "");
-            } else if (StringUtils.equals("all", param.getTimeTag())) {
+            } else if (StringUtils.equals(SEVEN, param.getTimeTag())) {
+                param.setStarTime(TimeUtil.beforeFewDays(SEVENNUM) + "");
+            } else if (StringUtils.equals(HALFMONTH, param.getTimeTag())) {
+                param.setStarTime(TimeUtil.beforeFewDays(HALFMONTHNUM) + "");
+            } else if (StringUtils.equals(ALL, param.getTimeTag())) {
                 param.setStarTime(null);
                 param.setEndTime(null);
             }
@@ -240,29 +248,29 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         if (isDistinct) {
             sql.append(" and partition in (:partition) ");
             countSql.append(" and partition in (:partition) ");
-            paramMap.put("partition", TimeUtil.partitons("seven"));
+            paramMap.put("partition", TimeUtil.partitons(SEVEN));
         } else if (StringUtils.isNotEmpty(errorResult.getTimeTag())) {
-            if (StringUtils.equals("today", errorResult.getTimeTag())) {
+            if (StringUtils.equals(TODAY, errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("today"));
+                paramMap.put("partition", TimeUtil.partitons(TODAY));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
                 paramMap.put("date", TimeUtil.beforeFewDays(0));
-            } else if (StringUtils.equals("seven", errorResult.getTimeTag())) {
+            } else if (StringUtils.equals(SEVEN, errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("seven"));
+                paramMap.put("partition", TimeUtil.partitons(SEVEN));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date", TimeUtil.beforeFewDays(7));
-            } else if (StringUtils.equals("halfMonth", errorResult.getTimeTag())) {
+                paramMap.put("date", TimeUtil.beforeFewDays(SEVENNUM));
+            } else if (StringUtils.equals(HALFMONTH, errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
-                paramMap.put("partition", TimeUtil.partitons("halfMonth"));
+                paramMap.put("partition", TimeUtil.partitons(HALFMONTH));
                 sql.append(" and date > :date ");
                 countSql.append(" and date > :date ");
-                paramMap.put("date", TimeUtil.beforeFewDays(15));
+                paramMap.put("date", TimeUtil.beforeFewDays(HALFMONTHNUM));
             } else if (StringUtils.equals("customZone", errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
@@ -273,7 +281,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 sql.append(" and date < :endTime ");
                 countSql.append(" and date < :endTime ");
                 paramMap.put("endTime", errorResult.getEndTime());
-            } else if (StringUtils.equals("all", errorResult.getTimeTag())) {
+            } else if (StringUtils.equals(ALL, errorResult.getTimeTag())) {
                 sql.append(" and partition like '%' ");
                 countSql.append(" and partition like '%' ");
             }
@@ -289,27 +297,27 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
 
         //根据项目名称过滤
-        if (errorResult.getPjNameList() != null && !errorResult.getPjNameList().isEmpty() && !errorResult.getPjNameList().contains("all")) {
+        if (errorResult.getPjNameList() != null && !errorResult.getPjNameList().isEmpty() && !errorResult.getPjNameList().contains(ALL)) {
             sql.append(" and  pjname in (:pjName)");
             countSql.append(" and  pjname in (:pjName)");
             paramMap.put("pjName", errorResult.getPjNameList());
         }
         //根据项目地点过滤
-        if (errorResult.getPjLocationList() != null && !errorResult.getPjLocationList().isEmpty() && !errorResult.getPjLocationList().contains("all")) {
+        if (errorResult.getPjLocationList() != null && !errorResult.getPjLocationList().isEmpty() && !errorResult.getPjLocationList().contains(ALL)) {
             sql.append(" and  pjlocation in (:pjLocation) ");
             countSql.append(" and  pjlocation in (:pjLocation) ");
             paramMap.put("pjLocation", errorResult.getPjLocationList());
         }
 
         //根据错误类型过滤
-        if (errorResult.getTagList() != null && !errorResult.getTagList().isEmpty() && !errorResult.getTagList().contains("all")) {
+        if (errorResult.getTagList() != null && !errorResult.getTagList().isEmpty() && !errorResult.getTagList().contains(ALL)) {
             getOrSqlTemplate(sql, countSql, paramMap, "errorResult", errorResult.getTagList());
         }
         if (StringUtils.isNotBlank(errorResult.getErrorSqlType())) {
             //此处替换前端发送的3000  数据库存储的3W
             errorResult.setErrorSqlType(errorResult.getErrorSqlType().replace("limit超过30000", "3W"));
             List<String> errorSqlType = EntityMapTransUtils.StringToList(errorResult.getErrorSqlType());
-            if (errorSqlType != null && !errorSqlType.isEmpty() && !errorSqlType.contains("all")) {
+            if (errorSqlType != null && !errorSqlType.isEmpty() && !errorSqlType.contains(ALL)) {
                 getOrSqlTemplate(sql, countSql, paramMap, "errorSqlType", errorSqlType);
             }
         }

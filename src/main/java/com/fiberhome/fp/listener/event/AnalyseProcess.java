@@ -18,8 +18,11 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class AnalyseProcess implements Serializable {
     private static final long serialVersionUID = 1443815653844037869L;
-    static Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
     public static final ConcurrentMap<String, AnalyseProcess> map = new ConcurrentHashMap<>();
+    public static final int FINISHNUM = 100;
+    public static final int HARFFINISHNUM = 50;
+
+    static Logger logging = LoggerFactory.getLogger(AnalyseProcess.class);
     //进程
     private int process;
     private boolean isFinish;
@@ -142,11 +145,11 @@ public class AnalyseProcess implements Serializable {
 
     public void setShowCount(int showCount) {
         this.showCount = showCount;
-        this.process = ((successCount + this.showCount) * 50) / count;
+        this.process = ((successCount + this.showCount) * HARFFINISHNUM) / count;
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
         if (this.showCount == count) {
             setShow(true);
-            logging.info("分析任务完成50% ,项目名{},项目地市{} , 是否可看{} ", projectName, projectLocation, isShow);
+            logging.info("分析任务完成HARFFINISHNUM% ,项目名{},项目地市{} , 是否可看{} ", projectName, projectLocation, isShow);
         }
     }
 
@@ -200,7 +203,7 @@ public class AnalyseProcess implements Serializable {
 
     public LogAnalze setFinishCount(int finishCount) {
         this.finishCount = finishCount;
-        if ((finishCount * 100 / count) == 100) {
+        if ((finishCount * FINISHNUM / count) == FINISHNUM) {
             setFinish(true);
             LogAnalze logAnalze = adapt(this);
             logging.info("项目名{},项目地市{} 已全部分析完毕 ,更新数据到数据库 ", projectName, projectLocation);
@@ -251,8 +254,8 @@ public class AnalyseProcess implements Serializable {
 
     public void setSuccessCount(int successCount) {
         this.successCount = successCount;
-        setProcess(((successCount + showCount) * 50) / count);
-        if (process == 100) {
+        setProcess(((successCount + showCount) * HARFFINISHNUM) / count);
+        if (process == FINISHNUM) {
             this.isFinish = true;
         }
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);

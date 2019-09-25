@@ -33,6 +33,8 @@ public class LogAnalzeController {
     @Autowired
     private LogAnalyzeService logAnalyzeService;
 
+    public static final int FINISHNUM = 100;
+
     /**
      * 上传日志文件接口
      *
@@ -153,7 +155,7 @@ public class LogAnalzeController {
         for (Map.Entry<String, AnalyseProcess> entry : map.entrySet()) {
             String uuid = entry.getKey();
             AnalyseProcess analyseProcess = entry.getValue();
-            if (analyseProcess.isFinish() || analyseProcess.getProcess() == 100) {
+            if (analyseProcess.isFinish() || analyseProcess.getProcess() == FINISHNUM) {
                 map.remove(uuid);
                 continue;
             }

@@ -22,6 +22,10 @@ public class ShellUtil {
 
     private static String encodedType = "utf-8";
 
+    public static final int SLEEPTIME = 2000;
+    public static final int SETPROCESS_5 = 5;
+    public static final int SETPROCESS_10 = 10;
+
     public static final ThreadPoolExecutor pool = new ThreadPoolExecutor(10, 20, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
 
@@ -46,9 +50,6 @@ public class ShellUtil {
      * @Return:
      * @Auth:User on 2019/9/6 16:28
      */
-    private  static  final  int NUMBER_10=10;
-    private  static  final  int NUMBER_5=5;
-    private  static  final  int NUMBER_2000=2000;
     public static boolean newShSuccess(String bashCommand, String uuid, String filePath) {
 
         Process pro = null;
@@ -61,25 +62,26 @@ public class ShellUtil {
         }
         int success = -1;
         try {
+            if (pro == null) {
+                logging.error("调用脚本发生错误,无法返回输出流");
+                return false;
+            }
             Process finalPro = pro;
             AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
             FileStatus fileStatus = analyseProcess.getFileMap().get(filePath);
             pool.execute(() -> errorMsg(finalPro.getErrorStream(), fileStatus));
-            if (pro==null){
-                return false;
-            }
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(pro.getInputStream(),encodedType));
             String line = "";
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), encodedType);
+                line = new String(line.getBytes(encodedType), encodedType);
                 if (line.contains("analyse progress")) {
                     Integer progress = Integer.valueOf(line.substring(line.lastIndexOf(' ') + 1));
-                    if (progress == NUMBER_10) {
-                        fileStatus.setProcess(NUMBER_10);
+                    if (progress == SETPROCESS_10) {
+                        fileStatus.setProcess(SETPROCESS_10);
                         fileStatus.setSuccess(true);
                         analyseProcess.getUnSuccessFileMap().remove(filePath);
-                    } else if (progress == NUMBER_5) {
-                        fileStatus.setProcess(NUMBER_5);
+                    } else if (progress == SETPROCESS_5) {
+                        fileStatus.setProcess(SETPROCESS_5);
                         fileStatus.setShow(true);
                     }
                 }
@@ -108,16 +110,16 @@ public class ShellUtil {
             } catch (IOException e) {
                 logging.error(e.getMessage(), e);
             }
-            while (true) {
-                try {
-                    if (((line = bufferedReader.readLine()) == null)){ break;};
-                    line = new String(line.getBytes(), encodedType);
+            try {
+                while (((line = bufferedReader.readLine()) != null)) {
+                    line = new String(line.getBytes(encodedType), encodedType);
                     logging.info(String.format("执行%s脚本：输出%s", bashCommand, line));
                     fWriter.write(line + "\r\n");
-                } catch (Exception e) {
-                    logging.error(e.getMessage(), e);
                 }
+            } catch (Exception e) {
+                logging.error(e.getMessage(), e);
             }
+
             try {
                 fWriter.flush();
                 fWriter.close();
@@ -128,13 +130,13 @@ public class ShellUtil {
             }
         });
         pro.waitFor();
-        Thread.sleep(NUMBER_2000);//2秒等待输出内容写完在读取
+        Thread.sleep(SLEEPTIME);//2秒等待输出内容写完在读取
         logging.info("读取{}文件", fileName);
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName))));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path + File.separator + fileName)),encodedType));
         ) {
             String line = null;
             while ((line = br.readLine()) != null) {
-                line = new String(line.getBytes(), encodedType);
+                line = new String(line.getBytes(encodedType), encodedType);
                 logging.info("读取{}文件内容{}", fileName, line);
                 if (line.contains(successFlag)) {
                     FileUtil.deleteFile(path, fileName);
@@ -152,7 +154,7 @@ public class ShellUtil {
         try {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), encodedType);
+                line = new String(line.getBytes(encodedType), encodedType);
                 builder.append(line + "\r\n");
             }
             if (builder.length() > 0) {
@@ -175,7 +177,7 @@ public class ShellUtil {
         try {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                line = new String(line.getBytes(), encodedType);
+                line = new String(line.getBytes(encodedType), encodedType);
                 logging.info("执行错误输出流输出：{}", line);
             }
             bufferedReader.close();
