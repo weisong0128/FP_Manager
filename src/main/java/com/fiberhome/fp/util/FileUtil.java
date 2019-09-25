@@ -22,7 +22,7 @@ public class FileUtil {
     private static String encodedType = "utf-8";
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
-    private static int mBsize = 1024;
+    private static final int MBSIZE = 1024;
 
 
     public static void creatDir(String path) {
@@ -363,7 +363,7 @@ public class FileUtil {
             for (File file : fileList) {
                 if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / mBsize / mBsize, cutFile.size(), cutFile.get(0).length() / mBsize / mBsize);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MBSIZE / MBSIZE, cutFile.size(), cutFile.get(0).length() / MBSIZE / MBSIZE);
                 }
             }
         }
@@ -407,7 +407,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * mBsize * mBsize);
+        return (long) (sizeMB * MBSIZE * MBSIZE);
     }
 
 
@@ -495,7 +495,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     logging.error(e.getMessage(), e);
                 }
-                byte[] buffer = new byte[mBsize];
+                byte[] buffer = new byte[MBSIZE];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {
