@@ -1,4 +1,4 @@
-package com.fiberhome.fp.createTable;
+package com.fiberhome.fp.createtable;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -408,33 +408,33 @@ public class Table {
 						String teString = entry1.getValue().replace("[", "").replace("]", "").replace(" ", "").trim();
 
 						String[] teString1 = teString.split(",");
-						int[] NoNum = new int[teString1.length];
-						for (int wwww = 0; wwww < NoNum.length; wwww++) {
-							NoNum[wwww] = Integer.parseInt(teString1[wwww]);
+						int[] noNum = new int[teString1.length];
+						for (int wwww = 0; wwww < noNum.length; wwww++) {
+							noNum[wwww] = Integer.parseInt(teString1[wwww]);
 						}
-						Arrays.sort(NoNum);
+						Arrays.sort(noNum);
 						int state = 0;
 						String result = "";
-						for (int i = 0; i < NoNum.length; i++) {
-							if (i == NoNum.length - 1)
+						for (int i = 0; i < noNum.length; i++) {
+							if (i == noNum.length - 1)
 								state = NUMBER_2;
 							if (state == 0) {
-								if (NoNum[i + 1] == NoNum[i] + 1) {
-									result += Integer.toString(NoNum[i]);
+								if (noNum[i + 1] == noNum[i] + 1) {
+									result += Integer.toString(noNum[i]);
 									result += "~";
 									state = 1;
 								} else {
-									result += Integer.toString(NoNum[i]);
+									result += Integer.toString(noNum[i]);
 									result += ",";
 								}
 							} else if (state == 1) {
-								if (NoNum[i + 1] != NoNum[i] + 1) {
-									result += Integer.toString(NoNum[i]);
+								if (noNum[i + 1] != noNum[i] + 1) {
+									result += Integer.toString(noNum[i]);
 									result += ",";
 									state = 0;
 								}
 							} else {
-								result += Integer.toString(NoNum[i]);
+								result += Integer.toString(noNum[i]);
 							}
 						}
 

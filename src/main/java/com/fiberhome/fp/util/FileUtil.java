@@ -22,7 +22,7 @@ public class FileUtil {
     private static String encodedType = "utf-8";
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
-    private static final int MBSIZE = 1024;
+    private static final int MB_SIZE = 1024;
 
 
     public static void creatDir(String path) {
@@ -140,7 +140,6 @@ public class FileUtil {
         File file = new File(filePath);
         Long fileLength = file.length();
         byte[] fileContext = new byte[fileLength.intValue()];
-        PrintWriter out = null;
         String oldDir = null;
         String oldBusiness = null;
         String oldRelief = null;
@@ -164,10 +163,10 @@ public class FileUtil {
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
         }
-
-
         //替换新配置
-        try (FileInputStream in = new FileInputStream(filePath);) {
+        try (FileInputStream in = new FileInputStream(filePath);
+             PrintWriter out = new PrintWriter(filePath);
+        ) {
             int count = 0;
             if ((count = in.read(fileContext)) > 0) {
                 // 避免出现中文乱码
@@ -175,22 +174,11 @@ public class FileUtil {
                 str = str.replace(oldDir, path);
                 str = str.replace(oldBusiness, business);
                 str = str.replace(oldRelief, relief);
-                out = new PrintWriter(filePath);
                 out.write(str);
             }
         } catch (IOException e) {
             logging.error(e.getMessage(), e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            } catch (Exception e) {
-                logging.error(e.getMessage(), e);
-            }
         }
-
     }
 
     public static List<File> cutFile(File orginalFile, String uuid) {
@@ -363,7 +351,7 @@ public class FileUtil {
             for (File file : fileList) {
                 if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
                     List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MBSIZE / MBSIZE, cutFile.size(), cutFile.get(0).length() / MBSIZE / MBSIZE);
+                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MB_SIZE / MB_SIZE, cutFile.size(), cutFile.get(0).length() / MB_SIZE / MB_SIZE);
                 }
             }
         }
@@ -407,7 +395,7 @@ public class FileUtil {
     }
 
     public static long getByteSize(int sizeMB) {
-        return (long) (sizeMB * MBSIZE * MBSIZE);
+        return (long) (sizeMB * MB_SIZE * MB_SIZE);
     }
 
 
@@ -495,7 +483,7 @@ public class FileUtil {
                 } catch (UnsupportedEncodingException e) {
                     logging.error(e.getMessage(), e);
                 }
-                byte[] buffer = new byte[MBSIZE];
+                byte[] buffer = new byte[MB_SIZE];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
                 try {

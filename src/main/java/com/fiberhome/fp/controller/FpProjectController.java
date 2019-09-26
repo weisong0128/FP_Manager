@@ -1,7 +1,7 @@
 package com.fiberhome.fp.controller;
 
-import com.fiberhome.fp.createTable.CheckExcel;
-import com.fiberhome.fp.createTable.Table;
+import com.fiberhome.fp.createtable.CheckExcel;
+import com.fiberhome.fp.createtable.Table;
 import com.fiberhome.fp.pojo.*;
 import com.fiberhome.fp.service.AllResultService;
 import com.fiberhome.fp.service.ErrorResultService;
@@ -11,7 +11,6 @@ import com.fiberhome.fp.util.*;
 import com.fiberhome.fp.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import jxl.read.biff.BiffException;
 import org.apache.commons.io.FileUtils;

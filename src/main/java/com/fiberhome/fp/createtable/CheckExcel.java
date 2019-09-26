@@ -1,4 +1,4 @@
-package com.fiberhome.fp.createTable;
+package com.fiberhome.fp.createtable;
 
 import com.fiberhome.fp.vo.CheckExcelModel;
 import jxl.Sheet;
