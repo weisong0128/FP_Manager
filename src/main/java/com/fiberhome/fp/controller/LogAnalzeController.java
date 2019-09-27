@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -237,9 +238,16 @@ public class LogAnalzeController {
                     logging.error("重新分析失败");
                 }
             } else {
+                logAnalyzeService.startAnalyse(pjName, pjLocation, uuid, Long.valueOf(createTime));
                 return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
             }
         }
         return Response.ok(uuid);
+    }
+
+    @GetMapping("/wordExport")
+    public void wordExport(String pjName, String pjLocation, String createTime, HttpServletResponse response) {
+        String fileName = logAnalyzeService.wordExport(pjName, pjLocation, createTime);
+        FileUtil.downloadFile(response, fileName, "path");
     }
 }

@@ -34,7 +34,7 @@ public class FpOperationTable {
     //日期格式化显示字段
     private String dateStr;
     //错误级别
-    private  String errLevel;
+    private String errLevel;
 
     //查询结束时间
     private String endTime;
@@ -47,7 +47,7 @@ public class FpOperationTable {
     private String logLeave;
 
     private List<String> logLeaveList;
-//查询关键字
+    //查询关键字
     private String keyWord;
     //排序值
     private String sort;
@@ -100,7 +100,7 @@ public class FpOperationTable {
 
     public void setDate(int date) {
         this.date = date;
-        this.dateStr = TimeUtil.long2String(date,"yyyy-MM-dd HH:mm:ss");
+        this.dateStr = TimeUtil.long2String(date, "yyyy-MM-dd HH:mm:ss");
     }
 
     public String getErrcode() {
@@ -117,6 +117,19 @@ public class FpOperationTable {
 
     public void setErrInfo(String errInfo) {
         this.errInfo = errInfo;
+        this.errLevel = errInfo.substring(errInfo.indexOf("[") + 1, errInfo.indexOf("-") + 1);
+        if ("CRIT-".equals(errLevel)) {
+            errLevel = "重度";
+        }
+        if ("ERRO-".equals(errLevel)) {
+            errLevel = "中度";
+        }
+        if ("WARN-".equals(errLevel)) {
+            errLevel = "轻度";
+        }
+        if ("INFO-".equals(errLevel)) {
+            errLevel = " 环境状态";
+        }
     }
 
     public String getPjName() {

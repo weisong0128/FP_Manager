@@ -382,6 +382,25 @@ public class FileUtil {
         }
     }
 
+    public static void getSizeLLesser(File rootFile, List<File> fileList) {
+       // AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
+      //  long size = analyseProcess.getCutfilesize();
+       // size += FileUtil.getByteSize(1);
+        if (rootFile.exists() && rootFile.isDirectory()) {
+            File[] files = rootFile.listFiles();
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getSizeLLesser(file, fileList);
+                } else {
+                    if (file.getName().contains("cl.log")) {
+                        fileList.add(file);
+                    }
+                }
+            }
+        }
+    }
+
+
 
     public static void deleteRootPathDir(File rootFile, String rex) {
         File[] files = rootFile.listFiles();

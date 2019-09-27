@@ -1,11 +1,16 @@
 package com.fiberhome.fp.dao.impl;
 
 import com.fiberhome.fp.dao.LogAnalzeDao;
+import com.fiberhome.fp.pojo.AllResult;
 import com.fiberhome.fp.pojo.ErrorResult;
+import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
+import com.fiberhome.fp.vo.ErrorSqlCount;
+import com.fiberhome.fp.vo.SqlCount;
+import com.fiberhome.fp.vo.TagProporation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,6 +147,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         return logAnalze;
     }
+
 
     /**
      *
@@ -377,4 +383,71 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         countSql.append(" )");
 
     }
+
+    @Override
+    public List<ErrorResult> wordExportErrorResult(String pjName, String pjLocation, String createTime) {
+        String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
+        String sql = "select count(*) as count,tag,alter_tag from err_result " +
+                "where partition like " + partition + " and pjname =:pjName and pjlocation = :pjLocation and capture_time = :captureTime " +
+                " group by tag,alter_tag";
+        Map paramMap = new HashMap();
+        // paramMap.put("partition", partition);
+        paramMap.put("pjName", pjName);
+        paramMap.put("pjLocation", pjLocation);
+        paramMap.put("captureTime", createTime);
+        List<ErrorResult> query = namedParameterJdbcTemplate.query(sql, paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
+        for (ErrorResult errorResult : query) {
+            String newSql = "select sql_result from err_result where partition like '" + partition + "' and pjname= '" + pjName + "' and pjlocation = '" + pjLocation + "' and capture_time = " + createTime + " " +
+                    "and tag = '" + errorResult.getTag() + "' limit 1";
+            String s = namedParameterJdbcTemplate.queryForObject(newSql, new HashMap<>(), String.class);
+            errorResult.setSqlResult(s);
+        }
+        return query;
+    }
+
+
+    public List<FpOperationTable> wordExportFpOperationTable(String pjName, String pjLocation, String createTime) {
+        String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
+        String sql = "select min(date) as date,count(*) as count ,errcode,errinfo from fp_operation_table where partition like '" + partition + "' " +
+                "and pjname='" + pjName + "' and pjlocation='" + pjLocation + "' and capture_time = '" + createTime + "' group by errcode,errinfo;";
+       /* Map paramMap = new HashMap();
+        // paramMap.put("partition", partition);
+        paramMap.put("pjName", pjName);
+        paramMap.put("pjLocation", pjLocation);
+        paramMap.put("captureTime", createTime);*/
+        List<FpOperationTable> query = namedParameterJdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<>(FpOperationTable.class));
+        return query;
+    }
+
+    public AllResult getProportion(String pjName, String pjLocation, String createTime) {
+        String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
+        AllResult allResult = new AllResult();
+        Map<String, Object> param = new HashMap();
+        StringBuilder qualifiedSql = new StringBuilder();
+        qualifiedSql.append(" select count(*) as count from all_result where partition like " + partition);
+        qualifiedSql.append(" and pjname =:pjName and pjlocation = :pjLocation and capture_time = :captureTime ");
+        StringBuilder unqualifiedSql = new StringBuilder();
+        unqualifiedSql.append(" select count(*) as count from err_result where partition  like  " + partition);
+        unqualifiedSql.append(" and pjname =:pjName and pjlocation = :pjLocation and capture_time = :captureTime ");
+        param.put("pjName", pjName);
+        param.put("pjLocation", pjLocation);
+        param.put("captureTime", createTime);
+
+        List<AllResult> qualifiedCountList = namedParameterJdbcTemplate.query(qualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
+        int qualifiedSqlCount = 0;
+        if (qualifiedCountList != null && qualifiedCountList.size() > 0) {
+            qualifiedSqlCount = qualifiedCountList.get(0).getCount();
+        }
+        List<AllResult> unqualifiedCountList = namedParameterJdbcTemplate.query(unqualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
+        int unqualifiedSqlCount = 0;
+        if (unqualifiedCountList != null && unqualifiedCountList.size() > 0) {
+            unqualifiedSqlCount = unqualifiedCountList.get(0).getCount();
+        }
+        allResult.setQualifiedSql(qualifiedSqlCount);
+        allResult.setUnqualifiedSql(unqualifiedSqlCount);
+        return allResult;
+
+    }
+
+
 }

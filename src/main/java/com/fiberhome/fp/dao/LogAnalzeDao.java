@@ -1,5 +1,6 @@
 package com.fiberhome.fp.dao;
 
+import com.fiberhome.fp.pojo.AllResult;
 import com.fiberhome.fp.pojo.ErrorResult;
 import com.fiberhome.fp.pojo.FpOperationTable;
 import com.fiberhome.fp.pojo.LogAnalze;
@@ -14,6 +15,7 @@ import java.util.Map;
 public interface LogAnalzeDao {
     /**
      * 创建日志
+     *
      * @param logAnalze
      * @return
      */
@@ -38,11 +40,16 @@ public interface LogAnalzeDao {
 
     LogAnalze findOneLogAnalyse(String uuid);
 
+    List<ErrorResult> wordExportErrorResult(String pjName, String pjLocation, String createTime);
+
+    List<FpOperationTable> wordExportFpOperationTable(String pjName, String pjLocation, String createTime);
+
     public List<LogAnalze> findLogAnalyseList(LogAnalze param, Page page);
 
     List<ErrorResult> listErrResult(Page page, ErrorResult errorResult);
 
 
-
     public int updateLogAnalze(LogAnalze logAnalze);
+
+    public AllResult getProportion(String pjName, String pjLocation, String createTime);
 }

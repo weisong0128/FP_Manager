@@ -26,4 +26,6 @@ public interface LogAnalyzeService {
 
     public LogAnalze findOneLogAnalyse(String uuid);
 
+    public String wordExport(String pjName, String pjLocation, String createTime);
+
 }

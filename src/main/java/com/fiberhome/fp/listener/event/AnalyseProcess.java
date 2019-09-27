@@ -59,6 +59,9 @@ public class AnalyseProcess implements Serializable {
     public static void init(String uuid, List<File> fileList, String projectName, String projectLocation, Long createTime, String rootPath) {
         ConcurrentHashMap<String, FileStatus> statusHashMap = new ConcurrentHashMap<>();
         ConcurrentHashMap<String, FileStatus> statusHashMap2 = new ConcurrentHashMap<>();
+        if (!map.containsKey(uuid)) {
+            map.put(uuid, new AnalyseProcess());
+        }
         AnalyseProcess analyseProcess = map.get(uuid);
         for (File file : fileList) {
             FileStatus fileStatus = new FileStatus();
@@ -147,7 +150,8 @@ public class AnalyseProcess implements Serializable {
         this.showCount = showCount;
         this.process = ((successCount + this.showCount) * HARFFINISHNUM) / count;
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
-        if (this.showCount == count) {
+        // if (this.showCount == count) {
+        if (this.showCount > 0) {
             setShow(true);
             logging.info("分析任务完成HARFFINISHNUM% ,项目名{},项目地市{} , 是否可看{} ", projectName, projectLocation, isShow);
         }

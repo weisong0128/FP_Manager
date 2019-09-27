@@ -5,9 +5,7 @@ import com.fiberhome.fp.dao.FpProjectDao;
 import com.fiberhome.fp.dao.LogAnalzeDao;
 import com.fiberhome.fp.listener.event.AnalyseProcess;
 import com.fiberhome.fp.listener.event.FileStatus;
-import com.fiberhome.fp.pojo.ErrorResult;
-import com.fiberhome.fp.pojo.FpProject;
-import com.fiberhome.fp.pojo.LogAnalze;
+import com.fiberhome.fp.pojo.*;
 import com.fiberhome.fp.service.FpProjectService;
 import com.fiberhome.fp.service.LogAnalyzeService;
 import com.fiberhome.fp.util.*;
@@ -20,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Service
@@ -38,8 +33,10 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Autowired
     private FpProjectService fpProjectService;
-
+    @Autowired
+    private AllResultServiceImpl allResultService;
     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    private Executor pool2 = Executors.newFixedThreadPool(1);
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -59,6 +56,11 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     int cutfilesize;
     @Value("${cut.file.max.count}")
     int cutFileMaxCount;
+    @Value("${template.file.dir}")
+    String outFilePath;
+
+    @Value("${template.file.name}")
+    String templateName;
 
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
@@ -124,7 +126,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             Long createTime = analyseProcess.getCreateTime();
             String projectName = analyseProcess.getProjectName();
             String projectLocation = analyseProcess.getProjectLocation();
-            pool.execute(() -> {
+            pool2.execute(() -> {
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
                 //调用脚本方法
@@ -183,7 +185,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
                                     logging.info("修改地市成功，并删除修改文件");
                                     break;
                                 }
-                            } catch (IOException| InterruptedException e) {
+                            } catch (IOException | InterruptedException e) {
                                 logging.error(String.format("修改地市%s失败", fileName), e);
                                 logging.error(e.getMessage(), e);
                             }
@@ -213,7 +215,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         });
     }
 
-    public void sleep(int time) {
+    private void sleep(int time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
@@ -281,6 +283,48 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     public LogAnalze findOneLogAnalyse(String uuid) {
         return logAnalzeDao.findOneLogAnalyse(uuid);
+    }
+
+    @Override
+    public String wordExport(String pjName, String pjLocation, String createTime) {
+        HashMap<String, Object> templateMap = new HashMap<>();
+        templateMap.put("projectName", pjName);
+        templateMap.put("projectLocation", pjLocation);
+        //不合格sql占比
+        AllResult proportionDate = logAnalzeDao.getProportion(pjName, pjLocation, createTime);
+        int unqualifiedSql = proportionDate.getUnqualifiedSql();
+        int qualifiedSql = proportionDate.getQualifiedSql();
+        templateMap.put("errorResultPercent", unqualifiedSql * 100 / (qualifiedSql));
+        //查询	不合格SQL 统计信息
+        List<ErrorResult> errorResultList = logAnalzeDao.wordExportErrorResult(pjName, pjLocation, createTime);
+        ArrayList<Map<String, String>> errResultList = new ArrayList<>();
+        for (ErrorResult errorResult : errorResultList) {
+            HashMap<String, String> inMap = new HashMap<>();
+            inMap.put("tag", errorResult.getTag());
+            inMap.put("alterTag", errorResult.getAlterTag());
+            inMap.put("count", errorResult.getCount() + "");
+            inMap.put("exam", errorResult.getSqlResult());
+            errResultList.add(inMap);
+        }
+        templateMap.put("errResults", errResultList);
+        //查询	数据库报错信息 统计信息
+        List<FpOperationTable> fpOperationTableList = logAnalzeDao.wordExportFpOperationTable(pjName, pjLocation, createTime);
+        ArrayList<Map<String, String>> operationList = new ArrayList<>();
+        for (FpOperationTable fpOperationTable : fpOperationTableList) {
+            HashMap<String, String> inMap = new HashMap<>();
+            inMap.put("dateStr", fpOperationTable.getDateStr());
+            inMap.put("errLevel", fpOperationTable.getErrLevel());
+            inMap.put("count", fpOperationTable.getCount() + "");
+            inMap.put("errInfo", fpOperationTable.getErrInfo());
+            operationList.add(inMap);
+        }
+        templateMap.put("operations", operationList);
+        templateMap.put("advice", "测试");
+
+        String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";
+        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName);
+        //FileUtil.deleteFile(outFilePath,outFileName);
+        return outFileName;
     }
 
 

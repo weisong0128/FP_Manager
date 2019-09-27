@@ -1,6 +1,5 @@
 package com.fiberhome.fp.util;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -19,19 +18,19 @@ import java.util.Objects;
  */
 public class ExcelUtil {
 
-    private  static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
 
     /* 给excel指定位置写入值
      * @param path       写入文件在路径
      * @param coordinate 写入内容的位置（例如:B4）
      * @param value      写的值
      */
-    public static void writeSpecifiedCell(String path,int sheetNum, String coordinate, String value) {
+    public static void writeSpecifiedCell(String path, int sheetNum, String coordinate, String value) {
         //根据路径获取文件
         File file = new File(path);
         //定义输入流对象
         FileInputStream excelFileInputStream;
-        Workbook workbook=null;
+        Workbook workbook = null;
         try {
             excelFileInputStream = new FileInputStream(file);
             // 拿到文件转化为JavaPoi可操纵类型
@@ -55,20 +54,14 @@ public class ExcelUtil {
             excelFileOutPutStream.close();
             //System.out.println("指定单元格设置数据写入完成");
             logger.info("指定单元格设置数据写入完成");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (EncryptedDocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidFormatException e) {
-            e.printStackTrace();
-        }finally {
-            if (workbook!=null){
+        } catch (EncryptedDocumentException | IOException | InvalidFormatException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            if (workbook != null) {
                 try {
                     workbook.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -78,12 +71,12 @@ public class ExcelUtil {
      * @param path       写入文件在路径
      * @param value      写的值
      */
-    public static void writeSpecifiedCell(String fieldFile,int sheetNum, int rowNum ,int colNum, String value) {
+    public static void writeSpecifiedCell(String fieldFile, int sheetNum, int rowNum, int colNum, String value) {
         //根据路径获取文件
         File file = new File(fieldFile);
         //定义输入流对象
         FileInputStream excelFileInputStream;
-        Workbook workbook =null;
+        Workbook workbook = null;
         try {
             excelFileInputStream = new FileInputStream(file);
             // 拿到文件转化为JavaPoi可操纵类型
@@ -92,10 +85,10 @@ public class ExcelUtil {
             ////获取excel表格
             Sheet sheet = workbook.getSheetAt(sheetNum);
             //获取单元格的row和cell
-            CellAddress address = new CellAddress(rowNum,colNum);
+            CellAddress address = new CellAddress(rowNum, colNum);
             // 获取行
             Row row = sheet.getRow(address.getRow());
-            if (row == null){
+            if (row == null) {
                 row = sheet.createRow(address.getRow());
             }
             // 获取列
@@ -111,20 +104,14 @@ public class ExcelUtil {
             excelFileOutPutStream.close();
             //System.out.println("指定单元格设置数据写入完成");
             logger.info("指定单元格设置数据写入完成");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (EncryptedDocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InvalidFormatException e) {
-            e.printStackTrace();
-        }finally {
-            if (workbook!=null){
+        } catch (EncryptedDocumentException | IOException | InvalidFormatException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            if (workbook != null) {
                 try {
                     workbook.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -132,35 +119,37 @@ public class ExcelUtil {
 
     /**
      * 判断是不是excel文件
+     *
      * @param inputStream
      * @return
      */
-    public static boolean isExcel(InputStream inputStream){
+    public static boolean isExcel(InputStream inputStream) {
         try {
             FileMagic fileMagic = FileMagic.valueOf(FileMagic.prepareToCheckMagic(inputStream));
-            if (Objects.equals(fileMagic,FileMagic.OLE2)){
+            if (Objects.equals(fileMagic, FileMagic.OLE2)) {
                 return true;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         return false;
     }
 
 
-
     /**
      * 导出Excel
+     *
      * @param sheetName sheet名称
-     * @param title 标题
-     * @param values 内容
-     * @param wb HSSFWorkbook对象
+     * @param title     标题
+     * @param values    内容
+     * @param wb        HSSFWorkbook对象
      * @return
      */
-    public static HSSFWorkbook getHSSFWorkbook(String sheetName,String []title,String [][]values, HSSFWorkbook wb){
+    public static HSSFWorkbook getHSSFWorkbook(String sheetName, String[] title, String[][] values, HSSFWorkbook wb) {
 
         // 第一步，创建一个HSSFWorkbook，对应一个Excel文件
-        if(wb == null){
+        if (wb == null) {
             wb = new HSSFWorkbook();
         }
 
@@ -178,16 +167,16 @@ public class ExcelUtil {
         HSSFCell cell = null;
 
         //创建标题
-        for(int i=0;i<title.length;i++){
+        for (int i = 0; i < title.length; i++) {
             cell = row.createCell(i);
             cell.setCellValue(title[i]);
             cell.setCellStyle(style);
         }
 
         //创建内容
-        for(int i=0;i<values.length;i++){
+        for (int i = 0; i < values.length; i++) {
             row = sheet.createRow(i + 1);
-            for(int j=0;j<values[i].length;j++){
+            for (int j = 0; j < values[i].length; j++) {
                 //将内容按顺序赋给对应的列对象
                 row.createCell(j).setCellValue(values[i][j]);
             }

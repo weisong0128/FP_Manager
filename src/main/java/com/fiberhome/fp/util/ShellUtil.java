@@ -93,6 +93,20 @@ public class ShellUtil {
         return success == 0 ? true : false;
     }
 
+    private void judjeNum(String line,FileStatus fileStatus,AnalyseProcess analyseProcess,String filePath) {
+        Integer progress = Integer.valueOf(line.substring(line.lastIndexOf(' ') + 1));
+        if (progress == SETPROCESS_10) {
+            fileStatus.setProcess(SETPROCESS_10);
+            fileStatus.setSuccess(true);
+            analyseProcess.getUnSuccessFileMap().remove(filePath);
+        } else if (progress == SETPROCESS_5) {
+            fileStatus.setProcess(SETPROCESS_5);
+            fileStatus.setShow(true);
+        } else {
+            fileStatus.setProcess(progress);
+        }
+    }
+
 
     /**
      * 根据执行结果判断执行成功还是失败
