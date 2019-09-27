@@ -148,7 +148,7 @@ public class AnalyseProcess implements Serializable {
 
     public void setShowCount(int showCount) {
         this.showCount = showCount;
-        this.process = ((successCount + this.showCount) * HARFFINISHNUM) / count;
+        setProcess(((successCount + this.showCount) * HARFFINISHNUM) / count);
         logging.info("项目名{},项目地市{} , 分析百分比{},是否成功{},是否可看{} ", projectName, projectLocation, process, isFinish, isShow);
         // if (this.showCount == count) {
         if (this.showCount > 0) {
