@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/log/")
@@ -258,5 +259,48 @@ public class LogAnalzeController {
         String fileName = logAnalyzeService.wordExport(pjName, pjLocation, createTime + "");
         FileUtil.downloadFile(response, fileName, outFilePath);
 
+    }
+
+    @PostMapping("/batchWordExport")
+    public void batchWordExport(@RequestBody String uuids, HttpServletResponse response) {
+        ZipOutputStream zos = null;
+        uuids = uuids.replace("\"", "");
+        String[] split = uuids.split(",");
+        if (split.length != 1) {
+            List<String> uuisList = Arrays.asList(split);
+            List<LogAnalze> logAnalyseListByUuids = logAnalyzeService.findLogAnalyseListByUuids(uuisList);
+            StringBuilder zipName = new StringBuilder();
+            for (int i = 0; i < logAnalyseListByUuids.size(); i++) {
+                String pjLocation = logAnalyseListByUuids.get(i).getAddress();
+                zipName.append(i != logAnalyseListByUuids.size() - 1 ? pjLocation + "_" : pjLocation);
+            }
+            ArrayList<String> filesPaths = new ArrayList<>();
+            for (LogAnalze logAnalze : logAnalyseListByUuids) {
+                String pjName = logAnalze.getProjectName();
+                String pjLocation = logAnalze.getAddress();
+                Long createTime = logAnalze.getCreateTime();
+                String fileName = logAnalyzeService.wordExport(pjName, pjLocation, createTime + "");
+                filesPaths.add(outFilePath + File.separator + fileName);
+            }
+            String zipFileName = zipName.toString() + ".zip";
+            String zipFilePath = outFilePath + File.separator + zipFileName;
+            try {
+                File zip = new File(zipFilePath);
+                if (!zip.exists()) {
+                    zip.createNewFile();
+                }
+                zos = new ZipOutputStream(new FileOutputStream(zip));
+                //创建zip文件输出流
+                FileUtil.zipFile(outFilePath, zipFileName, zipFilePath, filesPaths, zos);
+            } catch (Exception e) {
+                logging.error(e.getMessage(), e);
+            } finally {
+                FileUtil.closeStream(zos);
+            }
+            FileUtil.downloadFile(response, zipFileName, outFilePath);
+            // FileUtil.deleteFile(outFilePath, zipFileName);
+        } else {
+            wordExport(split[0], response);
+        }
     }
 }

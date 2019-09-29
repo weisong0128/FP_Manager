@@ -39,6 +39,7 @@ public class WordUtil {
         operationList.add(map2);
         map.put("errResults", errResultList);
         map.put("operations", operationList);
+        map.put("advice", "ceshi");
         wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml");
     }
 
@@ -64,7 +65,7 @@ public class WordUtil {
             String templatePath = WordUtil.class.getClassLoader().getResource("").getPath();
             FileTemplateLoader fileTemplateLoader = new FileTemplateLoader(new File(templatePath));
             configuration.setTemplateLoader(fileTemplateLoader);
-            String path = "/template" + File.separator + templateName;
+            String path = File.separator + "template" + File.separator + templateName;
             //获取模板
             Template template = configuration.getTemplate(path, encodedType);
             //检查文件夹

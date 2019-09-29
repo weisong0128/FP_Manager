@@ -411,7 +411,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         return query;
     }
 
-
+    @Override
     public List<FpOperationTable> wordExportFpOperationTable(String pjName, String pjLocation, String createTime) {
         String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
         String sql = "select min(date) as date,count(*) as count ,errcode,errinfo from fp_operation_table where partition like '" + partition + "' " +
@@ -422,7 +422,15 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     }
 
     public AllResult getProportion(String pjName, String pjLocation, String createTime) {
-        String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
+        String partition = null;
+        try {
+            partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
+        } catch (NumberFormatException e) {
+            logging.error("时间戳转换错误: "+createTime);
+            logging.error(e.getMessage(), e);
+            e.printStackTrace();
+            throw new NumberFormatException();
+        }
         AllResult allResult = new AllResult();
         Map<String, Object> param = new HashMap();
         StringBuilder qualifiedSql = new StringBuilder();

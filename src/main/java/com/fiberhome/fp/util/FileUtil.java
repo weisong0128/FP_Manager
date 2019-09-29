@@ -10,6 +10,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author fengxiaochun
@@ -310,6 +312,7 @@ public class FileUtil {
             } else if (stream instanceof OutputStream) {
                 OutputStream os = (OutputStream) stream;
                 try {
+                    os.flush();
                     os.close();
                 } catch (IOException e) {
                     logging.error(e.getMessage(), e);
@@ -318,6 +321,7 @@ public class FileUtil {
             } else if (stream instanceof Writer) {
                 Writer writer = (Writer) stream;
                 try {
+                    writer.flush();
                     writer.close();
                 } catch (IOException e) {
                     logging.error(e.getMessage(), e);
@@ -383,9 +387,9 @@ public class FileUtil {
     }
 
     public static void getSizeLLesser(File rootFile, List<File> fileList) {
-       // AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
-      //  long size = analyseProcess.getCutfilesize();
-       // size += FileUtil.getByteSize(1);
+        // AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
+        //  long size = analyseProcess.getCutfilesize();
+        // size += FileUtil.getByteSize(1);
         if (rootFile.exists() && rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
             for (File file : files) {
@@ -399,7 +403,6 @@ public class FileUtil {
             }
         }
     }
-
 
 
     public static void deleteRootPathDir(File rootFile, String rex) {
@@ -535,5 +538,48 @@ public class FileUtil {
                 }
             }
         }
+    }
+
+    /**
+     * @description:文件压缩
+     * @Param:[zipBasePath, zipName, zipFilePath, filesPath]
+     * @Return:java.lang.String
+     * @Auth:User on 2019/9/29 17:40
+     */
+    public static String zipFile(String zipBasePath, String zipName, String zipFilePath, List<String> filesPaths, ZipOutputStream zos) throws Exception {
+        BufferedInputStream bis = null;
+        for (String filesPath : filesPaths) {
+            File inputFile = new File(filesPath);
+            if (inputFile.exists()) {
+                if (inputFile.isFile()) {
+                    try {
+                         bis = new BufferedInputStream(new FileInputStream(inputFile));
+                        //将文件写入zip内，
+                        zos.putNextEntry(new ZipEntry(inputFile.getName()));
+                        int size = 0;
+                        byte[] buffer = new byte[1024];
+                        while ((size = bis.read(buffer)) > 0) {
+                            zos.write(buffer, 0, size);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        FileUtil.closeStream(bis);
+                    }
+                } else {
+                    try {
+                        File[] files = inputFile.listFiles();
+                        ArrayList<String> filePathsTem = new ArrayList<>();
+                        for (File fileTem : files) {
+                            filePathsTem.add(fileTem.toString());
+                        }
+                        return zipFile(zipBasePath, zipName, zipFilePath, filePathsTem, zos);
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
