@@ -148,6 +148,24 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         return logAnalze;
     }
 
+    /**
+     * @description:根据uuid列表返回list
+     * @Param:[uuids]
+     * @Return:java.util.List<com.fiberhome.fp.pojo.LogAnalze>
+     * @Auth:User on 2019/9/29 9:12
+     */
+    public List<LogAnalze> findLogAnalyseListByUuids(List<String> uuids) {
+
+        StringBuilder sql = new StringBuilder("SELECT " + LogAnalze.getAllColumn() + "from fp_log_analyze where 1 = ?");
+        ArrayList<Object> list = new ArrayList<>();
+        list.add("1");
+        if (uuids != null) {
+            getInSqlTemplate(sql, list, uuids, "uuid");
+        }
+        List<LogAnalze> query = mysqlJdbcTemplate.query(sql.toString(), list.toArray(), new BeanPropertyRowMapper<>(LogAnalze.class));
+        return query;
+    }
+
 
     /**
      *
@@ -173,29 +191,11 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         List<String> projectNameList = param.getProjectNameList();
         if (projectNameList != null && !projectNameList.isEmpty()) {
-            sql.append("and project_name in ( ");
-            for (int i = 0; i < projectNameList.size(); i++) {
-                if (i == projectNameList.size() - 1) {
-                    sql.append(" ? ");
-                } else {
-                    sql.append(" ? ,");
-                }
-                list.add(projectNameList.get(i));
-            }
-            sql.append(" ) ");
+            getInSqlTemplate(sql, list, projectNameList, "project_name");
         }
         List<String> addressList = param.getAddressList();
         if (addressList != null && !addressList.isEmpty()) {
-            sql.append("and address in ( ");
-            for (int i = 0; i < addressList.size(); i++) {
-                if (i == addressList.size() - 1) {
-                    sql.append(" ? ");
-                } else {
-                    sql.append(" ? ,");
-                }
-                list.add(addressList.get(i));
-            }
-            sql.append(" ) ");
+            getInSqlTemplate(sql, list, addressList, "address");
         }
         if (param.getStarTime() != null && !param.getStarTime().equalsIgnoreCase("")) {
             sql.append("and create_time > ? ");
@@ -242,10 +242,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         //是否去重
-        boolean isDistinct = false;
-        if (errorResult.getIsDistinct() != null && (errorResult.getIsDistinct() + "").equals("1")) {
-            isDistinct = true;
-        }
+        boolean isDistinct = errorResult.getIsDistinct();
         String date = isDistinct ? "max(date) as date" : " date ";
         sql.append(" select  " + date + ",tag,alter_tag,sql_result,pjname,pjlocation from err_result  WHERE   syskv='nothing:1' ");
         countSql.append("select  count(*) as count  from err_result  WHERE   syskv='nothing:1' ");
@@ -382,6 +379,16 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         sql.append(" )");
         countSql.append(" )");
 
+    }
+
+
+    public void getInSqlTemplate(StringBuilder sql, List list, List paramList, String colums) {
+        sql.append("and " + colums + " in ( ");
+        for (int i = 0; i < paramList.size(); i++) {
+            sql.append(i == paramList.size() - 1 ? " ? " : " ? ,");
+            list.add(paramList.get(i));
+        }
+        sql.append(" ) ");
     }
 
     @Override

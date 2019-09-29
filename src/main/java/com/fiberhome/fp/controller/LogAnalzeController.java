@@ -31,6 +31,9 @@ public class LogAnalzeController {
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
+
+    @Value("${template.file.dir}")
+    String outFilePath;
     @Autowired
     private LogAnalyzeService logAnalyzeService;
 
@@ -238,16 +241,22 @@ public class LogAnalzeController {
                     logging.error("重新分析失败");
                 }
             } else {
+                logging.info("序列化文件不存在");
                 logAnalyzeService.startAnalyse(pjName, pjLocation, uuid, Long.valueOf(createTime));
-                return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
+                // return Response.error("序列化文件不存在,无法重新分析.请重新上传日志文件");
             }
         }
         return Response.ok(uuid);
     }
 
     @GetMapping("/wordExport")
-    public void wordExport(String pjName, String pjLocation, String createTime, HttpServletResponse response) {
-        String fileName = logAnalyzeService.wordExport(pjName, pjLocation, createTime);
-        FileUtil.downloadFile(response, fileName, "path");
+    public void wordExport(String uuid, HttpServletResponse response) {
+        LogAnalze logAnalze = logAnalyzeService.findOneLogAnalyse(uuid);
+        String pjName = logAnalze.getProjectName();
+        String pjLocation = logAnalze.getAddress();
+        Long createTime = logAnalze.getCreateTime();
+        String fileName = logAnalyzeService.wordExport(pjName, pjLocation, createTime + "");
+        FileUtil.downloadFile(response, fileName, outFilePath);
+
     }
 }

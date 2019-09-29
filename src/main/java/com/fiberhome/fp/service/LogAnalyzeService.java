@@ -28,4 +28,5 @@ public interface LogAnalyzeService {
 
     public String wordExport(String pjName, String pjLocation, String createTime);
 
+    public List<LogAnalze> findLogAnalyseListByUuids(List<String> uuids);
 }

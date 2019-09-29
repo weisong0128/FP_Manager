@@ -64,7 +64,7 @@ public class WebLogAspect {
     @AfterReturning(returning = "response", pointcut = "getLog()")
     public void doAfterReturning(JoinPoint joinPoint) throws IOException {
         String name = joinPoint.getSignature().toString();
-        logger.info("Response" + name);
+        logger.debug("Response" + name);
     }
 
     @Before("Postlog()")
@@ -92,6 +92,6 @@ public class WebLogAspect {
     @AfterReturning(returning = "response", pointcut = "Postlog()")
     public void doAfterReturningPostlog(JoinPoint joinPoint) throws IOException {
         String name = joinPoint.getSignature().toString();
-        logger.info(name);
+        logger.debug(name);
     }
 }

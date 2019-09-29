@@ -52,4 +52,7 @@ public interface LogAnalzeDao {
     public int updateLogAnalze(LogAnalze logAnalze);
 
     public AllResult getProportion(String pjName, String pjLocation, String createTime);
+
+    //根据uuid列表 返回list
+    public List<LogAnalze> findLogAnalyseListByUuids(List<String> uuids);
 }

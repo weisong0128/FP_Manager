@@ -70,7 +70,7 @@ public class ErrorResult {
     //关键字查询
     private String keyWord;
     //是否去重查询  0 不去重  1 去重
-    private Integer isDistinct;
+    private boolean isDistinct;
 
     private  String errorSqlType;
 
@@ -155,11 +155,11 @@ public class ErrorResult {
         return tagList;
     }
 
-    public Integer getIsDistinct() {
+    public boolean getIsDistinct() {
         return isDistinct;
     }
 
-    public void setIsDistinct(Integer isDistinct) {
+    public void setIsDistinct(boolean isDistinct) {
         this.isDistinct = isDistinct;
     }
 

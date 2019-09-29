@@ -1105,15 +1105,15 @@
                     <w:tblLook w:val="04A0"/>
                 </w:tblPr>
                 <w:tblGrid>
-                    <w:gridCol w:w="1929"/>
-                    <w:gridCol w:w="2409"/>
-                    <w:gridCol w:w="2191"/>
-                    <w:gridCol w:w="2179"/>
+                    <w:gridCol w:w="2290"/>
+                    <w:gridCol w:w="2406"/>
+                    <w:gridCol w:w="2162"/>
+                    <w:gridCol w:w="2278"/>
                 </w:tblGrid>
                 <w:tr wsp:rsidR="005324FE" wsp:rsidRPr="00035587" wsp:rsidTr="0065102F">
                     <w:tc>
                         <w:tcPr>
-                            <w:tcW w:w="1929" w:type="dxa"/>
+                            <w:tcW w:w="2290" w:type="dxa"/>
                             <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                         </w:tcPr>
                         <w:p wsp:rsidR="005324FE" wsp:rsidRPr="005324FE" wsp:rsidRDefault="005324FE"
@@ -1135,7 +1135,7 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>不合格</w:t>
+                                <w:t>开始</w:t>
                             </w:r>
                             <w:r wsp:rsidRPr="005324FE">
                                 <w:rPr>
@@ -1144,13 +1144,13 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>原因</w:t>
+                                <w:t>报错时间</w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
                     <w:tc>
                         <w:tcPr>
-                            <w:tcW w:w="2409" w:type="dxa"/>
+                            <w:tcW w:w="1179" w:type="dxa"/>
                             <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                         </w:tcPr>
                         <w:p wsp:rsidR="005324FE" wsp:rsidRPr="005324FE" wsp:rsidRDefault="005324FE"
@@ -1172,13 +1172,13 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>更正建议</w:t>
+                                <w:t>错误级别</w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
                     <w:tc>
                         <w:tcPr>
-                            <w:tcW w:w="2191" w:type="dxa"/>
+                            <w:tcW w:w="1181" w:type="dxa"/>
                             <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                         </w:tcPr>
                         <w:p wsp:rsidR="005324FE" wsp:rsidRPr="005324FE" wsp:rsidRDefault="005324FE"
@@ -1206,7 +1206,7 @@
                     </w:tc>
                     <w:tc>
                         <w:tcPr>
-                            <w:tcW w:w="1693" w:type="dxa"/>
+                            <w:tcW w:w="3572" w:type="dxa"/>
                             <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                         </w:tcPr>
                         <w:p wsp:rsidR="005324FE" wsp:rsidRPr="005324FE" wsp:rsidRDefault="005324FE"
@@ -1223,30 +1223,21 @@
                             <w:r wsp:rsidRPr="005324FE">
                                 <w:rPr>
                                     <w:rFonts w:hint="fareast"/>
-                                    <w:b w:val="off"/>
-                                    <w:sz w:val="21"/>
-                                    <w:sz-cs w:val="21"/>
-                                </w:rPr>
-                                <w:t>SQL</w:t>
-                            </w:r>
-                            <w:r wsp:rsidRPr="005324FE">
-                                <w:rPr>
                                     <wx:font wx:val="宋体"/>
                                     <w:b w:val="off"/>
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>样例</w:t>
+                                <w:t>报错详情</w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
                 </w:tr>
                 <#list operations as operationList>
-
                     <w:tr wsp:rsidR="0065102F" wsp:rsidRPr="00035587" wsp:rsidTr="0065102F">
                         <w:tc>
                             <w:tcPr>
-                                <w:tcW w:w="1929" w:type="dxa"/>
+                                <w:tcW w:w="2290" w:type="dxa"/>
                                 <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                             </w:tcPr>
                             <w:p wsp:rsidR="0065102F" wsp:rsidRPr="005324FE" wsp:rsidRDefault="0065102F"
@@ -1262,6 +1253,7 @@
                                 </w:pPr>
                                 <w:r>
                                     <w:rPr>
+                                        <w:rFonts w:hint="fareast"/>
                                         <w:b w:val="off"/>
                                         <w:sz w:val="21"/>
                                         <w:sz-cs w:val="21"/>
@@ -1272,7 +1264,7 @@
                         </w:tc>
                         <w:tc>
                             <w:tcPr>
-                                <w:tcW w:w="2409" w:type="dxa"/>
+                                <w:tcW w:w="1179" w:type="dxa"/>
                                 <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                             </w:tcPr>
                             <w:p wsp:rsidR="0065102F" wsp:rsidRPr="005324FE" wsp:rsidRDefault="0065102F"
@@ -1299,7 +1291,7 @@
                         </w:tc>
                         <w:tc>
                             <w:tcPr>
-                                <w:tcW w:w="2191" w:type="dxa"/>
+                                <w:tcW w:w="1181" w:type="dxa"/>
                                 <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                             </w:tcPr>
                             <w:p wsp:rsidR="0065102F" wsp:rsidRPr="005324FE" wsp:rsidRDefault="0065102F"
@@ -1326,7 +1318,7 @@
                         </w:tc>
                         <w:tc>
                             <w:tcPr>
-                                <w:tcW w:w="1693" w:type="dxa"/>
+                                <w:tcW w:w="3572" w:type="dxa"/>
                                 <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
                             </w:tcPr>
                             <w:p wsp:rsidR="0065102F" wsp:rsidRPr="005324FE" wsp:rsidRDefault="0065102F"

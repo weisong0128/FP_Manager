@@ -319,7 +319,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             operationList.add(inMap);
         }
         templateMap.put("operations", operationList);
-        templateMap.put("advice", "测试");
+        templateMap.put("advice", "###");
 
         String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";
         WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName);
@@ -327,5 +327,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         return outFileName;
     }
 
-
+    public List<LogAnalze> findLogAnalyseListByUuids(List<String> uuids) {
+        return logAnalzeDao.findLogAnalyseListByUuids(uuids);
+    }
 }
