@@ -242,7 +242,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         //是否去重
-        boolean isDistinct = errorResult.getIsDistinct();
+        boolean isDistinct = errorResult.getIsDistinct() != null && (errorResult.getIsDistinct() + "").equals("1") ? true : false;
         String date = isDistinct ? "max(date) as date" : " date ";
         sql.append(" select  " + date + ",tag,alter_tag,sql_result,pjname,pjlocation from err_result  WHERE   syskv='nothing:1' ");
         countSql.append("select  count(*) as count  from err_result  WHERE   syskv='nothing:1' ");
@@ -339,7 +339,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         if (page != null) {
             int total = 0;
             List<ErrorResult> count = null;
-
             try {
                 count = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(ErrorResult.class));
             } catch (Exception e) {
@@ -396,7 +395,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
         String sql = "select count(*) as count,tag,alter_tag from err_result " +
                 "where partition like " + partition + " and pjname =:pjName and pjlocation = :pjLocation and capture_time = :captureTime " +
-                " group by tag,alter_tag";
+                " group by tag,alter_tag order by  count(*) DESC ";
         Map paramMap = new HashMap();
         // paramMap.put("partition", partition);
         paramMap.put("pjName", pjName);
@@ -416,12 +415,8 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
     public List<FpOperationTable> wordExportFpOperationTable(String pjName, String pjLocation, String createTime) {
         String partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
         String sql = "select min(date) as date,count(*) as count ,errcode,errinfo from fp_operation_table where partition like '" + partition + "' " +
-                "and pjname='" + pjName + "' and pjlocation='" + pjLocation + "' and capture_time = '" + createTime + "' group by errcode,errinfo;";
-       /* Map paramMap = new HashMap();
-        // paramMap.put("partition", partition);
-        paramMap.put("pjName", pjName);
-        paramMap.put("pjLocation", pjLocation);
-        paramMap.put("captureTime", createTime);*/
+                "and pjname='" + pjName + "' and pjlocation='" + pjLocation + "' and capture_time = '" + createTime + "' " +
+                "group by errcode,errinfo order by  count(*) DESC limit 10;";
         List<FpOperationTable> query = namedParameterJdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<>(FpOperationTable.class));
         return query;
     }
