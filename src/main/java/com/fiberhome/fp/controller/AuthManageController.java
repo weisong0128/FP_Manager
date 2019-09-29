@@ -61,4 +61,5 @@ public class AuthManageController {
     public Response getAllPjName() {
         return Response.ok(authManageService.getAllPjName());
     }
+
 }

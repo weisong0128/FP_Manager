@@ -40,6 +40,12 @@ public class BusinessDetailsDaoImpl implements BusinessDetailsDao {
         if (parames.get("tableName")!=null&& parames.get("tableName")!=""){
             sql.append(" AND table_name in (:tableName)  ");
         }
+      /*  if (StringUtils.isNotBlank(fpOperationTable.getKeyWord())){
+            sql.append(" and    SEARCH_ALL=:keyword ");
+            countSql.append(" and  SEARCH_ALL=:keyword  ");
+            paramMap.put("keyword",fpOperationTable.getKeyWord());
+        }*/
+
         sql.append(" group by table_name,pjlocation order by ");//cnt desc limit "+page.getRowStart()+","+page.getPageSize());
         if (StringUtils.isNotBlank((String) parames.get("sortName"))){
             if ("cnt".equals(parames.get("sortName"))){

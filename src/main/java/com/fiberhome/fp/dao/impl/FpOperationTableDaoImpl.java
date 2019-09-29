@@ -74,14 +74,15 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             List<String> errLevels = EntityMapTransUtils.StringToList(fpOperationTable.getErrLevel());
             for (int i = 0; i < errLevels.size(); i++) {
                 if (i==0){
-                    sql.append(" and (errinfo  like '["+errLevels.get(i)+"-'");
-                    countSql.append(" and errinfo like '["+errLevels.get(i)+"-'");
+                    sql.append(" and ( SEARCH_ALL= 'errinfo@["+errLevels.get(i)+"'");
+                    countSql.append(" and ( SEARCH_ALL= 'errinfo@["+errLevels.get(i)+"'");
                 }else {
-                    sql.append(" or errinfo  like '["+errLevels.get(i)+"-'");
-                    countSql.append(" or errinfo like '["+errLevels.get(i)+"-'");
+                    sql.append(" or SEARCH_ALL= 'errinfo@["+errLevels.get(i)+"'");
+                    countSql.append(" or SEARCH_ALL= 'errinfo@["+errLevels.get(i)+"'");
                 }
             }
             sql.append(")");
+            countSql.append(")");
         }
         if (fpOperationTable.getPjNameList() != null && fpOperationTable.getPjNameList().size()>0 && !fpOperationTable.getPjNameList().contains("all")){
             sql.append(" and  pjname in (:pjName)");
@@ -104,8 +105,15 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
             paramMap.put("startTime",fpOperationTable.getStartTime());
             paramMap.put("endTime",fpOperationTable.getEndTime());
         }
-        sql.append(" ORDER BY ");
+
+        if (StringUtils.isNotBlank(fpOperationTable.getKeyWord())){
+            sql.append(" and    SEARCH_ALL=:keyword ");
+            countSql.append(" and  SEARCH_ALL=:keyword  ");
+            paramMap.put("keyword",fpOperationTable.getKeyWord());
+        }
+
         if (StringUtils.isNotBlank(fpOperationTable.getSortName())){
+            sql.append(" ORDER BY ");
             if ("date".equals(fpOperationTable.getSortName())){
                 sql.append(" date ");
             }
