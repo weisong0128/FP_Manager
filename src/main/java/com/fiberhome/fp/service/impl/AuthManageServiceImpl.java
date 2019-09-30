@@ -32,8 +32,8 @@ public class AuthManageServiceImpl implements AuthManageService {
     }
 
     @Override
-    public List<Map<String, Object>> getAllCities() {
-        return authManageDao.getAllCities();
+    public List<Map<String, Object>> getAllCities(String pjName) {
+        return authManageDao.getAllCities(pjName);
     }
 
     @Override

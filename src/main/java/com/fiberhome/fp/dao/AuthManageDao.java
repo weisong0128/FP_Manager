@@ -31,7 +31,7 @@ public interface AuthManageDao {
      * 获取所有的安装地市
      */
 
-    List<Map<String,Object>> getAllCities();
+    List<Map<String,Object>> getAllCities(String pjName);
 
     /**
      * 获取所有的项目名称

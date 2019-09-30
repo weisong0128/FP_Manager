@@ -41,7 +41,7 @@ public class FpProjectDaoImpl implements FpProjectDao{
             sqlCount.append(" AND  pjname = :pjName ");
         }
         if(page!=null){
-            List<Map<String, Object>> count = namedParameterJdbcTemplate.queryForList(sql.toString(),map);
+            List<Map<String, Object>> count = namedParameterJdbcTemplate.queryForList(sqlCount.toString(),map);
             if(count.size()>0&&count.get(0).get("totalrows")!=null){
                 int total= Integer.valueOf(count.get(0).get("totalrows").toString());
                 page.setTotalRows(total);

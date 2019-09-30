@@ -97,9 +97,14 @@ public class AuthManageDaoImpl implements AuthManageDao {
     }
 
     @Override
-    public List<Map<String, Object>> getAllCities() {
-        StringBuilder sqlPjname = new StringBuilder("SELECT DISTINCT  cities  FROM  fp_auth_management WHERE is_available !='1' ");
-        return namedParameterJdbcTemplate.queryForList(sqlPjname.toString(),new HashMap<>());
+    public List<Map<String, Object>> getAllCities(String pjName) {
+        StringBuilder sqlPjname = new StringBuilder("SELECT DISTINCT  cities  FROM  fp_auth_management WHERE is_available !='1'  ");
+        Map map = new HashMap();
+        if (StringUtils.isNotBlank(pjName)){
+            map.put("pjName",pjName);
+            sqlPjname.append(" and  project_name = :pjName");
+        }
+        return namedParameterJdbcTemplate.queryForList(sqlPjname.toString(),map);
     }
 
     @Override

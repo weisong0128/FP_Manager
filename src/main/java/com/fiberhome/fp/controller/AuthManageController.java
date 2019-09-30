@@ -1,17 +1,18 @@
 package com.fiberhome.fp.controller;
 
-        import com.fiberhome.fp.pojo.AuthManage;
-        import com.fiberhome.fp.service.AuthManageService;
-        import com.fiberhome.fp.util.EntityMapTransUtils;
-        import com.fiberhome.fp.util.Page;
-        import com.fiberhome.fp.util.Response;
-        import io.swagger.annotations.Api;
-        import io.swagger.annotations.ApiImplicitParam;
-        import io.swagger.annotations.ApiOperation;
-        import org.springframework.web.bind.annotation.*;
+import com.fiberhome.fp.pojo.AuthManage;
+import com.fiberhome.fp.service.AuthManageService;
+import com.fiberhome.fp.util.EntityMapTransUtils;
+import com.fiberhome.fp.util.Page;
+import com.fiberhome.fp.util.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-        import javax.annotation.Resource;
-        import java.util.*;
+import javax.annotation.Resource;
+import java.util.*;
 
 @Api(value = "授权管理",description = "授权管理")
 @RestController
@@ -50,16 +51,39 @@ public class AuthManageController {
         return Response.ok(authManageService.updateAndDelete(map));
     }
 
-    @ApiOperation(value="获取安装地市",notes = "")
-    @GetMapping("getAllCities")
-    public Response getAllCities() {
-        return Response.ok(authManageService.getAllCities());
-    }
-
-    @ApiOperation(value="获取项目名称",notes = "")
-    @GetMapping("getAllPjName")
-    public Response getAllPjName() {
-        return Response.ok(authManageService.getAllPjName());
+    /*  @ApiOperation(value="获取安装地市",notes = "")
+      @GetMapping("getAllCities")
+      public Response getAllCities() {
+          return Response.ok(authManageService.getAllCities());
+      }
+  */
+    @ApiOperation(value="获取项目名称或者根据项目名称获取安装地市",notes = "")
+    @GetMapping("getAllPjNameAndCities")
+    public Response getAllPjNameAndCities(String pjName) {
+        List<Map<String, Object>> allCities=null;
+        List<String> cities =null;
+        List list = new ArrayList();
+        List<Map<String, Object>> provinces = authManageService.getAllPjName();
+        if (provinces.size()>0){
+            for (int i = 0; i <provinces.size() ; i++) {
+                cities = new ArrayList<>();
+                for (Object value:provinces.get(i).values()) {
+                    allCities = authManageService.getAllCities((String)value);
+                    for (int j = 0; j < allCities.size(); j++) {
+                        if (allCities.size()>0){
+                            for (Object citie:allCities.get(j).values()) {
+                                cities.add((String) citie);
+                            }
+                        }
+                    }
+                    Map map = new HashMap();
+                    map.put("pjName",value);
+                    map.put("pjLocationList",cities);
+                    list.add(map);
+                }
+            }
+        }
+        return Response.ok(list);
     }
 
 }
