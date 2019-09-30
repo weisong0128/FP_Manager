@@ -446,12 +446,20 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         List<AllResult> qualifiedCountList = namedParameterJdbcTemplate.query(qualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
         int qualifiedSqlCount = 0;
         if (qualifiedCountList != null && qualifiedCountList.size() > 0) {
-            qualifiedSqlCount = qualifiedCountList.get(0).getCount();
+            try {
+                qualifiedSqlCount = qualifiedCountList.get(0).getCount();
+            } catch (Exception e) {
+                logging.info("qualifiedSqlCount 为 0 条");
+            }
         }
         List<AllResult> unqualifiedCountList = namedParameterJdbcTemplate.query(unqualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
         int unqualifiedSqlCount = 0;
         if (unqualifiedCountList != null && unqualifiedCountList.size() > 0) {
-            unqualifiedSqlCount = unqualifiedCountList.get(0).getCount();
+            try {
+                unqualifiedSqlCount = unqualifiedCountList.get(0).getCount();
+            } catch (Exception e) {
+                logging.info("unqualifiedSqlCount 为 0 条");
+            }
         }
         allResult.setQualifiedSql(qualifiedSqlCount);
         allResult.setUnqualifiedSql(unqualifiedSqlCount);
