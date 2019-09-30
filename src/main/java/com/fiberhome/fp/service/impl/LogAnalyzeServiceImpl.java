@@ -36,7 +36,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private AllResultServiceImpl allResultService;
     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-    private Executor pool2 = Executors.newFixedThreadPool(1);
+   // private Executor pool2 = Executors.newFixedThreadPool(1);
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -108,6 +108,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
 
     public void upload(AnalyseProcess analyseProcess) {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
         String dir =
                 uploadLogPath + File.separator +
                         analyseProcess.getProjectLocation() + File.separator +
@@ -126,7 +127,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             Long createTime = analyseProcess.getCreateTime();
             String projectName = analyseProcess.getProjectName();
             String projectLocation = analyseProcess.getProjectLocation();
-            pool2.execute(() -> {
+            executorService.execute(() -> {
                 AnalyseProcess analyseProcess1 = map.get(uuid);
                 FileStatus fileStatus = analyseProcess1.getFileMap().get(filePath);
                 //调用脚本方法

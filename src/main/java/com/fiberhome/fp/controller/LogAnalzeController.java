@@ -261,8 +261,8 @@ public class LogAnalzeController {
 
     }
 
-    @PostMapping("/batchWordExport")
-    public void batchWordExport(@RequestBody String uuids, HttpServletResponse response) {
+    @GetMapping("/batchWordExport")
+    public void batchWordExport(String uuids, HttpServletResponse response) {
         ZipOutputStream zos = null;
         uuids = uuids.replace("\"", "");
         String[] split = uuids.split(",");
