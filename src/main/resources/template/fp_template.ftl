@@ -789,7 +789,8 @@
                         <w:sz-cs
                                 w:val="21"/>
                     </w:rPr>
-                    <w:t>${projectName}</w:t>
+                 <#--   <w:t>${projectName?if_exists}</w:t>-->
+                    <w:t><![CDATA[${projectName?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
                     <w:rPr>
@@ -811,7 +812,10 @@
                                 w:val="21"/>
                         <w:sz-cs w:val="21"/>
                     </w:rPr>
-                    <w:t>${projectLocation}</w:t>
+<#--
+                    <w:t>${projectLocation?if_exists}</w:t>
+-->
+                    <w:t><![CDATA[${projectLocation?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
                     <w:rPr>
@@ -882,7 +886,10 @@
                         <w:sz-cs
                                 w:val="21"/>
                     </w:rPr>
-                    <w:t>${errorResultPercent}</w:t>
+<#--
+                    <w:t>${errorResultPercent?if_exists}</w:t>
+-->
+                    <w:t><![CDATA[${errorResultPercent?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
                     <w:rPr>
@@ -1096,7 +1103,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${errResultList.tag}</w:t>
+                               <#-- <w:t>${errResultList.tag?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.tag?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1124,7 +1132,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${errResultList.alterTag}</w:t>
+                               <#-- <w:t>${errResultList.alterTag?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.alterTag?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1152,7 +1161,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${errResultList.count}</w:t>
+                               <#-- <w:t>${errResultList.count?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.count?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1180,7 +1190,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${errResultList.exam}</w:t>
+                               <#-- <w:t>${errResultList.exam?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.exam?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1426,7 +1437,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${operationList.dateStr}</w:t>
+                                <#--<w:t>${operationList.dateStr?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.dateStr?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1454,7 +1466,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${operationList.errLevel}</w:t>
+                               <#-- <w:t>${operationList.errLevel?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.errLevel?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1482,7 +1495,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${operationList.count}</w:t>
+                               <#-- <w:t>${operationList.count?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.count?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1510,7 +1524,8 @@
                                     <w:sz w:val="21"/>
                                     <w:sz-cs w:val="21"/>
                                 </w:rPr>
-                                <w:t>${operationList.errInfo}</w:t>
+                               <#-- <w:t>${operationList.errInfo?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.errInfo?if_exists}]]></w:t>
                             </w:r>
                         </w:p>
                     </w:tc>
@@ -1624,7 +1639,8 @@
                         <w:sz w:val="21"/>
                         <w:sz-cs w:val="21"/>
                     </w:rPr>
-                    <w:t>${advice}</w:t>
+                   <#-- <w:t>${advice?if_exists}</w:t>-->
+                    <w:t><![CDATA[${advice?if_exists}]]></w:t>
                 </w:r>
             </w:p>
             <w:p wsp:rsidR="005324FE" wsp:rsidRPr="008327C4" wsp:rsidRDefault="005324FE"
