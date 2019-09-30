@@ -253,6 +253,9 @@ public class LogAnalzeController {
     @GetMapping("/wordExport")
     public void wordExport(String uuid, HttpServletResponse response) {
         LogAnalze logAnalze = logAnalyzeService.findOneLogAnalyse(uuid);
+        if (logAnalze == null) {
+            throw new NullPointerException("uuid返回为空,请检查");
+        }
         String pjName = logAnalze.getProjectName();
         String pjLocation = logAnalze.getAddress();
         Long createTime = logAnalze.getCreateTime();
