@@ -62,6 +62,9 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Value("${template.file.name}")
     String templateName;
 
+    @Value("${template.root.path}")
+    String templateRootPath;
+
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
@@ -323,7 +326,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         templateMap.put("advice", "###");
 
         String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";
-        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName);
+        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName,templateRootPath);
         //FileUtil.deleteFile(outFilePath,outFileName);
         return outFileName;
     }

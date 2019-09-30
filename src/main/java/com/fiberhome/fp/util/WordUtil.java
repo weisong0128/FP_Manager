@@ -40,7 +40,7 @@ public class WordUtil {
         map.put("errResults", errResultList);
         map.put("operations", operationList);
         map.put("advice", "ceshi");
-        wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml");
+        wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml", "");
     }
 
     static Logger logging = LoggerFactory.getLogger(WordUtil.class);
@@ -53,7 +53,7 @@ public class WordUtil {
      * @Return:
      * @Auth:User on 2019/9/26 15:14
      */
-    public static void wordExport(Map<String, Object> hashMap, String templateName, String outFilePath, String outFileName) {
+    public static void wordExport(Map<String, Object> hashMap, String templateName, String outFilePath, String outFileName, String templateRootPath) {
 
         Writer out = null;
         try {
@@ -62,8 +62,16 @@ public class WordUtil {
             //配置编码
             configuration.setDefaultEncoding(encodedType);
             //配置生成模板位置
-            String templatePath = WordUtil.class.getClassLoader().getResource("").getPath();
-            FileTemplateLoader fileTemplateLoader = new FileTemplateLoader(new File(templatePath));
+            String templatePath = null;
+
+            FileTemplateLoader fileTemplateLoader = null;
+            try {
+                templatePath = WordUtil.class.getClassLoader().getResource("").getPath();
+                fileTemplateLoader = new FileTemplateLoader(new File(templatePath));
+            } catch (IOException e) {
+                templatePath = templateRootPath;
+                fileTemplateLoader = new FileTemplateLoader(new File(templatePath));
+            }
             configuration.setTemplateLoader(fileTemplateLoader);
             String path = File.separator + "template" + File.separator + templateName;
             //获取模板
