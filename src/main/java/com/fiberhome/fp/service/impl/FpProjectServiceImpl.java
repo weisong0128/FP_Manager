@@ -54,7 +54,7 @@ public class FpProjectServiceImpl implements FpProjectService {
         List<FpProject> projects = fpProjectDao.listProject(pjName,page);
         if (projects != null && projects.size()>0){
             for (FpProject project:projects){
-                project.setPjLocationList((List<String>)JSONObject.parse(project.getPjLocation()));
+                project.setPjLocationList((List<String>)JSONObject.parse("[\"-2147482624\"]".equals(project.getPjLocation())?"":project.getPjLocation()));
             }
         }
         return projects;

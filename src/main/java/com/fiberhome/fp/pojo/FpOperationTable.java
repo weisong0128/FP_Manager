@@ -42,7 +42,7 @@ public class FpOperationTable {
     private String startTime;
 
     //是否去重查询  0 不去重  1 去重
-    private Integer isDistinct;
+    private Integer isDistinct=0;
 
     private String logLeave;
 

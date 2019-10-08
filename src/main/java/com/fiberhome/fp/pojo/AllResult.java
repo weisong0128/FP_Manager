@@ -80,6 +80,16 @@ public class AllResult {
     //排序字段名
     private String sortName;
 
+    public Integer getIsDistinct() {
+        return isDistinct;
+    }
+
+    public void setIsDistinct(Integer isDistinct) {
+        this.isDistinct = isDistinct;
+    }
+
+    private Integer isDistinct=0;
+
     public String getSort() {
         return sort;
     }

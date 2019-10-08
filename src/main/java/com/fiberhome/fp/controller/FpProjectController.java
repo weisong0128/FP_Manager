@@ -129,20 +129,10 @@ public class FpProjectController {
         List<TagProporation> tagProporationList = dbAllResult.getTagProporationsList();
         List<SqlCount> sqlIssueCountList = dbAllResult.getSqlCountList();
         List<ErrorSqlCount> errorSqlCount = dbAllResult.getErrorSqlCountList();
-
-//        List<String> tagList = new ArrayList<>();
-//        List<Double> tagCountList = new ArrayList<>();
         List<String> hourList = new ArrayList<>();
         List<Double> sqlCountList = new ArrayList<>();
         List<String> yearMonthList = new ArrayList<>();
         List<Double> errorSqlCountList = new ArrayList<>();
-//        if (tagProporationList != null && tagProporationList.size()>0){
-//            for (TagProporation tp:tagProporationList){
-//                tagList.add(tp.getTag());
-//                tagCountList.add(tp.getCount());
-//            }
-//
-//        }
         if (sqlIssueCountList != null && sqlIssueCountList.size()>0){
             for (SqlCount sc:sqlIssueCountList){
                 hourList.add(sc.getHour());

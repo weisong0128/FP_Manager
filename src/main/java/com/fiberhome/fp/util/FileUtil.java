@@ -497,43 +497,45 @@ public class FileUtil {
         if (fileName != null) {
             //设置文件路径
             File file = new File(path);
-            if (file.exists()) {
-                response.setHeader("content-type", "application/octet-stream");
-                response.setContentType("application/octet-stream");
-                try {
-                    response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(encodedType), "ISO-8859-1"));
-                } catch (UnsupportedEncodingException e) {
-                    logging.error(e.getMessage(), e);
+            if (!file.exists()){
+                file.mkdirs();
+            }
+
+            response.setHeader("content-type", "application/octet-stream");
+            response.setContentType("application/octet-stream");
+            try {
+                response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(encodedType), "ISO-8859-1"));
+            } catch (UnsupportedEncodingException e) {
+                logging.error(e.getMessage(), e);
+            }
+            byte[] buffer = new byte[MB_SIZE];
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            try {
+                file = new File(path + File.separator + fileName);
+                fis = new FileInputStream(file);
+                bis = new BufferedInputStream(fis);
+                OutputStream os = response.getOutputStream();
+                int i = bis.read(buffer);
+                while (i != -1) {
+                    os.write(buffer, 0, i);
+                    i = bis.read(buffer);
                 }
-                byte[] buffer = new byte[MB_SIZE];
-                FileInputStream fis = null;
-                BufferedInputStream bis = null;
-                try {
-                    file = new File(path + File.separator + fileName);
-                    fis = new FileInputStream(file);
-                    bis = new BufferedInputStream(fis);
-                    OutputStream os = response.getOutputStream();
-                    int i = bis.read(buffer);
-                    while (i != -1) {
-                        os.write(buffer, 0, i);
-                        i = bis.read(buffer);
+            } catch (Exception e) {
+                logging.error(e.getMessage(), e);
+            } finally {
+                if (bis != null) {
+                    try {
+                        bis.close();
+                    } catch (IOException e) {
+                        logging.error(e.getMessage(), e);
                     }
-                } catch (Exception e) {
-                    logging.error(e.getMessage(), e);
-                } finally {
-                    if (bis != null) {
-                        try {
-                            bis.close();
-                        } catch (IOException e) {
-                            logging.error(e.getMessage(), e);
-                        }
-                    }
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            logging.error(e.getMessage(), e);
-                        }
+                }
+                if (fis != null) {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        logging.error(e.getMessage(), e);
                     }
                 }
             }
@@ -553,7 +555,7 @@ public class FileUtil {
             if (inputFile.exists()) {
                 if (inputFile.isFile()) {
                     try {
-                         bis = new BufferedInputStream(new FileInputStream(inputFile));
+                        bis = new BufferedInputStream(new FileInputStream(inputFile));
                         //将文件写入zip内，
                         zos.putNextEntry(new ZipEntry(inputFile.getName()));
                         int size = 0;

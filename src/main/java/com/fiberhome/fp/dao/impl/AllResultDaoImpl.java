@@ -43,79 +43,76 @@ public class AllResultDaoImpl implements AllResultDao {
     public List<AllResult> listAllResult(Page page, AllResult allResult) {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
-        sql.append(" select  date,time,tag,sql_result,pjname,pjlocation  from all_result  WHERE   syskv='nothing:1' ");
-        countSql.append("select  count(*) as count  from all_result  WHERE   syskv='nothing:1' ");
+        sql.append(" select  ");
+        System.err.println(allResult.getIsDistinct());
+        if (allResult.getIsDistinct()==1){
+            sql.append(" max(date) as date, ");
+        }else {
+            sql.append(" date, ");
+        }
+        sql.append(" time,tag,sql_result,pjname,pjlocation  from all_result  WHERE   syskv='nothing:1' ");
         Map paramMap = new HashMap();
         if (StringUtils.isNotEmpty(allResult.getTimeTag())) {
             if (StringUtils.equals("today", allResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
                 paramMap.put("partition", TimeUtil.partitons("today"));
                 sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
                 paramMap.put("date", TimeUtil.beforeFewDays(0));
             }
             if (StringUtils.equals("seven", allResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
                 paramMap.put("partition", TimeUtil.partitons("seven"));
                 sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
                 paramMap.put("date", TimeUtil.beforeFewDays(DAYS_7));
             }
             if (StringUtils.equals("halfMonth", allResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
-                countSql.append(" and partition in (:partition) ");
                 paramMap.put("partition", TimeUtil.partitons("halfMonth"));
                 sql.append(" and date > :date ");
-                countSql.append(" and date > :date ");
                 paramMap.put("date", TimeUtil.beforeFewDays(DAYS_15));
             }
             if (StringUtils.equals("all", allResult.getTimeTag())) {
                 sql.append(" and partition like '%' ");
-                countSql.append(" and partition like '%' ");
             }
         }
         if (allResult.getTagList() != null && allResult.getTagList().size() > 0 && !allResult.getTagList().contains("all")) {
             sql.append(" and tag in (:tag) ");
-            countSql.append(" and tag in (:tag) ");
             paramMap.put("tag", allResult.getTagList());
         }
         if (StringUtils.isNotEmpty(allResult.getDuration()) && !allResult.getDuration().contains("all")) {
             String[] durations = allResult.getDuration().split(",");
             if (durations != null && durations.length > 0) {
                 sql.append(" and ( ");
-                countSql.append(" and ( ");
                 for (int i = 0; i < durations.length; i++) {
                     jointSql(sql, durations[i], i);
-                    jointSql(countSql, durations[i], i);
                 }
                 sql.append(" ) ");
-                countSql.append(" ) ");
             }
         }
         if (allResult.getPjNameList() != null && allResult.getPjNameList().size() > 0 && !allResult.getPjNameList().contains("all")) {
             sql.append(" and  pjname in (:pjName)");
-            countSql.append(" and  pjname in (:pjName)");
             paramMap.put("pjName", allResult.getPjNameList());
         }
         if (allResult.getPjLocationList() != null && allResult.getPjLocationList().size() > 0 && !allResult.getPjLocationList().contains("all")) {
             sql.append(" and  pjlocation in (:pjLocation)");
-            countSql.append(" and  pjlocation in (:pjLocation)");
             paramMap.put("pjLocation", allResult.getPjLocationList());
         }
         if (StringUtils.isNotBlank(allResult.getStartTime()) && StringUtils.isNotBlank(allResult.getEndTime())) {
             sql.append(" and date like '[" + allResult.getStartTime() + " TO " + allResult.getEndTime() + " ]' ");
-            countSql.append(" and date like '[" + allResult.getStartTime() + " TO " + allResult.getEndTime() + "]' ");
             paramMap.put("startTime", allResult.getStartTime());
             paramMap.put("endTime", allResult.getEndTime());
         }
 
         if (StringUtils.isNotBlank(allResult.getKeyWord())) {
             sql.append(" and  SEARCH_ALL=:keyword ");
-            countSql.append(" and  SEARCH_ALL=:keyword  ");
             paramMap.put("keyword", allResult.getKeyWord());
         }
+
+        if(allResult.getIsDistinct()==1){
+            sql.append(" group by date,time,tag,sql_result,pjname,pjlocation ");
+        }
+
+
         sql.append(" order by  ");
         if (StringUtils.isNotBlank(allResult.getSortName())) {
             if ("date".equals(allResult.getSortName())) {
@@ -131,6 +128,7 @@ public class AllResultDaoImpl implements AllResultDao {
                 sql.append(" asc ");
             }
         }
+        countSql.append(" select count(*) as count from ("+sql+")A");
         if (page != null) {
             int total = 0;
             List<AllResult> totalList = namedParameterJdbcTemplate.query(countSql.toString(), paramMap, new BeanPropertyRowMapper<>(AllResult.class));

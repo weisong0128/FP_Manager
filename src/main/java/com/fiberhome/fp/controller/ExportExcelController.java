@@ -34,7 +34,7 @@ public class ExportExcelController {
     @ResponseBody
     public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
         //获取数据
-        List<AuthManage> allAuthManage = authManageService.getAllAuthManage(new Page(), new AuthManage());
+        List<AuthManage> allAuthManage = authManageService.getAllAuthManage(null, new AuthManage());
 
         //excel标题
         String[] title = {"主键","项目名称","环境负责人","电话","安装省份","安装地市","安装地址","MAC","主节点ip","证书下载日期","备注（线上生产环境，研发测试环境）","对应的sn文件","授权反馈情况","备注","创建时间","修改时间"};
@@ -63,6 +63,7 @@ public class ExportExcelController {
             String envirnote ="";
             if("0".equals(authManage.getEnvirNote())){envirnote="线上生成环境";}
             if("1".equals(authManage.getEnvirNote())){envirnote="研发测试环境";}
+            if("3".equals(authManage.getEnvirNote())){envirnote="已停用";}
             content[i][++b] = envirnote;
             content[i][++b] = authManage.getSnFile();
             String feedback ="";
