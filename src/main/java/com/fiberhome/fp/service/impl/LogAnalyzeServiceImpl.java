@@ -36,7 +36,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Autowired
     private AllResultServiceImpl allResultService;
     private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-   // private Executor pool2 = Executors.newFixedThreadPool(1);
+    // private Executor pool2 = Executors.newFixedThreadPool(1);
 
     @Value("${upload.log.path}")
     private String uploadLogPath;
@@ -323,10 +323,11 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             operationList.add(inMap);
         }
         templateMap.put("operations", operationList);
-        templateMap.put("advice", "###");
+        List<String> wordAdvice = WordUtil.getWordAdvice(WordUtil.advice);
+        templateMap.put("adviceList", wordAdvice);
 
         String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";
-        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName,templateRootPath);
+        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName, templateRootPath);
         //FileUtil.deleteFile(outFilePath,outFileName);
         return outFileName;
     }

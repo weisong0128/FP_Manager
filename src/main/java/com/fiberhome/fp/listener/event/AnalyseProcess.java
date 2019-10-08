@@ -41,8 +41,8 @@ public class AnalyseProcess implements Serializable {
     private String uuid;
     private String uploadFileRootPath;
 
-    private Long cutfilesize;
-    private Integer cutFileMaxCount;
+    private Long cutfilesize = Long.MIN_VALUE;
+    private Integer cutFileMaxCount = 1;
 
 
     public static ConcurrentMap<String, AnalyseProcess> getMap() {

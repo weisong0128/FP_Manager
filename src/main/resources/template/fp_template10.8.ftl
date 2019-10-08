@@ -789,7 +789,7 @@
                         <w:sz-cs
                                 w:val="21"/>
                     </w:rPr>
-                    <#--   <w:t>${projectName?if_exists}</w:t>-->
+                 <#--   <w:t>${projectName?if_exists}</w:t>-->
                     <w:t><![CDATA[${projectName?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
@@ -812,9 +812,9 @@
                                 w:val="21"/>
                         <w:sz-cs w:val="21"/>
                     </w:rPr>
-                    <#--
-                                        <w:t>${projectLocation?if_exists}</w:t>
-                    -->
+<#--
+                    <w:t>${projectLocation?if_exists}</w:t>
+-->
                     <w:t><![CDATA[${projectLocation?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
@@ -886,9 +886,9 @@
                         <w:sz-cs
                                 w:val="21"/>
                     </w:rPr>
-                    <#--
-                                        <w:t>${errorResultPercent?if_exists}</w:t>
-                    -->
+<#--
+                    <w:t>${errorResultPercent?if_exists}</w:t>
+-->
                     <w:t><![CDATA[${errorResultPercent?if_exists}]]></w:t>
                 </w:r>
                 <w:r wsp:rsidRPr="00035587">
@@ -1077,125 +1077,125 @@
                     </w:tc>
                 </w:tr>
                 <#list errResults as errResultList>
-                    <w:tr wsp:rsidR="00850A2C" wsp:rsidRPr="00035587" wsp:rsidTr="00850A2C">
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="1389" w:type="dxa"/>
-                                <w:shd
-                                        w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE"
-                                 wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${errResultList.tag?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${errResultList.tag?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="1701" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${errResultList.alterTag?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${errResultList.alterTag?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="1134" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="00711827" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${errResultList.count?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${errResultList.count?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="3998" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="00711827" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${errResultList.exam?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${errResultList.exam?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                    </w:tr>
+                <w:tr wsp:rsidR="00850A2C" wsp:rsidRPr="00035587" wsp:rsidTr="00850A2C">
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="1389" w:type="dxa"/>
+                            <w:shd
+                                    w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE"
+                             wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${errResultList.tag?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.tag?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="1701" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${errResultList.alterTag?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.alterTag?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="1134" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="00711827" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${errResultList.count?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.count?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="3998" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="00711827" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${errResultList.exam?if_exists}</w:t>-->
+                                <w:t><![CDATA[${errResultList.exam?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                </w:tr>
                 </#list>
             </w:tbl>
             <w:p wsp:rsidR="00711827"
@@ -1410,126 +1410,126 @@
                     </w:tc>
                 </w:tr>
                 <#list operations as operationList>
-                    <w:tr wsp:rsidR="00850A2C" wsp:rsidRPr="00035587" wsp:rsidTr="00850A2C">
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="1531" w:type="dxa"/>
-                                <w:shd
-                                        w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE"
-                                 wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#--<w:t>${operationList.dateStr?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${operationList.dateStr?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="1134" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${operationList.errLevel?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${operationList.errLevel?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="709" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${operationList.count?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${operationList.count?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                        <w:tc>
-                            <w:tcPr>
-                                <w:tcW w:w="4848" w:type="dxa"/>
-                                <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
-                            </w:tcPr>
-                            <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
-                                 wsp:rsidP="00850A2C">
-                                <w:pPr>
-                                    <w:pStyle w:val="a3"/>
-                                    <w:ind
-                                            w:first-line-chars="0" w:first-line="0"/>
-                                    <w:rPr>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                </w:pPr>
-                                <w:r>
-                                    <w:rPr>
-                                        <w:rFonts w:hint="fareast"/>
-                                        <w:b w:val="off"/>
-                                        <w:sz w:val="21"/>
-                                        <w:sz-cs w:val="21"/>
-                                    </w:rPr>
-                                    <#-- <w:t>${operationList.errInfo?if_exists}</w:t>-->
-                                    <w:t><![CDATA[${operationList.errInfo?if_exists}]]></w:t>
-                                </w:r>
-                            </w:p>
-                        </w:tc>
-                    </w:tr>
+                <w:tr wsp:rsidR="00850A2C" wsp:rsidRPr="00035587" wsp:rsidTr="00850A2C">
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="1531" w:type="dxa"/>
+                            <w:shd
+                                    w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE"
+                             wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                                <#--<w:t>${operationList.dateStr?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.dateStr?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="1134" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${operationList.errLevel?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.errLevel?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="709" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${operationList.count?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.count?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                    <w:tc>
+                        <w:tcPr>
+                            <w:tcW w:w="4848" w:type="dxa"/>
+                            <w:shd w:val="clear" w:color="auto" w:fill="auto"/>
+                        </w:tcPr>
+                        <w:p wsp:rsidR="00850A2C" wsp:rsidRPr="005324FE" wsp:rsidRDefault="00850A2C"
+                             wsp:rsidP="00850A2C">
+                            <w:pPr>
+                                <w:pStyle w:val="a3"/>
+                                <w:ind
+                                        w:first-line-chars="0" w:first-line="0"/>
+                                <w:rPr>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                            </w:pPr>
+                            <w:r>
+                                <w:rPr>
+                                    <w:rFonts w:hint="fareast"/>
+                                    <w:b w:val="off"/>
+                                    <w:sz w:val="21"/>
+                                    <w:sz-cs w:val="21"/>
+                                </w:rPr>
+                               <#-- <w:t>${operationList.errInfo?if_exists}</w:t>-->
+                                <w:t><![CDATA[${operationList.errInfo?if_exists}]]></w:t>
+                            </w:r>
+                        </w:p>
+                    </w:tc>
+                </w:tr>
                 </#list>
             </w:tbl>
             <w:p wsp:rsidR="00711827"
@@ -1578,53 +1578,91 @@
                     <w:t>调研评估建议：</w:t>
                 </w:r>
                 <aml:annotation aml:id="0" w:type="Word.Bookmark.End"/>
+                <w:r wsp:rsidR="0048711F">
+                    <w:rPr>
+                        <w:rFonts w:ascii="宋体" w:h-ansi="宋体" w:cs="宋体" w:hint="fareast"/>
+                        <wx:font
+                                wx:val="宋体"/>
+                        <w:b w:val="off"/>
+                        <w:b-cs/>
+                        <w:kern w:val="0"/>
+                        <w:sz w:val="21"/>
+                        <w:sz-cs w:val="21"/>
+                    </w:rPr>
+                    <w:t>:</w:t>
+                </w:r>
+                <w:r wsp:rsidR="0048711F" wsp:rsidRPr="00035587">
+                    <w:rPr>
+                        <w:rFonts w:ascii="宋体" w:h-ansi="宋体" w:cs="宋体"/>
+                        <wx:font
+                                wx:val="宋体"/>
+                        <w:b w:val="off"/>
+                        <w:b-cs/>
+                        <w:kern w:val="0"/>
+                        <w:sz w:val="21"/>
+                        <w:sz-cs w:val="21"/>
+                    </w:rPr>
+                    <w:t></w:t>
+                </w:r>
             </w:p>
-            <#list adviceList as advice>
-                <w:p wsp:rsidR="00381599" wsp:rsidRPr="00C008CC"
-                     wsp:rsidRDefault="00381599"
-                     wsp:rsidP="00381599">
-                    <w:pPr>
-                        <w:pStyle w:val="a3"/>
-                        <w:widowControl/>
-                        <w:listPr>
-                            <w:ilvl w:val="0"/>
-                            <w:ilfo w:val="2"/>
-                            <wx:t wx:val="²"/>
-                            <wx:font wx:val="Wingdings"/>
-                        </w:listPr>
-                        <w:overflowPunct w:val="off"/>
-                        <w:autoSpaceDE w:val="off"/>
-                        <w:autoSpaceDN
-                                w:val="off"/>
-                        <w:adjustRightInd w:val="off"/>
-                        <w:spacing w:line="288" w:line-rule="auto"/>
-                        <w:ind
-                                w:first-line-chars="0"/>
-                        <w:textAlignment w:val="baseline"/>
-                        <w:rPr>
-                            <w:b w:val="off"/>
-                            <w:kern w:val="0"/>
-                            <w:sz w:val="21"/>
-                            <w:sz-cs w:val="21"/>
-                        </w:rPr>
-                    </w:pPr>
-                    <w:r wsp:rsidRPr="00C008CC">
-                        <w:rPr>
-                            <w:rFonts w:hint="fareast"/>
-                            <wx:font wx:val="宋体"/>
-                            <w:b w:val="off"/>
-                            <w:kern
-                                    w:val="0"/>
-                            <w:sz w:val="21"/>
-                            <w:sz-cs w:val="21"/>
-                        </w:rPr>
-                        <w:t>${advice}</w:t>
-                    </w:r>
-                </w:p>
-
-            </#list>
-
-
+            <w:p wsp:rsidR="005324FE" wsp:rsidRPr="00035587" wsp:rsidRDefault="007C7F1A"
+                 wsp:rsidP="005324FE">
+                <w:pPr>
+                    <w:pStyle w:val="a3"/>
+                    <w:widowControl/>
+                    <w:listPr>
+                        <w:ilvl w:val="0"/>
+                        <w:ilfo w:val="2"/>
+                        <wx:t wx:val="²"/>
+                        <wx:font wx:val="Wingdings"/>
+                    </w:listPr>
+                    <w:overflowPunct w:val="off"/>
+                    <w:autoSpaceDE w:val="off"/>
+                    <w:autoSpaceDN
+                            w:val="off"/>
+                    <w:adjustRightInd w:val="off"/>
+                    <w:spacing w:line="288" w:line-rule="auto"/>
+                    <w:ind w:left="420"
+                           w:first-line-chars="0"
+                           w:first-line="200"/>
+                    <w:textAlignment
+                            w:val="baseline"/>
+                    <w:rPr>
+                        <w:b w:val="off"/>
+                        <w:sz w:val="24"/>
+                    </w:rPr>
+                </w:pPr>
+                <w:r>
+                    <w:rPr>
+                        <w:b w:val="off"/>
+                        <w:kern w:val="0"/>
+                        <w:sz w:val="21"/>
+                        <w:sz-cs w:val="21"/>
+                    </w:rPr>
+                   <#-- <w:t>${advice?if_exists}</w:t>-->
+                    <w:t><![CDATA[${advice?if_exists}]]></w:t>
+                </w:r>
+            </w:p>
+            <w:p wsp:rsidR="005324FE" wsp:rsidRPr="008327C4" wsp:rsidRDefault="005324FE"
+                 wsp:rsidP="005324FE">
+                <w:pPr>
+                    <w:spacing w:line="240" w:line-rule="at-least"/>
+                    <w:rPr>
+                        <w:b w:val="off"/>
+                        <w:sz w:val="24"/>
+                    </w:rPr>
+                </w:pPr>
+            </w:p>
+            <w:p wsp:rsidR="000D7B17" wsp:rsidRPr="005324FE"
+                 wsp:rsidRDefault="007C7F1A"/>
+            <w:sectPr wsp:rsidR="000D7B17"
+                      wsp:rsidRPr="005324FE"
+                      wsp:rsidSect="00C82C35">
+                <w:pgSz w:w="11906" w:h="16838"/>
+                <w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="851" w:footer="992"
+                         w:gutter="0"/>
+                <w:cols w:space="425"/>
+                <w:docGrid w:type="lines" w:line-pitch="312"/>
+            </w:sectPr>
         </wx:sect>
-    </w:body>
-        </w:wordDocument>
+    </w:body></w:wordDocument>

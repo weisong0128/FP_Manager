@@ -338,27 +338,32 @@ public class FileUtil {
     }
 
     public static void findAllSizeMore(File rootFile, String uuid) {
-        Long size = AnalyseProcess.map.get(uuid).getCutfilesize();
-        long size1 = FileUtil.getByteSize(1) + size;
-        if (rootFile.isDirectory()) {
-            File[] files = rootFile.listFiles();
-            ArrayList<String> dirNameList = new ArrayList<>();
-            ArrayList<File> fileList = new ArrayList<>();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    dirNameList.add(file.getName().replace(cutRex, ""));
-                } else {
-                    fileList.add(file);
+        AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
+        Integer cutFileMaxCount = analyseProcess.getCutFileMaxCount();
+        if (cutFileMaxCount > 1) {
+            Long size = analyseProcess.getCutfilesize();
+            long size1 = FileUtil.getByteSize(1) + size;
+            if (rootFile.isDirectory()) {
+                File[] files = rootFile.listFiles();
+                ArrayList<String> dirNameList = new ArrayList<>();
+                ArrayList<File> fileList = new ArrayList<>();
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        dirNameList.add(file.getName().replace(cutRex, ""));
+                    } else {
+                        fileList.add(file);
+                    }
                 }
-            }
-            fileListLengthSort(fileList);
-            for (File file : fileList) {
-                if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
-                    List<File> cutFile = cutFile(file, uuid);
-                    logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MB_SIZE / MB_SIZE, cutFile.size(), cutFile.get(0).length() / MB_SIZE / MB_SIZE);
+                fileListLengthSort(fileList);
+                for (File file : fileList) {
+                    if (file.isFile() && file.length() > size1 && !dirNameList.contains(file.getName())) {
+                        List<File> cutFile = cutFile(file, uuid);
+                        logging.info("{}日志文件{}MB,执行切割成{}份,单个文件最大{}MB,异步下发分析", file.getName(), file.length() / MB_SIZE / MB_SIZE, cutFile.size(), cutFile.get(0).length() / MB_SIZE / MB_SIZE);
+                    }
                 }
             }
         }
+
     }
 
     public static void fileListLengthSort(List<File> files) {
@@ -370,8 +375,11 @@ public class FileUtil {
     //获取文件夹下所有小于 size大小的日志文件
     public static void getSizeLLesser(File rootFile, List<File> fileList, String uuid) {
         AnalyseProcess analyseProcess = AnalyseProcess.map.get(uuid);
-        long size = analyseProcess.getCutfilesize();
-        size += FileUtil.getByteSize(1);
+        Integer cutFileMaxCount = analyseProcess.getCutFileMaxCount();
+        //判断配置文件切割的值是不是大于1
+        long size = cutFileMaxCount > 1 ? analyseProcess.getCutfilesize() + FileUtil.getByteSize(1) : Long.MAX_VALUE;
+        //   long size = analyseProcess.getCutfilesize();
+        //size += FileUtil.getByteSize(1);
         if (rootFile.exists() && rootFile.isDirectory()) {
             File[] files = rootFile.listFiles();
             for (File file : files) {
@@ -497,14 +505,16 @@ public class FileUtil {
         if (fileName != null) {
             //设置文件路径
             File file = new File(path);
-            if (!file.exists()){
+            if (!file.exists()) {
                 file.mkdirs();
             }
 
             response.setHeader("content-type", "application/octet-stream");
             response.setContentType("application/octet-stream");
             try {
-                response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(encodedType), "ISO-8859-1"));
+                byte[] fileNameBytes = fileName.contains("_template_") && fileName.contains(".xml") ? getOutPutFileName(fileName).getBytes(encodedType) : fileName.getBytes(encodedType);
+                // byte[] bytes = fileName.getBytes(encodedType);
+                response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileNameBytes, "ISO-8859-1"));
             } catch (UnsupportedEncodingException e) {
                 logging.error(e.getMessage(), e);
             }
@@ -556,8 +566,13 @@ public class FileUtil {
                 if (inputFile.isFile()) {
                     try {
                         bis = new BufferedInputStream(new FileInputStream(inputFile));
+                        //修改名字
+                        String inputFileName = inputFile.getName();
+                        inputFileName = getOutPutFileName(inputFileName);
+                        //String[] split = inputFileName.split("_");
+                        //inputFileName = split[0] + "_" + split[1] + "_业务分析报告.xml";
                         //将文件写入zip内，
-                        zos.putNextEntry(new ZipEntry(inputFile.getName()));
+                        zos.putNextEntry(new ZipEntry(inputFileName));
                         int size = 0;
                         byte[] buffer = new byte[1024];
                         while ((size = bis.read(buffer)) > 0) {
@@ -577,11 +592,16 @@ public class FileUtil {
                         }
                         return zipFile(zipBasePath, zipName, zipFilePath, filePathsTem, zos);
                     } catch (Exception e) {
-
+                        logging.error(e.getMessage(), e);
                     }
                 }
             }
         }
         return null;
+    }
+
+    private static String getOutPutFileName(String oldFileName) {
+        String[] split = oldFileName.split("_");
+        return oldFileName = split[0] + "_" + split[1] + "_业务分析报告.xml";
     }
 }

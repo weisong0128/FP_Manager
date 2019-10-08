@@ -8,16 +8,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Create by User
  * Create TIME 2019/9/26 11:00
  */
 public class WordUtil {
+    public static String advice = "业务SQL在使用过程中请充分利用索引进行过滤筛选，减少返回给spark层的数量。 \n" +
+            "在业务使用高峰期，减少长任务、慢SQL的执行频率。 \n" +
+            "平台的平稳运行需要长时间的监控和维护，烦请驻场人员每天对FP平台进行日常巡检，并及时反馈平台运营情况。\n" +
+            "业务界面的快速响应以及FP集群的平稳运行，需要我们共同努力，如若在使用过程中，有任何疑问，请及时联系我们，谢谢。";
+
     public static void main(String[] args) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("projectName", "南京");
@@ -39,13 +41,20 @@ public class WordUtil {
         operationList.add(map2);
         map.put("errResults", errResultList);
         map.put("operations", operationList);
-        map.put("advice", "ceshi");
+        List<String> wordAdvice = getWordAdvice(advice);
+        map.put("adviceList", wordAdvice);
         wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml", "");
     }
 
     static Logger logging = LoggerFactory.getLogger(WordUtil.class);
 
     private static String encodedType = "utf-8";
+
+    public static List<String> getWordAdvice(String advice) {
+        String[] split = advice.split("\n");
+        List<String> strings = Arrays.asList(split);
+        return strings;
+    }
 
     /**
      * @description:导出word报表
