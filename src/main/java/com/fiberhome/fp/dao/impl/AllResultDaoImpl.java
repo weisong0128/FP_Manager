@@ -44,7 +44,7 @@ public class AllResultDaoImpl implements AllResultDao {
         StringBuilder sql = new StringBuilder();
         StringBuilder countSql = new StringBuilder();
         sql.append(" select  ");
-        System.err.println(allResult.getIsDistinct());
+       // System.err.println(allResult.getIsDistinct());
         if (allResult.getIsDistinct()==1){
             sql.append(" max(date) as date, ");
         }else {

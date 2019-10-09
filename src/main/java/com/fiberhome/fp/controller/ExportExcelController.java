@@ -32,9 +32,10 @@ public class ExportExcelController {
      */
     @GetMapping(value = "/export")
     @ResponseBody
-    public void export(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void export(HttpServletRequest request, HttpServletResponse response,String projectName, String cities, String envirNote, String feedback, String keyWord, String sortField, String startTime, String endTime) throws Exception {
+        AuthManage authManages = new AuthManage(projectName,cities,envirNote,feedback,keyWord,sortField,startTime,endTime);
         //获取数据
-        List<AuthManage> allAuthManage = authManageService.getAllAuthManage(null, new AuthManage());
+        List<AuthManage> allAuthManage = authManageService.getAllAuthManage(null,authManages);
 
         //excel标题
         String[] title = {"主键","项目名称","环境负责人","电话","安装省份","安装地市","安装地址","MAC","主节点ip","证书下载日期","备注（线上生产环境，研发测试环境）","对应的sn文件","授权反馈情况","备注","创建时间","修改时间"};
@@ -66,10 +67,10 @@ public class ExportExcelController {
             if("3".equals(authManage.getEnvirNote())){envirnote="已停用";}
             content[i][++b] = envirnote;
             content[i][++b] = authManage.getSnFile();
-            String feedback ="";
-            if("0".equals(authManage.getFeedback())){feedback="已反馈";}
-            if("1".equals(authManage.getFeedback())){feedback="未反馈";}
-            content[i][++b] = feedback;
+            String feedback1 ="";
+            if("0".equals(authManage.getFeedback())){feedback1="已反馈";}
+            if("1".equals(authManage.getFeedback())){feedback1="未反馈";}
+            content[i][++b] = feedback1;
             content[i][++b] = authManage.getCreateTime();
             // content[i][14] = authManage.getUpdateTime();
         }

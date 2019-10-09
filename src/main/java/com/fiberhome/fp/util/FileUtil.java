@@ -558,6 +558,7 @@ public class FileUtil {
      * @Return:java.lang.String
      * @Auth:User on 2019/9/29 17:40
      */
+    private static  final  Integer  NUMBER_1024=1024;
     public static String zipFile(String zipBasePath, String zipName, String zipFilePath, List<String> filesPaths, ZipOutputStream zos) throws Exception {
         BufferedInputStream bis = null;
         for (String filesPath : filesPaths) {
@@ -574,7 +575,7 @@ public class FileUtil {
                         //将文件写入zip内，
                         zos.putNextEntry(new ZipEntry(inputFileName));
                         int size = 0;
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[NUMBER_1024];
                         while ((size = bis.read(buffer)) > 0) {
                             zos.write(buffer, 0, size);
                         }
