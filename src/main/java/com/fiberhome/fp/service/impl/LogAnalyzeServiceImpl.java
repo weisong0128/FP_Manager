@@ -69,6 +69,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
     public static final int SLEEPTIME = 1050;
+    public static final int NUMBER_100 = 100;
 
     @Override
     public Response getLogListByParam(Page page, LogAnalze logAnalze) {
@@ -298,7 +299,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         AllResult proportionDate = logAnalzeDao.getProportion(pjName, pjLocation, createTime);
         int unqualifiedSql = proportionDate.getUnqualifiedSql();
         int qualifiedSql = proportionDate.getQualifiedSql();
-        templateMap.put("errorResultPercent", unqualifiedSql * 100 / (qualifiedSql));
+        templateMap.put("errorResultPercent", unqualifiedSql * NUMBER_100 / (qualifiedSql));
         //查询	不合格SQL 统计信息
         List<ErrorResult> errorResultList = logAnalzeDao.wordExportErrorResult(pjName, pjLocation, createTime);
         ArrayList<Map<String, String>> errResultList = new ArrayList<>();

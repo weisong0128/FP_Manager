@@ -21,7 +21,7 @@ public class WordUtil {
             "业务界面的快速响应以及FP集群的平稳运行，需要我们共同努力，如若在使用过程中，有任何疑问，请及时联系我们，谢谢。";
 
     public static void main(String[] args) {
-        HashMap<String, Object> map = new HashMap<>();
+    /*    HashMap<String, Object> map = new HashMap<>();
         map.put("projectName", "南京");
         map.put("projectLocation", "HCZZ");
         map.put("errorResultPercent", "70");
@@ -43,7 +43,7 @@ public class WordUtil {
         map.put("operations", operationList);
         List<String> wordAdvice = getWordAdvice(advice);
         map.put("adviceList", wordAdvice);
-        wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml", "");
+        wordExport(map, "fp_template.ftl", "D:\\test", "测试.xml", "");*/
     }
 
     static Logger logging = LoggerFactory.getLogger(WordUtil.class);

@@ -140,6 +140,12 @@ public class LogAnalzeController {
         return Response.ok(arrayList);
     }
 
+    /**
+     * @description:去重list<String></>
+     * @Param:[list1]
+     * @Return:java.util.List<java.lang.String>
+     * @Auth:User on 2019/10/10 15:41
+     */
     private List<String> deDuplicationList(List<String> list1) {
         ArrayList<String> list = new ArrayList<>();
         if (list1 != null && !list1.isEmpty()) {
@@ -196,8 +202,20 @@ public class LogAnalzeController {
         return Response.ok(retMap);
     }
 
+    /**
+     * @description:批量删除
+     * @Param:[uuids]
+     * @Return:com.fiberhome.fp.util.Response
+     * @Auth:User on 2019/10/10 15:39
+     */
     @PostMapping("/batchDeleteLogAnaylse")
     public Response batchDeleteLogAnaylse(@RequestBody String uuids) {
+        /**
+         * @description:
+         * @Param:[uuids]
+         * @Return:com.fiberhome.fp.util.Response
+         * @Auth:User on 2019/10/10 15:39
+         */
         uuids = uuids.replace("\"", "");
         String[] split = uuids.split(",");
         ArrayList<String> list = new ArrayList<>();
@@ -217,6 +235,13 @@ public class LogAnalzeController {
         return Response.ok();
     }
 
+
+    /**
+     * @description:重新分析
+     * @Param:[pjName, pjLocation, createTime, uuid]
+     * @Return:com.fiberhome.fp.util.Response
+     * @Auth:User on 2019/10/10 15:39
+     */
     @GetMapping("/restartAnalyse")
     public Response restartAnalyse(String pjName, String pjLocation, String createTime, String uuid) {
         if (StringUtils.isEmpty(pjName) || StringUtils.isEmpty(pjLocation) || StringUtils.isEmpty(createTime) || StringUtils.isEmpty(uuid)) {
@@ -250,6 +275,12 @@ public class LogAnalzeController {
         return Response.ok(uuid);
     }
 
+    /**
+     * @description:单个word文档导出
+     * @Param:[uuid, response]
+     * @Return:void
+     * @Auth:User on 2019/10/10 15:38
+     */
     @GetMapping("/wordExport")
     public void wordExport(String uuid, HttpServletResponse response) {
         LogAnalze logAnalze = logAnalyzeService.findOneLogAnalyse(uuid);
@@ -264,6 +295,12 @@ public class LogAnalzeController {
 
     }
 
+    /**
+     * @description:批量word文档导出
+     * @Param:[uuid, response]
+     * @Return:void
+     * @Auth:User on 2019/10/10 15:38
+     */
     @GetMapping("/batchWordExport")
     public void batchWordExport(String uuids, HttpServletResponse response) {
         ZipOutputStream zos = null;
