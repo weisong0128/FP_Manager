@@ -35,7 +35,13 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     private FpProjectService fpProjectService;
     @Autowired
     private AllResultServiceImpl allResultService;
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(20, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+
+    public static int NUM_20 = 20;
+
+    public static long LONG_60 = 60l;
+
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(NUM_20, Integer.MAX_VALUE,
+            LONG_60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
     // private Executor pool2 = Executors.newFixedThreadPool(1);
 
     @Value("${upload.log.path}")
