@@ -17,6 +17,15 @@
                 <include>upload</include>
             </includes>
         </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/src/main/resources/config</directory>
+            <outputDirectory>${unzip.name}/config</outputDirectory>
+            <includes>
+                <include>application.properties</include>
+            </includes>
+        </fileSet>
+
         <fileSet>
             <directory>${basedir}/target</directory>
             <outputDirectory>${unzip.name}</outputDirectory>

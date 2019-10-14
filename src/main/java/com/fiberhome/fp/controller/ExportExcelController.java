@@ -71,8 +71,9 @@ public class ExportExcelController {
             if("0".equals(authManage.getFeedback())){feedback1="已反馈";}
             if("1".equals(authManage.getFeedback())){feedback1="未反馈";}
             content[i][++b] = feedback1;
+            content[i][++b] = authManage.getNote();
             content[i][++b] = authManage.getCreateTime();
-            // content[i][14] = authManage.getUpdateTime();
+            content[i][14] = authManage.getUpdateTime();
         }
 
         //创建HSSFWorkbook

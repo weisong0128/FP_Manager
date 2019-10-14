@@ -36,6 +36,11 @@ public class UserInfoServiceImpl implements UserInofService {
     }
 
     @Override
+    public UserInfo getUserInfoByUserName(String userName) {
+        return userInfoDao.getUserInfoByUserName(userName);
+    }
+
+    @Override
     public int updateState(String state, Map<String,Object> parames) {
         return userInfoDao.updateState(state,parames);
     }

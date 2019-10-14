@@ -104,8 +104,7 @@ public class AllResultDaoImpl implements AllResultDao {
         }
 
         if (StringUtils.isNotBlank(allResult.getKeyWord())) {
-            sql.append(" and  SEARCH_ALL=:keyword ");
-            paramMap.put("keyword", allResult.getKeyWord());
+            sql.append(" and   SEARCH_ALL  like 'sql_result@%"+allResult.getKeyWord().trim()+"%'");
         }
 
         if(allResult.getIsDistinct()==1){
@@ -196,9 +195,12 @@ public class AllResultDaoImpl implements AllResultDao {
 //                " (select date from fp_operation_table where partition like '%' and pjname=:pjName and pjlocation=:pjLocation and date >:date )t)a group by month order by  month limit 100";
 
         StringBuilder errorSqlcountSql = new StringBuilder();
+    /*    errorSqlcountSql.append(" select month,count(*) as count from (select substr(date,0,7) as month from  " +
+                " (select from_unixtime(date) as date from " +
+                " (select date from fp_operation_table where partition like '%' ");*/
         errorSqlcountSql.append(" select month,count(*) as count from (select substr(date,0,7) as month from  " +
                 " (select from_unixtime(date) as date from " +
-                " (select date from fp_operation_table where partition like '%' ");
+                " (select date from fp_operation_table where partition in (:partition) ");
         joinSql(pjNames, pjLocations, param, errorSqlcountSql);
         errorSqlcountSql.append(" and date >:date )t)a)s group by month order by  month limit 100 ");
 

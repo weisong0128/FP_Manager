@@ -98,8 +98,7 @@ public class FpOperationTableDaoImpl implements FpOperationTableDao {
         }
 
         if (StringUtils.isNotBlank(fpOperationTable.getKeyWord())){
-            sql.append(" and    SEARCH_ALL=:keyword ");
-            paramMap.put("keyword",fpOperationTable.getKeyWord());
+            sql.append(" and   SEARCH_ALL like 'errinfo@%"+fpOperationTable.getKeyWord()+"%'");
         }
 
         if(fpOperationTable.getIsDistinct()==1){

@@ -244,13 +244,16 @@ public class Table {
 							for (int fieldrow = 1; fieldrow < fieldsheet.getRows(); fieldrow++) {
 								olddatatype = fieldsheet.getCell(0, fieldrow).getContents().trim().toLowerCase();
 								newdatatype = fieldsheet.getCell(1, fieldrow).getContents().trim();
-								if(datatype.equals(olddatatype) && "是".equals(datalong)) {
-									newdatatype = "wildcard4";
-								}else {
-									newdatatype = newdatatype;
-									if (olddatatype.contains("number") && (datatypetemp.indexOf(",")>=0 || datatypetemp.indexOf("，")>=0)){
-										newdatatype = "tfloat";
+								if (datatype.equals(olddatatype)) {
+									if ("是".equals(datalong)) {
+										newdatatype = "wildcard4";
+									} else {
+										newdatatype = newdatatype;
+										if (olddatatype.contains("number") && (datatypetemp.indexOf(",")>=0 || datatypetemp.indexOf("，")>=0)){
+											newdatatype = "tfloat";
+										}
 									}
+
 									fp_datatype = "y_" + newdatatype + "_";
 								}
 

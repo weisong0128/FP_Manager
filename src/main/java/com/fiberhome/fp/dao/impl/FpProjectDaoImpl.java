@@ -36,9 +36,9 @@ public class FpProjectDaoImpl implements FpProjectDao{
         StringBuilder sql = new StringBuilder("select pjname,pjlocation from fp_project where  pjname is not null ");
         StringBuilder sqlCount = new StringBuilder(" select count(*) as totalrows from fp_project where  pjname is not null ");
         if (StringUtils.isNotBlank(pjName)){
-            map.put("pjName",pjName);
-            sql.append(" AND  pjname = :pjName ");
-            sqlCount.append(" AND  pjname = :pjName ");
+            pjName=pjName.toUpperCase();
+            sql.append(" AND  pjname like '%"+pjName+"%' ");
+            sqlCount.append("  AND  pjname like '%"+pjName+"%' ");
         }
         if(page!=null){
             List<Map<String, Object>> count = namedParameterJdbcTemplate.queryForList(sqlCount.toString(),map);

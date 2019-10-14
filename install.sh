@@ -49,8 +49,8 @@ writeLog(){
 #获取全局公共配置中变量的方法，用到哪些变量，Need_Check_Keys和Need_Check_Vaules的值中就根据已有示例添加变量名，不用的删除。
 init() {
 	writeLog "initlization..."
-	Need_Check_Keys=( FP_TOOL_PORT  DB_URL  DB_USERNAME DB_PASSWORD )
-	Need_Check_Vaules=("$FP_TOOL_PORT" "$DB_URL" "$DB_USERNAME" "$DB_PASSWORD"  )
+	Need_Check_Keys=( FP_TOOL_PORT  HIVE_DB_URL  HIVE_DB_USERNAME  HIVE_DB_PASSWORD MYSQL_DB_URL  MYSQL_DB_USERNAME  MYSQL_DB_PASSWORD  NEWTABLE_TEMPLATE_FILEPATH   NEWTABLE_TEMPLATE_FILENAEM )
+	Need_Check_Vaules=("$FP_TOOL_PORT" "$HIVE_DB_URL" "$HIVE_DB_USERNAME" "$HIVE_DB_PASSWORD" "$MYSQL_DB_URL" "$MYSQL_DB_USERNAME" "$MYSQL_DB_PASSWORD"  "$NEWTABLE_TEMPLATE_FILEPATH" "$NEWTABLE_TEMPLATE_FILENAEM" )
 	for (( i=0; i<"${#Need_Check_Keys[*]}"; ++i ))
 	do
 		if [ -z "${Need_Check_Vaules[$i]}" ];then
@@ -160,9 +160,16 @@ install()
     #将globe.common.conf中的配置信息写入application.properties文件中
     applicationConf=./config/application.properties
     sed -i "s#server.port.*#server.port=${FP_TOOL_PORT}#g" $applicationConf
-    sed -i "s#spring.datasource.url.*#spring.datasource.url=${DB_URL}#g" $applicationConf
-    sed -i "s#spring.datasource.username.*#spring.datasource.username=${DB_USERNAME}#g" $applicationConf
-    sed -i "s#spring.datasource.password.*#spring.datasource.password=${DB_PASSWORD}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.jdbc-url.*#spring.datasource.hadoop.jdbc-url=${HIVE_DB_URL}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.username.*#spring.datasource.hadoop.username=${HIVE_DB_USERNAME}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.password.*#spring.datasource.hadoop.password=${HIVE_DB_PASSWORD}#g" $applicationConf
+
+    sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url=${MYSQL_DB_URL}#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.username.*#spring.datasource.mysql.username=${MYSQL_DB_USERNAME}#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.password.*#spring.datasource.mysql.password=${MYSQL_DB_PASSWORD}#g" $applicationConf
+
+    sed -i "s#newTable.template.filePath.*#newTable.template.filePath=${NEWTABLE_TEMPLATE_FILEPATH}#g" $applicationConf
+    sed -i "s#newTable.template.fileName2.*#newTable.template.fileName2=${NEWTABLE_TEMPLATE_FILENAEM}#g" $applicationConf
 
 
      #父目录下jar文件存在

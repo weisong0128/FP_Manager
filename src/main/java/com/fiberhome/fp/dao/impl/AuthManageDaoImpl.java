@@ -32,7 +32,7 @@ public class AuthManageDaoImpl implements AuthManageDao {
      */
     @Override
     public String createAuthManage(AuthManage authManage) {
-        StringBuilder sql = new StringBuilder("INSERT INTO `fp_myql_test`.`fp_auth_management`(`uuid`, `project_name`, `envir_head`, `phone`, `provinces`, `cities`, `address`, `mac`," +
+        StringBuilder sql = new StringBuilder("INSERT INTO `fp_auth_management`(`uuid`, `project_name`, `envir_head`, `phone`, `provinces`, `cities`, `address`, `mac`," +
                 " `master_ip`, `download_time`, `envir_note`, `sn_file`, `feedback`, `note`, `create_time`, `update_time`) VALUES (:uuid, :projectName, :envirHead, :phone, :provinces, :cities, :address, :mac," +
                 " :masterIp, :downloadTime, :envirNote, :snFile, :feedback, :note, :createTime, :updateTime)");
         authManage.setUuid(UUID.randomUUID().toString().replaceAll("-", ""));

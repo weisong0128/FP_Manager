@@ -14,11 +14,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import jxl.read.biff.BiffException;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,14 +29,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author fengxiaochun
@@ -43,7 +41,7 @@ import java.util.Map;
 @Api(value = "FP功能接口" ,description = "前一个版本所有接口")
 @RestController
 @RequestMapping("/project/")
-@PropertySource(value = "classpath:config/application.properties" ,encoding = "UTF-8")
+@PropertySource(value = "classpath:config/application.properties" ,encoding = "utf-8")
 public class FpProjectController {
 
     Logger logging = LoggerFactory.getLogger(FpProjectController.class);
@@ -251,11 +249,14 @@ public class FpProjectController {
     @Value("${upload.table.path}")
     String uploadTablePath;
 
-    @Value("${newTable.template.fileName2}")
     String  fileName2;
+
     @Value("${newTable.template.filePath}")
     String filePath;
 
+
+    @Resource
+    Environment env;
 
 
     /**
@@ -311,7 +312,10 @@ public class FpProjectController {
      */
     @ApiOperation(value="建表模块-》下载excel模板接口",notes = "下载excel模板接口")
     @GetMapping(value = "/downloadexcel")
-    public void  downloadexcel(HttpServletResponse response) {
+    public void  downloadexcel(HttpServletResponse response) throws IOException {
+        Properties p = new Properties();
+        p.load(new InputStreamReader(FpProjectController.class.getClassLoader().getResourceAsStream("config"+File.separator+"application.properties"),"UTF-8"));
+        fileName2 = p.getProperty("newTable.template.fileName2");
         FileUtil.downloadFile(response,fileName2,filePath);
     }
 
@@ -350,18 +354,20 @@ public class FpProjectController {
     @ApiOperation(value="建表模块-》修改excel接口",notes = "修改excel接口")
     @PostMapping(value = "/updateexcel")
     public Response updateExcel(@RequestBody List<UpdateExcelModel> updateExcelModel) {
+        String excelFile="";
         for (int i = 0; i <updateExcelModel.size() ; i++) {
-            if (StringUtils.pathEquals(updateExcelModel.get(i).getUpdateType(),"T")){
+            if (updateExcelModel.get(i).getUpdateType()!=null && StringUtils.pathEquals(updateExcelModel.get(i).getUpdateType(),"T")){
                 String fieldFile = fieldPath +  File.separator + fieldFileName;
 //            String[] fields = updateExcelModel.getUpdateType().split(",");
                 ExcelUtil.writeSpecifiedCell(fieldFile,0,updateExcelModel.get(i).getRow(),updateExcelModel.get(i).getCol(),updateExcelModel.get(i).getOldType());
                 ExcelUtil.writeSpecifiedCell(fieldFile,0,updateExcelModel.get(i).getRow(),updateExcelModel.get(i).getCol()+1,updateExcelModel.get(i).getContent());
             }else {
-                String excelFile = updateExcelModel.get(0).getPath() +  File.separator + updateExcelModel.get(i).getFileName();
+                excelFile = updateExcelModel.get(0).getPath() +  File.separator + updateExcelModel.get(i).getFileName();
                 ExcelUtil.writeSpecifiedCell(excelFile, updateExcelModel.get(i).getSheetNum(), updateExcelModel.get(i).getRow(),updateExcelModel.get(i).getCol(), updateExcelModel.get(i).getContent());
             }
         }
-        return Response.ok();
+        Response check = check(updateExcelModel.get(0).getFileName(), updateExcelModel.get(0).getPath());
+        return check;
     }
 
 
@@ -397,7 +403,7 @@ public class FpProjectController {
     @ApiOperation(value="建表模块-》上传脚本",notes = "上传脚本")
     @RequestMapping(value = "uploadSql",method = RequestMethod.POST,headers = "content-type=multipart/form-data")
     public Response uploadSql(@RequestParam(value = "file",required = true) MultipartFile file){
-       return Response.ok( FileUtil.uploadSql(file,uploadTablePath));
+        return Response.ok( FileUtil.uploadSql(file,uploadTablePath));
     }
 
     /**

@@ -29,6 +29,10 @@ public class UserInfoController {
     @ApiOperation(value="创建用户",notes = "创建用户信息")
     @PostMapping(value = "createUser")
     public Response createUser(@RequestBody UserInfo userInfo){
+        UserInfo userInfoByUserName = userInfoService.getUserInfoByUserName(userInfo.getUserName());
+        if (userInfoByUserName!=null){
+            return Response.error("用户名已经存在，请重新输入！");
+        }
         return Response.ok(userInfoService.createUser(userInfo));
     };
 

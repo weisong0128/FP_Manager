@@ -68,7 +68,8 @@ public class IndexDataDaoImpl implements IndexDataDao {
     @Override
     public List<Map<String, Object>> openAuthManage(Map<String, Object> map) {
         map.put("year", Calendar.getInstance().get(Calendar.YEAR));
-        StringBuilder sql = new StringBuilder("SELECT  DATE_FORMAT( download_time, '%m' ) AS month, COUNT(*) AS count   FROM fp_auth_management WHERE 1=1 and envir_note !='3' and is_available !='1' and DATE_FORMAT( download_time, '%Y' ) =:year  GROUP BY month  ORDER BY month;");
+        map.put("year1", Calendar.getInstance().get(Calendar.YEAR)-1);
+        StringBuilder sql = new StringBuilder("SELECT  DATE_FORMAT( download_time, '%m' ) AS month, COUNT(*) AS count ,DATE_FORMAT( download_time, '%Y' ) AS year   FROM fp_auth_management WHERE 1=1 and envir_note !='3' and is_available ='0' and DATE_FORMAT( download_time, '%Y' ) in(:year,:year1) GROUP BY MONTH ORDER BY YEAR ,MONTH");
         List<Map<String, Object>> maps = namedParameterJdbcTemplate.queryForList(sql.toString(), map);
         return maps;
     }

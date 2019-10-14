@@ -40,4 +40,12 @@ public interface UserInfoDao {
 
     int updateState(String state, Map<String,Object> parames);
 
+    /**
+     * 根据用户名查询用户是否存在
+     * @param userName
+     * @return
+     */
+    UserInfo getUserInfoByUserName(String userName);
+
+
 }

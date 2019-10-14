@@ -173,7 +173,7 @@ public class AllResult {
                     break;
                 case "comp": this.tagDescribe = "复杂语句";
                     break;
-                case "insert": this.tagDescribe = "导入导出语句";
+                case "ins|exp": this.tagDescribe = "导入导出语句";//ins|exp
                     break;
                 case "else": this.tagDescribe = "其他语句";
                     break;

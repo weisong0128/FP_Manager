@@ -30,6 +30,13 @@ public interface UserInofService {
      */
     UserInfo getUserInfoByUuid(String uuid);
 
+    /**
+     * 根据用户名查询用户是否存在
+     * @param userName
+     * @return
+     */
+    UserInfo getUserInfoByUserName(String userName);
+
     /***
      * 删除，启用，禁用
      */

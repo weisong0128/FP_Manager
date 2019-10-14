@@ -83,6 +83,13 @@ public class UserInfoDaoImpl implements UserInfoDao {
         return namedParameterJdbcTemplate.update(sql.toString(),parames);
     }
 
+    @Override
+    public UserInfo getUserInfoByUserName(String userName) {
+        String sql="SELECT * FROM fp_user WHERE user_name = ? ";
+        List<UserInfo> query = jdbcTemplate.query(sql, new String[]{userName}, new BeanPropertyRowMapper<>(UserInfo.class));
+        return query.size()>0?query.get(0):null;
+    }
+
     /**
      * 获取所有的用户信息
      */
