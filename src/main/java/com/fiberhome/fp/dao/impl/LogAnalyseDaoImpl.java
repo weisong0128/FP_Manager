@@ -248,11 +248,12 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         countSql.append("select  count(*) as count  from err_result  WHERE   syskv='nothing:1' ");
         Map paramMap = new HashMap();
         //根据时间过滤
-        if (isDistinct) {
+      /*  if (isDistinct) {
             sql.append(" and partition in (:partition) ");
             countSql.append(" and partition in (:partition) ");
             paramMap.put("partition", TimeUtil.partitons(SEVEN));
-        } else if (StringUtils.isNotEmpty(errorResult.getTimeTag())) {
+        } else */
+        if (StringUtils.isNotEmpty(errorResult.getTimeTag())) {
             if (StringUtils.equals(TODAY, errorResult.getTimeTag())) {
                 sql.append(" and partition in (:partition) ");
                 countSql.append(" and partition in (:partition) ");
@@ -426,7 +427,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         try {
             partition = TimeUtil.long2String(Long.parseLong(createTime), "yyyyMM");
         } catch (NumberFormatException e) {
-            logging.error("时间戳转换错误: "+createTime);
+            logging.error("时间戳转换错误: " + createTime);
             logging.error(e.getMessage(), e);
             e.printStackTrace();
             throw new NumberFormatException();

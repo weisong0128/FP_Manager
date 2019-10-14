@@ -25,6 +25,8 @@ public class FileUtil {
     private static String cldir = "cl_dir";
     private static String cutRex = "_cut";
     private static final int MB_SIZE = 1024;
+    static boolean isSql = false;
+    private static final Integer NUMBER_1024 = 1024;
 
 
     public static void creatDir(String path) {
@@ -453,7 +455,6 @@ public class FileUtil {
     /**
      * 脚本下载
      */
-    static boolean isSql = false;
 
     public static Response uploadSql(MultipartFile file, String uploadPath) {
         try {
@@ -499,8 +500,8 @@ public class FileUtil {
         }
         return false;
     }
-
     /*文件下载*/
+
     public static void downloadFile(HttpServletResponse response, String fileName, String path) {
         if (fileName != null) {
             //设置文件路径
@@ -552,13 +553,6 @@ public class FileUtil {
         }
     }
 
-    /**
-     * @description:文件压缩
-     * @Param:[zipBasePath, zipName, zipFilePath, filesPath]
-     * @Return:java.lang.String
-     * @Auth:User on 2019/9/29 17:40
-     */
-    private static  final  Integer  NUMBER_1024=1024;
     public static String zipFile(String zipBasePath, String zipName, String zipFilePath, List<String> filesPaths, ZipOutputStream zos) throws Exception {
         BufferedInputStream bis = null;
         for (String filesPath : filesPaths) {
