@@ -327,7 +327,9 @@ public class LogAnalzeController {
             try {
                 File zip = new File(zipFilePath);
                 if (!zip.exists()) {
-                    zip.createNewFile();
+                    if (!zip.createNewFile()) {
+                        throw new RuntimeException();
+                    }
                 }
                 zos = new ZipOutputStream(new FileOutputStream(zip));
                 //创建zip文件输出流

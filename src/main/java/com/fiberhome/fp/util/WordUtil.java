@@ -15,7 +15,7 @@ import java.util.*;
  * Create TIME 2019/9/26 11:00
  */
 public class WordUtil {
-    public static String advice = "业务SQL在使用过程中请充分利用索引进行过滤筛选，减少返回给spark层的数量。 \n" +
+    public static final String advice = "业务SQL在使用过程中请充分利用索引进行过滤筛选，减少返回给spark层的数量。 \n" +
             "在业务使用高峰期，减少长任务、慢SQL的执行频率。 \n" +
             "平台的平稳运行需要长时间的监控和维护，烦请驻场人员每天对FP平台进行日常巡检，并及时反馈平台运营情况。\n" +
             "业务界面的快速响应以及FP集群的平稳运行，需要我们共同努力，如若在使用过程中，有任何疑问，请及时联系我们，谢谢。";
@@ -52,8 +52,7 @@ public class WordUtil {
 
     public static List<String> getWordAdvice(String advice) {
         String[] split = advice.split("\n");
-        List<String> strings = Arrays.asList(split);
-        return strings;
+        return Arrays.asList(split);
     }
 
     /**

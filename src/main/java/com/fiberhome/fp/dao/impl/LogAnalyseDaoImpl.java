@@ -8,9 +8,6 @@ import com.fiberhome.fp.pojo.LogAnalze;
 import com.fiberhome.fp.util.EntityMapTransUtils;
 import com.fiberhome.fp.util.Page;
 import com.fiberhome.fp.util.TimeUtil;
-import com.fiberhome.fp.vo.ErrorSqlCount;
-import com.fiberhome.fp.vo.SqlCount;
-import com.fiberhome.fp.vo.TagProporation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,8 +159,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         if (uuids != null) {
             getInSqlTemplate(sql, list, uuids, "uuid");
         }
-        List<LogAnalze> query = mysqlJdbcTemplate.query(sql.toString(), list.toArray(), new BeanPropertyRowMapper<>(LogAnalze.class));
-        return query;
+        return mysqlJdbcTemplate.query(sql.toString(), list.toArray(), new BeanPropertyRowMapper<>(LogAnalze.class));
     }
 
 
@@ -418,8 +414,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         String sql = "select min(date) as date,count(*) as count ,errcode,errinfo from fp_operation_table where partition like '" + partition + "' " +
                 "and pjname='" + pjName + "' and pjlocation='" + pjLocation + "' and capture_time = '" + createTime + "' " +
                 "group by errcode,errinfo order by  count(*) DESC limit 10;";
-        List<FpOperationTable> query = namedParameterJdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<>(FpOperationTable.class));
-        return query;
+        return namedParameterJdbcTemplate.query(sql, new HashMap<>(), new BeanPropertyRowMapper<>(FpOperationTable.class));
     }
 
     public AllResult getProportion(String pjName, String pjLocation, String createTime) {
@@ -429,7 +424,6 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         } catch (NumberFormatException e) {
             logging.error("时间戳转换错误: " + createTime);
             logging.error(e.getMessage(), e);
-            e.printStackTrace();
             throw new NumberFormatException();
         }
         AllResult allResult = new AllResult();
@@ -446,7 +440,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
 
         List<AllResult> qualifiedCountList = namedParameterJdbcTemplate.query(qualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
         int qualifiedSqlCount = 0;
-        if (qualifiedCountList != null && qualifiedCountList.size() > 0) {
+        if (qualifiedCountList != null && !qualifiedCountList.isEmpty()) {
             try {
                 qualifiedSqlCount = qualifiedCountList.get(0).getCount();
             } catch (Exception e) {
@@ -456,7 +450,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         }
         List<AllResult> unqualifiedCountList = namedParameterJdbcTemplate.query(unqualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
         int unqualifiedSqlCount = 0;
-        if (unqualifiedCountList != null && unqualifiedCountList.size() > 0) {
+        if (unqualifiedCountList != null && !unqualifiedCountList.isEmpty()) {
             try {
                 unqualifiedSqlCount = unqualifiedCountList.get(0).getCount();
             } catch (Exception e) {
