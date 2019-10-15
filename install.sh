@@ -157,8 +157,8 @@ install()
 		exit 1
 	fi
 
-    #将globe.common.conf中的配置信息写入application.properties文件中
-    applicationConf=./config/application.properties
+    #将globe.common.conf中的配置信息写入application.yml文件中
+    applicationConf=./config/application.yml
     sed -i "s#server.port.*#server.port=${FP_TOOL_PORT}#g" $applicationConf
     sed -i "s#spring.datasource.hadoop.jdbc-url.*#spring.datasource.hadoop.jdbc-url=${HIVE_DB_URL}#g" $applicationConf
     sed -i "s#spring.datasource.hadoop.username.*#spring.datasource.hadoop.username=${HIVE_DB_USERNAME}#g" $applicationConf

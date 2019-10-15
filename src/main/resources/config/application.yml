@@ -1,0 +1,100 @@
+server:
+  port: 8084
+  tomcat:
+    uri-encoding: UTF-8
+
+#fp数据库配置
+spring:
+  datasource:
+    hadoop:
+      type: com.alibaba.druid.pool.DruidDataSource
+      jdbc-url: jdbc:hive2://172.16.108.6:10009/default
+      username: root
+      password: 123456
+      driver-class-name: org.apache.hive.jdbc.HiveDriver
+    one :
+      type: com.alibaba.druid.pool.DruidDataSource
+      #用户信息管理和授权管理数据库
+    mysql:
+      jdbc-url: jdbc:mysql://172.16.108.6:3306/fp_test?useSSL=false&useUnicode=true&characterEncoding=utf-8
+      username: root
+      password: root
+      driver-class-name: com.mysql.jdbc.Driver
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+  servlet:
+    multipar:
+      enabled: true
+      max-file-size: 600MB
+      max-request-size: 600MB
+
+field:
+  type:
+    path: /home/analysis/fptool/field
+    #path: D:\\zgd\\test
+    file: fieldType.xls
+
+update:
+    conf:
+      name: fp_sql_analysis.conf
+      #path: D:\\zgd\\test
+      path: /home/analysis/fptool
+
+shell:
+  execute:
+    path: /home/analysis/new_fptool
+
+upload:
+  table:
+    #path: D:\\test
+    path: /home/analysis/fptool/upload
+  log:
+    path: /home/ghr/log2/upload
+
+#swagger是否禁用，生产环境时禁用（false）
+swagger:
+  enable: false
+
+#  enable: false
+
+#建表模板名称（只能为.xsl后缀文件） 江苏省南京市_测试项目_务对接调查_20190627.xls
+newTable:
+  template:
+    fileName2: 模板.xls
+    #建表模板路径
+    #filePath: D:\\zgd\\test
+    filePath: /home/analysis/fptool/model
+
+    #单个文件默认大小
+cut:
+  file:
+      size: 30
+        #文件最大拆分数
+      max:
+        count: 1
+
+    #同时异步分析最大值
+max:
+  analyse:
+      thread:
+        count: 2
+    #生成word报表目录
+template:
+  file:
+    dir: D:\\test
+      #模板名称
+    name: fp_template.ftl
+    #模板根目录
+  root:
+    path: /home/analysis/new_fptool/fptool
+
+    #是否异步分析程序
+analyse:
+      is:
+       asyn: true
+
+
+

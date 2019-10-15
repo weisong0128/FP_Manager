@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import jxl.read.biff.BiffException;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ import java.util.*;
 @Api(value = "FP功能接口" ,description = "前一个版本所有接口")
 @RestController
 @RequestMapping("/project/")
-@PropertySource(value = "classpath:config/application.properties" ,encoding = "utf-8")
+//@PropertySource(value = "classpath:config/AA.properties",encoding = "utf-8")
 public class FpProjectController {
 
     Logger logging = LoggerFactory.getLogger(FpProjectController.class);
@@ -248,7 +247,7 @@ public class FpProjectController {
 
     @Value("${upload.table.path}")
     String uploadTablePath;
-
+    @Value("${newTable.template.fileName2}")
     String  fileName2;
 
     @Value("${newTable.template.filePath}")
@@ -313,9 +312,9 @@ public class FpProjectController {
     @ApiOperation(value="建表模块-》下载excel模板接口",notes = "下载excel模板接口")
     @GetMapping(value = "/downloadexcel")
     public void  downloadexcel(HttpServletResponse response) throws IOException {
-        Properties p = new Properties();
-        p.load(new InputStreamReader(FpProjectController.class.getClassLoader().getResourceAsStream("config"+File.separator+"application.properties"),"UTF-8"));
-        fileName2 = p.getProperty("newTable.template.fileName2");
+      /* Properties p = new Properties();
+        p.load(new InputStreamReader(new FileInputStream(filePath),"UTF-8"));
+        fileName2 = p.getProperty("newTable.template.fileName2");*/
         FileUtil.downloadFile(response,fileName2,filePath);
     }
 

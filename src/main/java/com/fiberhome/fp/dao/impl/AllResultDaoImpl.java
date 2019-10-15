@@ -299,29 +299,29 @@ public class AllResultDaoImpl implements AllResultDao {
     private void jointSql(StringBuilder sql, String tag, int i) {
         if (i == 0) {
             if (StringUtils.equals("1", tag)) {
-                sql.append("  (time < 10000) ");
+                sql.append("  (time <= 10000) ");
             }
             if (StringUtils.equals("2", tag)) {
-                sql.append("  (time < 20000) ");
+                sql.append("  (time <= 20000) ");
             }
             if (StringUtils.equals("3", tag)) {
-                sql.append(" (time > 20000 and time < 60000) ");
+                sql.append(" (time >= 20000 and time <= 60000) ");
             }
             if (StringUtils.equals("4", tag)) {
-                sql.append(" (time > 60000) ");
+                sql.append(" (time >= 60000) ");
             }
         } else {
             if (StringUtils.equals("1", tag)) {
-                sql.append(" or (time < 10000) ");
+                sql.append(" or (time <= 10000) ");
             }
             if (StringUtils.equals("2", tag)) {
-                sql.append(" or (time < 20000) ");
+                sql.append(" or (time <= 20000) ");
             }
             if (StringUtils.equals("3", tag)) {
-                sql.append(" or (time > 20000 and time < 60000) ");
+                sql.append(" or (time >= 20000 and time <= 60000) ");
             }
             if (StringUtils.equals("4", tag)) {
-                sql.append(" or (time > 60000) ");
+                sql.append(" or (time >= 60000) ");
             }
         }
 
