@@ -12,7 +12,7 @@ spring:
       username: root
       password: 123456
       driver-class-name: org.apache.hive.jdbc.HiveDriver
-    one :
+    one:
       type: com.alibaba.druid.pool.DruidDataSource
       #用户信息管理和授权管理数据库
     mysql:
@@ -26,10 +26,10 @@ spring:
       force: true
       enabled: true
   servlet:
-    multipar:
-      enabled: true
-      max-file-size: 600MB
-      max-request-size: 600MB
+      multipart:
+        enabled: true
+        max-file-size:  600MB
+        max-request-size: 600MB
 
 field:
   type:
@@ -38,10 +38,10 @@ field:
     file: fieldType.xls
 
 update:
-    conf:
-      name: fp_sql_analysis.conf
-      #path: D:\\zgd\\test
-      path: /home/analysis/fptool
+  conf:
+    name: fp_sql_analysis.conf
+    #path: D:\\zgd\\test
+    path: /home/analysis/fptool
 
 shell:
   execute:
@@ -71,30 +71,29 @@ newTable:
     #单个文件默认大小
 cut:
   file:
-      size: 30
-        #文件最大拆分数
-      max:
-        count: 1
+    size: 30
+    #文件最大拆分数
+    max:
+      count: 1
 
     #同时异步分析最大值
 max:
   analyse:
-      thread:
-        count: 2
+    thread:
+      count: 2
     #生成word报表目录
 template:
   file:
-    dir: D:\\test
-      #模板名称
+    #模板名称
     name: fp_template.ftl
     #模板根目录
-  root:
-    path: /home/analysis/new_fptool/fptool
+root:
+  path: /home/nebula/fp_1.0/fptool/
 
-    #是否异步分析程序
+  #是否异步分析程序
 analyse:
-      is:
-       asyn: true
+  is:
+    asyn: true
 
 
 

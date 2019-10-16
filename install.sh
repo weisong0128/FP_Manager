@@ -175,7 +175,8 @@ install()
      #父目录下jar文件存在
      if [ -f "${jar_file}" ]; then
          #启动jar包；重定向标准错误输出到文件，丢掉标准输出
-        nohup  java  -jar ${jar_file} > "${log_file}" &
+       # nohup  java  -jar ${jar_file} > "${log_file}" &
+		nohup java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xmx2048m  -jar ${jar_file}  > "${log_file}"  &
      else
          echo -e "\033[31m${jar_file}文件不存在！\033[0m"
          exit 1

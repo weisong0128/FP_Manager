@@ -305,7 +305,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         //根据项目地点过滤
         if (errorResult.getPjLocationList() != null && !errorResult.getPjLocationList().isEmpty() && !errorResult.getPjLocationList().contains(ALL)) {
             sql.append(" and  pjlocation in (:pjLocation) ");
-            countSql.append(" and  pjlocation in (:pjLocation) ");
+            countSql.append(" and  pjlocation in (:pjLocation) ");  
             paramMap.put("pjLocation", errorResult.getPjLocationList());
         }
 

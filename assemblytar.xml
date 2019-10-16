@@ -15,6 +15,9 @@
                 <include>field</include>
                 <include>log</include>
                 <include>upload</include>
+                <include>template</include>
+                <include>result</include>
+                <include>tmp</include>
             </includes>
         </fileSet>
 
@@ -34,6 +37,7 @@
             </includes>
         </fileSet>
 
+
         <fileSet>
             <directory>${basedir}/target</directory>
             <outputDirectory>${unzip.name}</outputDirectory>
@@ -49,6 +53,17 @@
             <includes>
                 <include>globe.common.conf</include>
                 <include>install.sh</include>
+                <!-- <include>FieldsFrequency.jar</include>-->
+                <include>fp_analysis.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <outputDirectory>${unzip.name}</outputDirectory>
+            <includes>
+                <include>FieldsFrequency.jar</include>
+                <include>result</include>
+                <include>tmp</include>
             </includes>
         </fileSet>
     </fileSets>

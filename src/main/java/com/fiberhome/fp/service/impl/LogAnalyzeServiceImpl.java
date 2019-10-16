@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -42,8 +43,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());*/
     private Executor pool = Executors.newCachedThreadPool();
 
-    @Value("${upload.log.path}")
-    private String uploadLogPath;
+
     @Autowired
     private AnalyseProcess analyseProcess;
 
@@ -53,22 +53,25 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Value("${update.conf.path}")
     String path;
 
-    @Value("${shell.execute.path}")
-    String shellPath;
+
 
     @Value("${cut.file.size}")
     int cutfilesize;
     @Value("${cut.file.max.count}")
     int cutFileMaxCount;
-    @Value("${template.file.dir}")
-    String outFilePath;
 
     @Value("${template.file.name}")
     String templateName;
 
-    @Value("${template.root.path}")
-    String templateRootPath;
 
+    String rootPath = new ApplicationHome(getClass()).getSource().getParentFile().toString();
+
+
+    String shellPath=rootPath;
+
+    private String uploadLogPath=rootPath + File.separator + "upload";
+
+    String outFilePath = rootPath + File.separator + "output_template";
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
@@ -296,6 +299,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Override
     public String wordExport(String pjName, String pjLocation, String createTime) {
+        String path = new ApplicationHome(getClass()).getSource().getParentFile().toString();
         HashMap<String, Object> templateMap = new HashMap<>();
         templateMap.put("projectName", pjName);
         templateMap.put("projectLocation", pjLocation);
@@ -332,7 +336,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
         templateMap.put("adviceList", wordAdvice);
 
         String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";
-        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName, templateRootPath);
+        WordUtil.wordExport(templateMap, templateName, outFilePath, outFileName, rootPath);
         //FileUtil.deleteFile(outFilePath,outFileName);
         return outFileName;
     }
