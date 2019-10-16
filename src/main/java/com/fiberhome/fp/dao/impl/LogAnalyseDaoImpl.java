@@ -305,7 +305,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
         //根据项目地点过滤
         if (errorResult.getPjLocationList() != null && !errorResult.getPjLocationList().isEmpty() && !errorResult.getPjLocationList().contains(ALL)) {
             sql.append(" and  pjlocation in (:pjLocation) ");
-            countSql.append(" and  pjlocation in (:pjLocation) ");  
+            countSql.append(" and  pjlocation in (:pjLocation) ");
             paramMap.put("pjLocation", errorResult.getPjLocationList());
         }
 
@@ -445,7 +445,8 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
                 qualifiedSqlCount = qualifiedCountList.get(0).getCount();
             } catch (Exception e) {
                 logging.error("qualifiedSqlCount 为 0 条,分析错误");
-                throw new NullPointerException("qualifiedSqlCount 为 0 条");
+                qualifiedSqlCount = 1;
+                // throw new NullPointerException("qualifiedSqlCount 为 0 条");
             }
         }
         List<AllResult> unqualifiedCountList = namedParameterJdbcTemplate.query(unqualifiedSql.toString(), param, new BeanPropertyRowMapper<>(AllResult.class));
@@ -458,7 +459,7 @@ public class LogAnalyseDaoImpl implements LogAnalzeDao {
             }
         }
         allResult.setQualifiedSql(qualifiedSqlCount);
-        allResult.setUnqualifiedSql(unqualifiedSqlCount);
+        allResult.setUnqualifiedSql(qualifiedSqlCount == 1 ? 0 : unqualifiedSqlCount);
         return allResult;
 
     }

@@ -51,8 +51,6 @@ upload:
   table:
     #path: D:\\test
     path: /home/analysis/fptool/upload
-  log:
-    path: /home/ghr/log2/upload
 
 #swagger是否禁用，生产环境时禁用（false）
 swagger:
@@ -86,9 +84,8 @@ template:
   file:
     #模板名称
     name: fp_template.ftl
-    #模板根目录
-root:
-  path: /home/nebula/fp_1.0/fptool/
+
+
 
   #是否异步分析程序
 analyse:
