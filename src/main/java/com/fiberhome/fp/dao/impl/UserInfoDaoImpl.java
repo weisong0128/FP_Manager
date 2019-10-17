@@ -85,7 +85,7 @@ public class UserInfoDaoImpl implements UserInfoDao {
 
     @Override
     public UserInfo getUserInfoByUserName(String userName) {
-        String sql="SELECT * FROM fp_user WHERE user_name = ? ";
+        String sql="SELECT * FROM fp_user WHERE  user_state ='0' and user_name = ?  ";
         List<UserInfo> query = jdbcTemplate.query(sql, new String[]{userName}, new BeanPropertyRowMapper<>(UserInfo.class));
         return query.size()>0?query.get(0):null;
     }

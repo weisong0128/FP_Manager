@@ -44,6 +44,10 @@ public class UserInfoController {
     @ApiOperation(value="修改用户信息",notes = "修改用户信息")
     @RequestMapping(value = "updateUserInfo",method = RequestMethod.POST)
     public Response updateUserInfo(@RequestBody UserInfo userInfo){
+        UserInfo userInfoByUserName = userInfoService.getUserInfoByUserName(userInfo.getUserName());
+        if (userInfoByUserName!=null){
+            return Response.error("用户名已经存在，请重新输入！");
+        }
         return Response.ok(userInfoService.updateUserInfo(userInfo));
     };
 

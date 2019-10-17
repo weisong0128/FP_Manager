@@ -159,17 +159,18 @@ install()
 
     #将globe.common.conf中的配置信息写入application.yml文件中
     applicationConf=./config/application.yml
-    sed -i "s#server.port.*#server.port=${FP_TOOL_PORT}#g" $applicationConf
-    sed -i "s#spring.datasource.hadoop.jdbc-url.*#spring.datasource.hadoop.jdbc-url=${HIVE_DB_URL}#g" $applicationConf
-    sed -i "s#spring.datasource.hadoop.username.*#spring.datasource.hadoop.username=${HIVE_DB_USERNAME}#g" $applicationConf
-    sed -i "s#spring.datasource.hadoop.password.*#spring.datasource.hadoop.password=${HIVE_DB_PASSWORD}#g" $applicationConf
+    sed -i "s#server.port.*#server.port\: ${FP_TOOL_PORT}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.jdbc-url.*#spring.datasource.hadoop.jdbc-url\: ${HIVE_DB_URL}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.username.*#spring.datasource.hadoop.username\: ${HIVE_DB_USERNAME}#g" $applicationConf
+    sed -i "s#spring.datasource.hadoop.password.*#spring.datasource.hadoop.password\: ${HIVE_DB_PASSWORD}#g" $applicationConf
 
-    sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url=${MYSQL_DB_URL}#g" $applicationConf
-    sed -i "s#spring.datasource.mysql.username.*#spring.datasource.mysql.username=${MYSQL_DB_USERNAME}#g" $applicationConf
-    sed -i "s#spring.datasource.mysql.password.*#spring.datasource.mysql.password=${MYSQL_DB_PASSWORD}#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url\: ${MYSQL_DB_URL}#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.username.*#spring.datasource.mysql.username\: ${MYSQL_DB_USERNAME}#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.password.*#spring.datasource.mysql.password\: ${MYSQL_DB_PASSWORD}#g" $applicationConf
 
-    sed -i "s#newTable.template.filePath.*#newTable.template.filePath=${NEWTABLE_TEMPLATE_FILEPATH}#g" $applicationConf
-    sed -i "s#newTable.template.fileName2.*#newTable.template.fileName2=${NEWTABLE_TEMPLATE_FILENAEM}#g" $applicationConf
+    sed -i "s#newTable.template.filePath.*#newTable.template.filePath\: ${NEWTABLE_TE
+    MPLATE_FILEPATH}#g" $applicationConf
+    sed -i "s#newTable.template.fileName2.*#newTable.template.fileName2\: ${NEWTABLE_TEMPLATE_FILENAEM}#g" $applicationConf
 
 
      #父目录下jar文件存在
