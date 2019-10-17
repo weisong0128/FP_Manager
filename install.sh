@@ -164,7 +164,8 @@ install()
     sed -i "s#spring.datasource.hadoop.username.*#spring.datasource.hadoop.username\: ${HIVE_DB_USERNAME}#g" $applicationConf
     sed -i "s#spring.datasource.hadoop.password.*#spring.datasource.hadoop.password\: ${HIVE_DB_PASSWORD}#g" $applicationConf
 
-    sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url\: ${MYSQL_DB_URL}#g" $applicationConf
+    #sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url\: ${MYSQL_DB_URL}\?useUnicode=true\&amp;characterEncoding=UTF-8\&rewriteBatchedStatements=true#g" $applicationConf
+    sed -i "s#spring.datasource.mysql.jdbc-url.*#spring.datasource.mysql.jdbc-url\: ${MYSQL_DB_URL}\?useSSL=false\&useUnicode=true\&characterEncoding=utf-8#g" $applicationConf
     sed -i "s#spring.datasource.mysql.username.*#spring.datasource.mysql.username\: ${MYSQL_DB_USERNAME}#g" $applicationConf
     sed -i "s#spring.datasource.mysql.password.*#spring.datasource.mysql.password\: ${MYSQL_DB_PASSWORD}#g" $applicationConf
 
