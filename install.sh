@@ -168,8 +168,7 @@ install()
     sed -i "s#spring.datasource.mysql.username.*#spring.datasource.mysql.username\: ${MYSQL_DB_USERNAME}#g" $applicationConf
     sed -i "s#spring.datasource.mysql.password.*#spring.datasource.mysql.password\: ${MYSQL_DB_PASSWORD}#g" $applicationConf
 
-    sed -i "s#newTable.template.filePath.*#newTable.template.filePath\: ${NEWTABLE_TE
-    MPLATE_FILEPATH}#g" $applicationConf
+    sed -i "s#newTable.template.filePath.*#newTable.template.filePath\: ${NEWTABLE_TEMPLATE_FILEPATH}#g" $applicationConf
     sed -i "s#newTable.template.fileName2.*#newTable.template.fileName2\: ${NEWTABLE_TEMPLATE_FILENAEM}#g" $applicationConf
 
 
