@@ -7,6 +7,8 @@ date=`date +%Y-%m-%d-%H-%M-%S`
 #获取分区变量
 partition=`date +%Y%m`
 day=`date +%Y-%m-%d`
+mkdir ${CURR_DIR}/result 1>/dev/null 2>/dev/null
+mkdir ${CURR_DIR}/tmp 1>/dev/null 2>/dev/null
 mkdir ${CURR_DIR}/result/fp_${day} 1>/dev/null 2>/dev/null
 
 one(){
@@ -393,6 +395,7 @@ nine(){
 sh /opt/software/lsql/bin/load.sh -t all_result -p ${partition} -tp txt -local -sp '#####' -f ${CURR_DIR}/result/fp_${day}/ins_result_${date} -fl date,time,sql_result,pjname,pjlocation,capture_time,tag 1>>${CURR_DIR}/tmp_log 2>>${CURR_DIR}/tmp_log
 sh /opt/software/lsql/bin/load.sh -t all_result -p ${partition} -tp txt -local -sp '#####' -f ${CURR_DIR}/result/fp_${day}/easy_result_${date} -fl date,time,sql_result,pjname,pjlocation,capture_time,tag 1>>${CURR_DIR}/tmp_log 2>>${CURR_DIR}/tmp_log
 sh /opt/software/lsql/bin/load.sh -t all_result -p ${partition} -tp txt -local -sp '#####' -f ${CURR_DIR}/result/fp_${day}/else_result_${date} -fl date,time,sql_result,pjname,pjlocation,capture_time,tag 1>>${CURR_DIR}/tmp_log 2>>${CURR_DIR}/tmp_log
+sh /opt/software/lsql/bin/load.sh -t all_result -p ${partition} -tp txt -local -sp '#####' -f ${CURR_DIR}/result/fp_${day}/comp_result_${date} -fl date,time,sql_result,pjname,pjlocation,capture_time,tag 1>>${CURR_DIR}/tmp_log 2>>${CURR_DIR}/tmp_log
 
 sh /opt/software/lsql/bin/load.sh -t sql_tmp -p ${partition} -tp txt -local -sp '#####' -f ${CURR_DIR}/result/fp_${day}/row_result_${date} -fl tag,date,row_name,table_name,pjname,pjlocation,capture_time 1>>${CURR_DIR}/tmp_log 2>>${CURR_DIR}/tmp_log
 if [ $? -eq 0 ]

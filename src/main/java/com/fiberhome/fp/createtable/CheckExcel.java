@@ -67,7 +67,7 @@ public class CheckExcel {
                     checkExcelModel.setFileName(execl_file.getName());
                     checkExcelModel.setSheetNum(sheetcheck);
                     checkExcelModel.setErrType(TWO);
-                    checkExcelModel.setRow(2);
+                    checkExcelModel.setRow(TWO);
                     checkExcelModel.setCol(1);
                     checkExcelModel.setMsg("建表类型不能为空！");
                     // msgMap.put("tableType","建表类型不能为空！");

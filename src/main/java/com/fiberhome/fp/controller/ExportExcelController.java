@@ -73,7 +73,7 @@ public class ExportExcelController {
             content[i][++b] = feedback1;
             content[i][++b] = authManage.getNote();
             content[i][++b] = authManage.getCreateTime();
-            content[i][14] = authManage.getUpdateTime();
+            content[i][++b] = authManage.getUpdateTime();
         }
 
         //创建HSSFWorkbook
