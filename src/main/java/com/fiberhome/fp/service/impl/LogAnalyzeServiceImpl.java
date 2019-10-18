@@ -50,10 +50,6 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     @Value("${update.conf.name}")
     String config;
 
-    @Value("${update.conf.path}")
-    String path;
-
-
 
     @Value("${cut.file.size}")
     int cutfilesize;
@@ -67,13 +63,16 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
     String rootPath = new ApplicationHome(getClass()).getSource().getParentFile().toString();
 
 
-    String shellPath=rootPath;
+    String shellPath = rootPath;
 
-    private String uploadLogPath=rootPath + File.separator + "upload";
+    private String uploadLogPath = rootPath + File.separator + "upload";
 
     String outFilePath = rootPath + File.separator + "output_template";
 
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
+
+   // @Value("${update.conf.path}")
+    String path = rootPath + File.separator + "updateConf";
 
     public static final int SLEEPTIME = 1050;
     public static final int NUMBER_100 = 100;
@@ -299,7 +298,6 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
 
     @Override
     public String wordExport(String pjName, String pjLocation, String createTime) {
-        String path = new ApplicationHome(getClass()).getSource().getParentFile().toString();
         HashMap<String, Object> templateMap = new HashMap<>();
         templateMap.put("projectName", pjName);
         templateMap.put("projectLocation", pjLocation);
@@ -332,7 +330,7 @@ public class LogAnalyzeServiceImpl implements LogAnalyzeService {
             operationList.add(inMap);
         }
         templateMap.put("operations", operationList);
-        List<String> wordAdvice = WordUtil.getWordAdvice(WordUtil.advice);
+        List<String> wordAdvice = WordUtil.getWordAdvice(WordUtil.ADVICE);
         templateMap.put("adviceList", wordAdvice);
 
         String outFileName = pjName + "_" + pjLocation + "_template_" + System.currentTimeMillis() + ".xml";

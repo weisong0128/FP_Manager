@@ -31,7 +31,6 @@ public class LogAnalzeController {
     private Map<String, AnalyseProcess> map = AnalyseProcess.getMap();
 
 
-
     String rootPath = new ApplicationHome(getClass()).getSource().getParentFile().toString();
 
     public String uploadLogPath = rootPath + File.separator + "upload";
@@ -330,10 +329,8 @@ public class LogAnalzeController {
             String zipFilePath = outFilePath + File.separator + zipFileName;
             try {
                 File zip = new File(zipFilePath);
-                if (!zip.exists()) {
-                    if (!zip.createNewFile()) {
-                        throw new RuntimeException();
-                    }
+                if (!zip.exists() && !zip.createNewFile()) {
+                    throw new RuntimeException();
                 }
                 zos = new ZipOutputStream(new FileOutputStream(zip));
                 //创建zip文件输出流
