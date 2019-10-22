@@ -33,17 +33,28 @@ public class UserInfo {
     @ApiModelProperty(value ="用户修改时间（不填，自动生成）" ,name = "updateTime",dataType = "String")
     private String updateTime;
 
-    public String getLoginStatus() {
+    private String getLoginStatus() {
         return loginStatus;
     }
 
-    public void setLoginStatus(String loginStatus) {
+    private void setLoginStatus(String loginStatus) {
         this.loginStatus = loginStatus;
     }
 
     //修改时间
     @ApiModelProperty(value ="账号登录状态" ,name = "loginStatus",dataType = "String")
     private String loginStatus;
+
+//判断是否修改过用户名    true 改过用户名   false  没修改
+    private  String isEdit="true";
+
+    public String getIsEdit() {
+        return isEdit;
+    }
+
+    public void setIsEdit(String isEdit) {
+        this.isEdit = isEdit;
+    }
 
     public UserInfo(String uuid, String userId, String userName, String userPassword, String userRole, String userState, String createTime, String updateTime) {
         this.uuid = uuid;

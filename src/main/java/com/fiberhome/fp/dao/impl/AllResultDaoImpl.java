@@ -149,6 +149,9 @@ public class AllResultDaoImpl implements AllResultDao {
      */
     @Override
     public AllResult getProportion(List<String> pjNames, List<String> pjLocations, String time, String startTime, String endTime) {
+        if (startTime==null && endTime==null  ){
+            time="year";
+        }
         List<String> partitions = partitions(time);
         if (StringUtils.isNotBlank(startTime) && StringUtils.isNotBlank(endTime)) {
             startTime = startTime + "000";
@@ -358,7 +361,7 @@ public class AllResultDaoImpl implements AllResultDao {
     private static final int MONTH_12 = 12;
 
     public static List<String> partitions(String partition) {
-        List<String> partitions = null;
+        List<String> partitions = new ArrayList<>();
         switch (partition) {
             case "one":
                 partitions = TimeUtil.partitions(1);
