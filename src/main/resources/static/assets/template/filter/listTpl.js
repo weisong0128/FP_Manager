@@ -1,0 +1,2 @@
+/*TMODJS:{"version":1,"md5":"a1ce6c063aa3395d567e9fb9a9cd6cd0"}*/
+define(["../template"],function(a){return a("filter/listTpl",function(a){"use strict";var b=this,c=(b.$helpers,b.$each),d=(a.item,a.$index,b.$escape),e="";return e+=' <li class="item all" data-value="all" data-action="selectFilter"> <a href="javascript:void(0)">\u5168\u90e8</a> </li> ',c(a.list,function(a){e+=' <li class="item" data-value="',e+=d(a),e+='" data-action="selectFilter"> <a href="javascript:void(0)">',e+=d(a),e+="</a> </li> "}),new String(e)})});

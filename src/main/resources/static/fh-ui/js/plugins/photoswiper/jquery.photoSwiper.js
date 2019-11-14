@@ -2314,15 +2314,7 @@
     setBigImage: function(slide) {
       var self = this,
         $img = $("<img  style='visibility: hidden;'/>");
-        // 2018.9.19 start  解决 图片路径错误下的展示问题
-        var $image = new Image();
-        $image.src = slide.src;
-        var $imgWidth = $image.width;
-        var $imgHeight = $image.height;
-        if( ($image.fileSize <= 0) || ($imgWidth === 0)){
-            slide.src = self.getPath + "images/blank.png";
-        }
-        // 2018.9.19 start  end 
+
       slide.$image = $img
         .one("error", function() {
             // 去除该错误提示， 兼容低版本chrome
@@ -5278,7 +5270,7 @@
             '" tabindex="0" class="' +
             CLASS_LOAD +
             '"' +
-            (src && src.length ? ' style="background-image:url(' + src + ')"' : "") +
+            (src && src.length ? ' style="background-image:url(' + src + ')" />' : "") +
             "></li>"
         );
 

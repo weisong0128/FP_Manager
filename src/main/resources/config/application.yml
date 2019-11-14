@@ -18,6 +18,7 @@ spring.datasource.mysql.username: root
 spring.datasource.mysql.password: root
 spring.datasource.mysql.driver-class-name: com.mysql.jdbc.Driver
 
+
 spring:
   http:
     encoding:

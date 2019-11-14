@@ -1,0 +1,41 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+        "month": "1",
+        "value": 1202
+    },{
+        "month": "2",
+        "value": 72
+    },{
+        "month": "3",
+        "value": 608
+    },{
+        "month": "4",
+        "value": 32
+    },{
+        "month": "5",
+        "value": 550
+    },{
+        "month": "6",
+        "value": 42
+    },{
+        "month": "7",
+        "value": 328
+    },{
+        "month": "8",
+        "value": 592
+    },{
+        "month": "9",
+        "value": 128
+    },{
+        "month": "10",
+        "value": 80
+    },{
+        "month": "11",
+        "value": 60
+    },{
+        "month": "12",
+        "value": 256
+    }]
+}

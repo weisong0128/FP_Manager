@@ -1,0 +1,2 @@
+/*TMODJS:{"version":1,"md5":"00359d69efbd82586404176ab9a4c8b2"}*/
+define(["../template"],function(a){return a("analysis/errorSqlTpl",function(a){"use strict";var b=this,c=(b.$helpers,b.$escape),d="";return d+='<div class="right-modal-content error-sql"> <div class="title">\u4e0d\u5408\u683c\u539f\u56e0</div> <div class="content">',d+=c(a.tag),d+='</div> <div class="title">\u66f4\u6b63\u5efa\u8bae</div> <div class="content">',d+=c(a.alterTag),d+='</div> <div class="title">SQL\u8be6\u60c5</div> <div class="content">',d+=c(a.sqlResult),d+="</div> </div>",new String(d)})});

@@ -5720,7 +5720,7 @@ S2.define('select2/core',[
       return this.$element.val();
     }
 
-    var newVal = arguments[0];
+    var newVal = args[0];
 
     if ($.isArray(newVal)) {
       newVal = $.map(newVal, function (obj) {

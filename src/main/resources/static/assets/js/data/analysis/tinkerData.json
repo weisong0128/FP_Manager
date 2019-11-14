@@ -1,0 +1,156 @@
+{
+  "code": 0,
+  "msg": "操作成功",
+  "data": {
+    "fpHelp": [
+      {
+        "errCode": " 1002",
+        "errKeyWord": "BlockMissing",
+        "errReason": "2019-05-13 16:27:37 820 cl.d016 [ERROR] executor_error:{msg=[15.118.117.111:13783:117][cn.lucene.plugins.mdrill.ver_1_0_1_13.day_2019011905.goto3: code:100003@[15.118.117.111:13783:117][15.118.117.130:16932:120][java.lang.Exception: org.apache.hadoop.hdfs.BlockMissingException: Could not obtain block: BP-1906439680-15.118.117.71-1527907818331:blk_5948171301_4874969028 file=/data/ycloud/ydb/ydbpath/ssdindex/ydb_physical_table/index/20190507/part-00791/leaf_20190507192239_3758661_3726898726_stream/_9.tim",
+        "solution": "\"检查HDFS状态 1.检查Active状态的50070页面，是否有block corrupt。 --1.1如有，请检查是否有大于2个节点的DataNode服务未启动，可在DataNodes标签页检查是否有Dead的节点。如有Dead的节点，考虑在服务挂掉的节点上执行hadoop-daemon.sh start datanode命令尝试拉起服务，观察HDFS是否恢复正常。如果DataNode服务不能拉起，且log中有报错(/hdfsdata/1/hadooplogs/hadoop-root-datanode-主机名.log)，请联系秦浩协助处理。 --1.2如没有，则请检查是否有大于2个节点的磁盘存储出现问题。如确实是2台机器的2块以上硬盘出现问题，此时产生的corrupt将不可恢复，仅可使用fsck / -delete命令清理坏块。 2.检查机架与存储情况 主节点或备节点的8088页面，左侧Nodes标签页，检查是否有孤立的机架存在（如都是rack0，仅一台rack1），同时检查50070页面各节点存储情况，是否有机器存储满且有大量正在等待被复制的block。若机架不正确，则需检查所有节点的/opt/software/hadoop/hdfs/etc/hadoop/rackware.py并修正错误的机架，然后重启该节点的DataNode和NodeManager服务（Collie上重启单点服务或直接手动kill -15后用hadoop-daemon和yarn-daemon手动拉起） 另外还需检查系统允许的文件打开数，可直接在1210/executorstat页面上搜索ulimit看到，正常要求此值为640000，若非此值，需要执行下该服务器上的sh /home/collie/common/common.sh进行修正，然后重启服务器\"",
+        "count": null
+      },
+      {
+        "errCode": " 1003",
+        "errKeyWord": "SQL执行超时",
+        "errReason": "2019-05-16 06:25:45 698 cl.d016 [ERROR] executor_error:{msg=[15.118.117.159:23033:8][cn.lucene.plugins.mdrill.ver_1_0_1_13.day_2019011905.stop3: pending timeout120@120",
+        "solution": "\"基础服务可能不正常，或超时时间过短。检查当前FP服务情况是否正常。 检查1210/executorstat页面上Executor列表中是否出现zkmiss红色提示或者出现大规模的蓝色提示Executor重启。若无此现象出现，考虑是否为FP刚启动完，还未打开索引，建议执行一个全表统计帮助打开索引。 若为Executor刚发生重启，则使用到此Executor的查询亦需重新打开索引，这也会对查询产生影响，处理方式参考FP刚启动完。 若均无此现象，且查询规模较大且较为复杂，可能是超时时间偏短所致。考虑cl.sql.execute.timeout.secs参数，此参数可动态配置，若在sql中使用，写法为syskv='cl.sql.execute.timeout.secs:秒数'，对本条sql生效。若写在/opt/software/lsql/config/site/lsql-site.properties中，则写法为cl.sql.execute.timeout.secs=秒数，对所有sql生效。对于超时的sql，可适当调大秒数。\"",
+        "count": null
+      },
+      {
+        "errCode": " 2000+X",
+        "errKeyWord": "\"Exitcode 1 Exitcode 134 Exitcode 151 Exitcode 158 Exitcode 255\"",
+        "errReason": "2019-05-16 17:20:30 700 cluster.YarnScheduler [ERROR] Lost executor 161 on NSHS196: Container marked as failed: container_1557571700396_0005_01_000163 on host: NSHS196. Exit status: 1. Diagnostics: Exception from container-launch.",
+        "solution": "未知错误，需要结合日志进一步检查。",
+        "count": null
+      },
+      {
+        "errCode": " 2050",
+        "errKeyWord": "Exitcode 50",
+        "errReason": "\"2019-07-31 15:18:23 211 cluster.YarnScheduler [ERROR] Lost executor 20 on ZDRHM: Container marked as failed: container_1553160526040_0444_01_000021 on host: ZDRHM. Exit status: 50. Diagnostics: Exception from container-launch. Container id: container_1553160526040_0444_01_000021 Exit code: 50 \"",
+        "solution": "\"内部未被捕获的错误 见于lib下放置的jar包与FP运行使用的java版本不一致，如与PostgreSQL库对接，但是使用了1.7或更低版本的JDK。该错误不单独出现，会在此之前出现版本不一致的错误，如Caused by: java.lang.UnsupportedClassVersionError: org/postgresql/Driver : Unsupported major.minor version 52.0 此问题应更新两边JDK版本保证一致，如均使用1.8的jdk且为1.8版本编译的jar包。检查/opt/software/hadoop/hdfs/etc/hadoop/hadoop-env.sh和同目录下的yarn-env.sh中JAVA_HOME是否配置为1.8的路径；/opt/software/lsql/config/site/lsql-env.sh中JAVA_HOME是否为1.8的路径；lib下的jar包是否为1.8编译的\"",
+        "count": null
+      },
+      {
+        "errCode": " 2052",
+        "errKeyWord": "Exitcode 52",
+        "errReason": "\"Job aborted due to stage failure: Task 6 in stage 61566.0 failed 2 times,most recent failure: Lost task 6.1 in stage 61566.0(TID 1035759,NB-YDB-186-174):ExecutorLostFailure (executor 4 exited caused by one of the running tasks) Reason: Container marked as failed:container_1562395026724_0002_01_000005 in host:NB-YDB-186-174. Exit status:52.Diagnostics: Container id: container_1562395026724_0002_01_000005 Exit code:52\"",
+        "solution": "\"ExecutorOOM，为内部未被捕获的OOM。涉及到规模较大的计算会使用shuffle，当shuffle较大内存不够的时候会刷到磁盘，使用sort方式。若此过程中有2个以上同样的shuffle需要刷盘会出现此问题。 若此问题频繁出现，考虑升级jar包，更新到1.0.1.13_20190709或更高版本可解决此问题\"",
+        "count": null
+      },
+      {
+        "errCode": " 2137",
+        "errKeyWord": "Exitcode 137",
+        "errReason": "2019-05-16 10:21:25 917 cluster.YarnScheduler [ERROR] Lost executor 108 on NSHS123: Container marked as failed: container_1557571700396_0003_01_000109 on host: NSHS123. Exit status: 137. Diagnostics: Container killed on request. Exit code is 137",
+        "solution": "\"executorOOM，检查分词器安装情况，查询是否用到巨大量的limit，以及yarn配置中pmem和vmem检查是否关闭。 1.分词器默认安装在数据节点的/opt/software/hanlp目录下，分词器引起的137错误仅见于扩容节点或重装的节点，确认其他数据节点是否有此目录，如没有则未安装分词器，如有则需将其复制到本机对应目录下（建议参考《扩容指导书》进行重新比对） 2.若查询违反规则使用了如limit 100000000，可能会导致Executor内存爆掉，此错误无解决方法，建议检查并禁止不合法的sql下发 3.正常要求所有节点/opt/software/hadoop/hdfs/etc/hadoop/yarn-site.xml中yarn.nodemanager.pmem-check-enabled和yarn.nodemanager.vmem-check-enabled两配置项均为false，建议检查不能正常启动Executor机器上的此文件。若未配置此二项默认均为true，需要按其他配置项的格式对此二项进行配置，配置完成后需要重启问题节点的NodeManager（Collie上重启或者手动kill -15后再通过yarn-daemon.sh start nodemanager拉起） 4.检查Executor日志中是否存在Kafka消费的错误，如消费者无法commit导致无限Rebalance等错误。此问题建议尝试更换消费者组名，在lsql-site.properties中修改。若现有数据量较大，可考虑更换topic。\"",
+        "count": null
+      },
+      {
+        "errCode": " 2143",
+        "errKeyWord": "Exitcode 143",
+        "errReason": "2019-06-24 16:44:07 546 cluster.YarnScheduler [ERROR] Lost executor 4 on dbn-108-6: Container marked as failed: container_1560302418186_0022_01_000007 on host: dbn-108-6. Exit status: 143. Diagnostics: Container killed on request. Exit code is 143",
+        "solution": "常见于手动结束Executor进程，无须更多操作。若非人为操作，请提供前后日志信息排查问题。",
+        "count": null
+      },
+      {
+        "errCode": " 2156",
+        "errKeyWord": "Exitcode 156",
+        "errReason": "2019-05-15 16:37:20 144 cluster.YarnScheduler [ERROR] Lost executor 105 on NSHS200: Container marked as failed: container_1557571700396_0002_01_000107 on host: NSHS200. Exit status: 156. Diagnostics: Exception from container-launch.",
+        "solution": "\"与主节点心跳超时，检查Driver是否过于繁忙 检查主节点与其他数据节点的网络连接是否有问题，可用ping命令检查网络延迟，使用iperf检查集群间带宽。正常万兆网络同集群内延迟稳定不超过1ms，带宽可达9Gbps以上（万兆网络），如出现较多毛刺，需要检查主节点网络硬件设备是否正常，如网线是否插好，交换机是否有故障等。 如果网络没有问题，检查主节点Driver进程是否内存用满导致心跳无法发出。使用jps命令获取SparkSubmit进程的PID号，然后使用jstat -gcutil PID号 1s命令持续观察GC情况，如果老年代（O列）长期处于98以上，且频繁出现FGC，表明Driver内存已满，需要扩大Driver内存。调整/opt/software/lsql/config/site/lsql-env.sh中CL_DRIVER_MEMORY配置，一般128/256G主节点且不复用数据节点的可考虑调整成30G，调整完毕后重启FP集群。\"",
+        "count": null
+      },
+      {
+        "errCode": " 2300",
+        "errKeyWord": "Exitcode -100",
+        "errReason": "2019-06-24 14:52:06 013 cluster.YarnScheduler [ERROR] Lost executor 2 on dbn-108-7: Container marked as failed: container_1560302418186_0016_01_000003 on host: dbn-108-7. Exit status: -100. Diagnostics: Container released on a *lost* node",
+        "solution": "\"硬件故障，检查系统连通性或NM进程是否被意外终止 该Executor所在的节点被标记为lost node，在主节点或备节点8088页面左侧Nodes标签页检查上方表格中出现的Lost Nodes并登录对应机器jps检查NodeManager服务是否正常。在集群运行状态下，重启其中运行了Executor的节点都会导致此错误。若无法登录机器，则应考虑是否存在网络问题或硬件故障。若机器能登录但NodeManager进程始终无法由Collie守护进程拉起，请检查/hdfsdata/1/yarnlogs/yarn-root-nodemanager-主机名.log中是否有报错信息。\"",
+        "count": null
+      },
+      {
+        "errCode": " 2301",
+        "errKeyWord": "executor自身心跳超时",
+        "errReason": "\"2019-05-16 16:44:59 453 cluster.YarnScheduler [ERROR] Lost executor 97 on NSHS101: Executor heartbeat timed out after 1262536 ms 2019-05-16 16:45:05 534 cluster.YarnScheduler [ERROR] Lost executor 97 on NSHS101: Container container_1557571700396_0005_01_000098 exited from explicit termination request. \"",
+        "solution": "\"运行该Executor的机器过于繁忙 建议top检查该机器cpu使用是否长期在80%以上，可用内存free+cache是否已不足总内存10%，iostat检查是否有磁盘长期%util维持100。如存在此类问题则需要按条件进行优化，一般FP机器要求为专用设备，不与其他机器角色复用。在没有其他服务运行的情况下，若仍有此现象出现，检查该机器上的Executor数量是否多于其他机器，可考虑在允许的情况下重启FP集群或kill -15其中一个Executor释放压力。若多台机器均出现心跳超时，但没有资源过度使用的现象，考虑集群网络是否出现问题，检查到交换机的网络是否正常。\"",
+        "count": null
+      },
+      {
+        "errCode": " 2302",
+        "errKeyWord": "Slave lost",
+        "errReason": "2019-06-24 16:06:04 798 cluster.YarnScheduler [ERROR] Lost executor 2 on dbn-108-7: Slave lost",
+        "solution": "\"一般成批出现，检查Executor Launcher是否故障 Slave Lost一般是与连接有关，如运行在集群内某台机器上的ExecutorLauncher进程突然挂掉，则会导致大量Slave lost出现，此问题无解决方案，考虑修改主节点/opt/software/lsql/config/site/lsql-env.sh中CL_EXECUTOR_MEMORY给ExecutorLauncher进程预留足够的内存大小\"",
+        "count": null
+      },
+      {
+        "errCode": " 2303",
+        "errKeyWord": "executor资源被抢占",
+        "errReason": "2019-07-30 15:59:40 543 cluster.YarnScheduler [ERROR] Lost executor 9 on HS-FPS-DNSS-140: Container container_1564026360209_1688_01_000012 on host: HS-FPS-DNSS-140 was preempted.",
+        "solution": "\"Executor资源被抢占 一般由于集群合布，资源并非FP独享，导致可用资源不充足，其他任务在等待资源但是一直被FP的executor占用不释放，YARN会将该Container kill掉以释放资源给其他任务 需要检查各节点/opt/software/hadoop/hdfs/etc/hadoop/yarn-site.xml中，yarn.scheduler.fair.preemption配置项是否为false（默认为true），修改后重启Hadoop集群。\"",
+        "count": null
+      },
+      {
+        "errCode": " 3001",
+        "errKeyWord": "触发Yarn主备切换",
+        "errReason": "2019-06-17 17:43:06 930 retry.RetryInvocationHandler [INFO] Exception while invoking getApplicationReport of class ApplicationClientProtocolPBClientImpl over rm1 after 2 fail over attempts. Trying to fail over after sleeping for 25261ms.",
+        "solution": "\"检查触发主备切换的原因 1.检查是否在主备节点上进行了对时操作，对时操作可能会导致节点心跳异常，触发心跳超时，进而触发ResourceManager主备切换，主备切换会导致FP不可用（1210能打开，但查询都报Connection refused）。此问题无解决方案，仅可重启FP。进行对时之前，请先停止FP集群。 2.Active的ResourceManager突然挂掉，此情况较少见，或手动执行了yarn rmadmin -failover进行主备切换。如果为RM突然挂掉，需要检查主/备节点的/hdfsdata/1/yarnlogs/yarn-root-resourcemanager-主机名.log中是否有错误提示。\"",
+        "count": null
+      },
+      {
+        "errCode": " 3002",
+        "errKeyWord": "Container故障",
+        "errReason": "2019-06-11 10:18:07 735 client.TransportClient [ERROR] Failed to send RPC 4715551794265428618 to FPB14/172.16.4.14:33040: java.nio.channels.ClosedChannelException",
+        "solution": "\"Container故障 一般结合Executor丢失问题处理，不单独出现。\"",
+        "count": null
+      },
+      {
+        "errCode": " 3003",
+        "errKeyWord": "NameNode安全模式",
+        "errReason": "\"2019-07-10 13:59:37 016 spark.SparkContext [ERROR] Error initializing SparkContext. org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.ipc.RetriableException): org.apache.hadoop.hdfs.server.namenode.SafeModeException: Cannot create directory /user/root/.sparkStaging/application_1562737891004_0001. Name node is in safe mode. The reported blocks 22812 needs additional 6108 blocks to reach the threshold 0.9990 of total blocks 28948. The number of live datanodes 3 has reached the minimum number 0. Safe mode will be turned off automatically once the thresholds have been reached.\"",
+        "solution": "\"NameNode仍处于安全模式，常见于大集群未等数据块上报完毕就启动FP或者有DataNode/数据盘丢失导致有块损坏，致使上报数据块达不到HDFS要求的99.9%。 检查50070的DataNode页是否所有节点都是存活状态，各节点df检查各盘是否挂载正常，可否正常读写（可用touch创建空文件）。若这些项目均无问题，考虑是否未数据块还未上报完毕（在StartupProgress页检查最下方启动进度），稍后刷新50070等待它是否会自动退出安全模式。\"",
+        "count": null
+      },
+      {
+        "errCode": " 4001",
+        "errKeyWord": "10009端口关闭",
+        "errReason": "2019-06-04 12:44:33 024 jdbc.HiveConnection [INFO] Could not open client transport with JDBC Uri: jdbc:hive2://localhost:10009/default",
+        "solution": "\"无法正常使用jdbc连接，不单独出现，应有前序报错 由其他错误导致FP服务不正常进而引发此错误，建议找到第一次报本错误的位置并向上追溯相关问题。\"",
+        "count": null
+      },
+      {
+        "errCode": " 4002",
+        "errKeyWord": "Executor被关闭",
+        "errReason": "\"2019-06-04 12:22:09 346 cl.d752 [ERROR] netty_call:dec377c1-b22e-4d39-91c2-6bd2174954cd:cn.lucene.plugins.mdrill.ver_1_0_1_13.day_2019011905.long1@1f3b3161 java.net.ConnectException: Connection refused: /15.118.117.121:32110 \"",
+        "solution": "\"Executor被关闭导致原来与其建立连接的都将中断，不单独出现，前序应有Lost executor Executor_error导致Executor丢失致使失去连接，建议向上追溯发生Executor丢失的时间与丢失的具体原因。\"",
+        "count": null
+      },
+      {
+        "errCode": " 5001",
+        "errKeyWord": "授权失效",
+        "errReason": "\"2019-03-16 10:01:42 386 cl.e044 [INFO] {\"\"____acheck\"\":1,\"\"code\"\":100007,\"\"msg\"\":\"\"SN CHECK FAIL\"\"}\"",
+        "solution": "\"检查授权信息 授权失效，一般是主节点硬件发生变化（内存/硬盘/网卡/驱动等）或HDFS服务不正常或MFS服务不正常导致。FP授权时会读取当前机器硬件信息，同时FP会从HDFS上读取检测文件，如该文件无法读取，会引发授权不正常。而对于装有MFS服务的集群，在MFS服务启动时进行了授权，则当MFS服务故障时，授权也会相应失效。同时查询可能还会有提示you have not enough ram或直接提示SN CHECK FAIL 主节点硬件发生变化时需要重新申请授权。HDFS或MFS服务不正常时，一般不需要再次授权，只需在此二服务恢复正常后，授权即可恢复正常\"",
+        "count": null
+      },
+      {
+        "errCode": " 5002",
+        "errKeyWord": "存在多个版本的FP程序",
+        "errReason": "\"2019-06-24 14:25:52 102 mortbay.log [ERROR] /heartbeat java.lang.RuntimeException: java.lang.ClassNotFoundException: cn.lucene.plugins.service.clusterState.state.stop5 \"",
+        "solution": "\"检查lib文件夹是否未移除老版本jar包 一般在版本升级后出现此问题，新老版本部分方法不兼容，致使升级后必须将jar包移出才能正常使用。主要现象为FP层查询无法查出，spark查询几乎不受影响。 从/opt/software/lsql/lib目录中将老版本jar包移出后，重启FP即可解决。\"",
+        "count": null
+      },
+      {
+        "errCode": null,
+        "errKeyWord": null,
+        "errReason": null,
+        "solution": null,
+        "count": null
+      }
+    ],
+    "page": {
+      "totalRows": 38,
+      "pageSize": 20,
+      "pageNo": 1,
+      "rowEnd": 20,
+      "rowStart": 0
+    }
+  },
+  "page": null
+}

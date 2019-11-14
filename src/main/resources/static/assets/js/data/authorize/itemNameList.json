@@ -1,0 +1,21 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+            "itemId": "1",
+            "item": "万花筒"
+        },
+        {
+            "itemId": "2",
+            "item": "标签系统"
+        },
+        {
+            "itemId": "3",
+            "item": "业务中心"
+        },
+        {
+            "itemId": "4",
+            "item": "全息档案"
+        }]
+
+}

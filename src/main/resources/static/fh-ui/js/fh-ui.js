@@ -964,14 +964,12 @@
 			cfg.top = _top;
 			
 			if (reg.test(_left)) {
-                //_left = (ws.cw - $wrap.offsetWidth) * parseFloat(_left) * 0.01 + dl;
-                _left = (ws.cw - ($wrap.offsetWidth === 0 ? this.config.width : $wrap.offsetWidth) ) * parseFloat(_left) * 0.01 + dl;
-				left = Math.max(parseInt(_left), dl);
+	      _left = (ws.cw - $wrap.offsetWidth) * parseFloat(_left) * 0.01 + dl;
+				_left = Math.max(parseInt(_left), dl);
 	    }
 		
 	    if(reg.test(_top)) {
-                //_top = (ws.ch - $wrap.offsetHeight) * parseFloat(_top) * 0.01 + dt;
-                _top = (ws.ch - ($wrap.offsetHeight === 0 ? this.config.height : $wrap.offsetHeight) ) * parseFloat(_top) * 0.01 + dt;
+				_top = (ws.ch - $wrap.offsetHeight) * parseFloat(_top) * 0.01 + dt;
 				_top = Math.max(parseInt(_top), dt);
 	    }
 
@@ -2464,12 +2462,10 @@ Dialog.defaults = {
 				(mode !== 'mini')&&mode == 'classic' && (cfg.firstlabel !== false) && page_html.push('<span class="page-first-dis">'+ cfg.firstlabel +'</span>');
 				(mode !== 'mini')&&mode == 'classic' && (cfg.prevlabel !== false) && page_html.push('<span class="page-prev-dis">'+ cfg.prevlabel +'</span>');
 			} else {
-				
+				(mode !== 'mini')&&mode == 'classic'&& (cfg.firstlabel !== false) && page_html.push('<a href="'+ _href(1) +'" onclick="javascript:'+ this._id +'.toPage(1);" class="page-first">'+ cfg.firstlabel +'</a>');
 				if (prevPage == 0){
-                    (mode !== 'mini')&&mode == 'classic' && (cfg.firstlabel !== false) && page_html.push('<span class="page-first cun">'+ cfg.firstlabel +'</span>');
 					(mode !== 'mini')&&(cfg.prevlabel !== false) && page_html.push('<a  class="page-prev cun">'+ cfg.prevlabel +'</a>');
 				}else {
-                    (mode !== 'mini')&&mode == 'classic'&& (cfg.firstlabel !== false) && page_html.push('<a href="'+ _href(1) +'" onclick="javascript:'+ this._id +'.toPage(1);" class="page-first">'+ cfg.firstlabel +'</a>');
 					(mode !== 'mini')&&(cfg.prevlabel !== false) && page_html.push('<a href="'+ _href(prevPage) +'" onclick="javascript:'+ this._id +'.toPage(' + prevPage + ');" class="page-prev">'+ cfg.prevlabel +'</a>');
 				}
 			}
@@ -2505,7 +2501,7 @@ Dialog.defaults = {
 				}
 				
 				if(this.pageno + 3 < this.totalpages && (this.totalpages >7)) {
-					page_html.push('<span class="page-ell">...</span>');
+					page_html.push('<span class="page-ell ttt">...</span>');
 				}
 				
 				if (this.pageno != this.totalpages) {
@@ -2532,15 +2528,12 @@ Dialog.defaults = {
 				(mode !== 'mini')&&mode == 'classic' && (cfg.lastlabel !== false) && page_html.push('<span class="page-last-dis">'+ cfg.lastlabel +'</span>');
 			} else {
 				if(nextPage == (this.totalpages+1)){
-                    (mode !== 'mini')&&(cfg.nextlabel !== false) && page_html.push('<a class="page-next cun">'+ cfg.nextlabel +'</a>');
-				    (mode !== 'mini')&&mode == 'classic' && (cfg.lastlabel !== false) && page_html.push('<span class="page-last cun">'+ cfg.lastlabel +'</span>');
-                    
+					(mode !== 'mini')&&(cfg.nextlabel !== false) && page_html.push('<a class="page-next cun">'+ cfg.nextlabel +'</a>');
 				}else{
 					(mode !== 'mini')&&(cfg.nextlabel !== false) && page_html.push('<a href="'+ _href(nextPage) +'" onclick="javascript:'+ this._id +'.toPage(' + nextPage + ');" class="page-next">'+ cfg.nextlabel +'</a>');
-				    (mode !== 'mini')&&mode == 'classic' && (cfg.lastlabel !== false) && page_html.push('<a href="'+ _href(this.totalpages) +'" onclick="javascript:'+ this._id +'.toPage(' + this.totalpages + ');" class="page-last">'+ cfg.lastlabel +'</a>');
-                
-                }
+				}
 				
+				(mode !== 'mini')&&mode == 'classic' && (cfg.lastlabel !== false) && page_html.push('<a href="'+ _href(this.totalpages) +'" onclick="javascript:'+ this._id +'.toPage(' + this.totalpages + ');" class="page-last">'+ cfg.lastlabel +'</a>');
 			}
 	
 			page_html.push('</div>');
@@ -2629,8 +2622,8 @@ Dialog.defaults = {
 		pageno: 1,
 		pageinfo: '共 #{totalrows} 条记录，当前显示第 #{from} - #{to} 条',
 		firstlabel: '首页',
-		prevlabel: '<i class="aidicon aidicon-chevron-left"></i>',
-		nextlabel: '<i class="aidicon aidicon-chevron-right"></i>',
+		prevlabel: '<',
+		nextlabel: '>',
 		lastlabel: '尾页',
 		resizer: {values:[10,20,50,100,200,500], label: " #{size} 条/页"},
 		jumpable: true,
@@ -2951,7 +2944,6 @@ require("./bootstrap/navTop");
   var AreaMultiSelect = function (element, options) {
     this.$element = $(element);
     this.$AreaMultiSelect = '';
-    this.dataObj = {};
     this.options = $.extend({}, AreaMultiSelect.DEFAULTS, options);
   }
 
@@ -2994,7 +2986,7 @@ require("./bootstrap/navTop");
     return $(root);
   }
 
-  //省市区的单独jquery dom 模板，为了性能提升暂时不单独使用
+
   AreaMultiSelect.prototype.templeteProvince = function (obj) {//省模板-需要用的节点信息也可以根据业务需求记录在dom属性或者data里，方便获取
     var ele = $('<div class="select-content-center-in clearfix"></div>');
     var provinceStr = '<div class="select-content-center-in-left">';
@@ -3053,82 +3045,16 @@ require("./bootstrap/navTop");
 
     return $areaStr;
   }
-
-  //为了提升性能，一次性批量生成省市区模板
-  AreaMultiSelect.prototype.templateAllBatch = function (dataList) {
-    var _self = this;
-    var provinceStrAll = ""; 
-    dataList.forEach(function (item) {
-      var provinceStr = '<div class="select-content-center-in clearfix">';
-      provinceStr += '<div class="select-content-center-in-left">';
-      provinceStr += '<label class="checkbox-inline checkbox-beauty">';
-      provinceStr += '<input type="checkbox">' + '<span class="text-label" node-id="'+ item.id + '">' + item.name + '</span>';
-      provinceStr += '</label></div>';
-      provinceStr +='<div class="select-content-center-in-right">';
-     
-      if (item.children.length > 0) {
-        var cityStrAll = '';
-        item.children.forEach(function (childItem) {
-          var cityStr = '<div class = "content-item">';//城市string
-          cityStr += '<label class="checkbox-inline checkbox-beauty">';
-          cityStr += '<input type="checkbox">';
-          cityStr += '<span class="text-label" node-id="'+ childItem.id + '">' + childItem.name + '</span>';
-          cityStr += '</label>';      
-
-          if (childItem.children.length > 0) {
-            cityStr += '<span class="caret"></span>';
-            cityStr += '<div class="select-content-child">';
-            cityStr += '<div class="select-content-child-top">';
-
-            var areaStrAll = "";//子区域All
-            childItem.children.forEach(function(childChild){
-              var areaStr = '';
-              if (childChild.name.length > 5) {
-                areaStr += '<label class="checkbox-inline checkbox-beauty showTips" data-toggle="popover" data-placement="top" data-content="' + childChild.name + '">';
-              } else {
-                areaStr += '<label class="checkbox-inline checkbox-beauty">';
-              }
-              areaStr += '<input type="checkbox">';
-              areaStr += '<span class="text-label" node-id="'+ childChild.id + '">' + childChild.name + '</span>';
-              areaStr += '</label>';
-              areaStrAll += areaStr;
-            })
-
-            cityStr += areaStrAll;
-
-
-            cityStr += '</div>';
-            if (_self.options.mode === "strict") {
-              cityStr += '<div class="select-content-child-bottom">';
-            }else{
-              cityStr += '<div class="select-content-child-bottom default">';
-            }  
-      
-            cityStr += '<button type="button" class="btn submit btn-primary btn-sm">确定</button>';
-            cityStr += '<button type="button" class="btn cancel btn-default btn-sm">取消</button>';
-            cityStr += '</div>';
-            cityStr += '</div>';
-
-          }
-
-          cityStr += '</div>';
-          cityStrAll += cityStr;
-        });
-      }
-      provinceStr += cityStrAll;
-      provinceStr +='</div>';
-      provinceStr +='</div>';
-      provinceStrAll += provinceStr;
-    })
-
-
-    return $(provinceStrAll);
-  }
-
   AreaMultiSelect.prototype.selectChild = function ($element) {
-    var selectNumber = $element.parents(".select-content-child").find(".select-content-child-top input:checked").length;
+    var selectNumber = 0;
+    $element.parents(".select-content-child").find(".select-content-child-top input:checkbox").each(function () {
+      if ($(this).prop('checked')) {
+        selectNumber += 1;
+      }
+    });
     $element.parents(".content-item").children("label").find(".text-label span").remove();
     $element.parents(".select-content-child").siblings(".checkbox-beauty").removeClass("part-select");
+
     if (selectNumber > 0) {
       $element.parents(".content-item").children("label").children(".text-label").append("<span>(" + selectNumber + ")</span");
       if (selectNumber != $element.parents(".select-content-child").find(".select-content-child-top input").length) {
@@ -3155,24 +3081,24 @@ require("./bootstrap/navTop");
     //处理选中的省数据
     _self.$AreaMultiSelect.find(".select-content-center-in-left input:checkbox:checked").each(function (index) {
       provinceList.push($(this).siblings(".text-label").html());
-      provinceObjList.push(_self.dataObj[$(this).siblings(".text-label").attr("node-id")]);
-      provinceIdList.push($(this).siblings(".text-label").attr("node-id"));
+      provinceObjList.push($(this).siblings(".text-label").data("node"));
+      provinceIdList.push($(this).siblings(".text-label").data("node").id);
     });
 
     //处理选中的市数据，若该市所属省为选中状态，则不单独输出该市
     _self.$AreaMultiSelect.find(".content-item>label input:checkbox:checked").each(function (index) {
       if ($(this).parents(".select-content-center-in").find(".select-content-center-in-left input:checkbox").prop('checked')) return;
       cityList.push($(this).parents(".select-content-center-in").find(".select-content-center-in-left .text-label").html() + "-" + $(this).siblings(".text-label").html().split("<span>")[0]);
-      cityObjList.push(_self.dataObj[$(this).siblings(".text-label").attr("node-id")]);
-      cityIdList.push($(this).siblings(".text-label").attr("node-id"));
+      cityObjList.push($(this).siblings(".text-label").data("node"));
+      cityIdList.push($(this).siblings(".text-label").data("node").id);
     });
 
     //处理选中的区域数据，若该区域所属市为选中状态，则不单独输出区域
     _self.$AreaMultiSelect.find(".content-item .select-content-child input:checkbox:checked").each(function (index) {
       if ($(this).parents(".content-item").children(".checkbox-beauty").find("input:checkbox").prop('checked')) return;
       areaList.push($(this).parents(".select-content-center-in").find(".select-content-center-in-left .text-label").html() + "-" + $(this).parents(".content-item").children(".checkbox-beauty").find(".text-label").html().split("<span>")[0] + "-" + $(this).siblings(".text-label").html());
-      areaObjList.push(_self.dataObj[$(this).siblings(".text-label").attr("node-id")]);
-      areaIdList.push($(this).siblings(".text-label").attr("node-id"));
+      areaObjList.push($(this).siblings(".text-label").data("node"));
+      areaIdList.push($(this).siblings(".text-label").data("node").id);
     });
 
     // console.log(provinceObjList);
@@ -3206,21 +3132,39 @@ require("./bootstrap/navTop");
     };
   }
 
+
   AreaMultiSelect.prototype.init = function () {
     var _self = this;
     if (_self.$AreaMultiSelect) _self.$AreaMultiSelect.remove();
 
     if (_self.options.data.length > 0) {
       var $root = _self.templeteRoot();
-      $root.find(".select-content-center").append(_self.templateAllBatch(_self.options.data));
-      _self.$AreaMultiSelect = $root;
-      $(document.body).append(_self.$AreaMultiSelect);
+      _self.options.data.forEach(function (item) {
+        var $dom = _self.templeteProvince(item);
+        if (item.children.length > 0) {
+          item.children.forEach(function (childItem) {
+            if (childItem.children.length > 0) {
+              var $childDom = _self.templeteCity(childItem);
+              childItem.children.forEach(function (childChild) {
+                $childDom.find(".select-content-child-top").append(_self.templeteArea(childChild));
+              })
+              $dom.find(".select-content-center-in-right").append($childDom);
+            } else {
+              $dom.find(".select-content-center-in-right").append(_self.templeteCity(childItem));
+            }
+          });
+        }
+        $root.find(".select-content-center").append($dom);
+        //_self.$element.append($root);
+        _self.$AreaMultiSelect = $root;
+        $(document.body).append(_self.$AreaMultiSelect);
+        // $(".select-content-center").append($dom);
+      })
+
       _self.initEvents();
-      _self.dataConversion(_self.options.data);
       _self.setSelect(_self.options.selectList);
     }
   }
-
   AreaMultiSelect.prototype.initEvents = function () {
     //打开地区多选
     var _self = this;
@@ -3243,12 +3187,10 @@ require("./bootstrap/navTop");
     //左侧全选(省份)
     _self.$AreaMultiSelect.on('click', '.select-content-center-in-left .checkbox-inline', function () {
       var _this = $(this);
-      var isChecked = _this.find('input:checkbox').prop("checked");
-      _this.parent('.select-content-center-in-left').siblings(".select-content-center-in-right").find(".checkbox-inline input:checkbox").each(function () {
-        $(this).prop('checked', isChecked);
+      _this.parent('.select-content-center-in-left').siblings(".select-content-center-in-right").find(".checkbox-inline").each(function () {
+        $(this).find('input:checkbox').prop('checked', _this.find('input:checkbox').prop("checked"));
       });
-    
-      _this.parent('.select-content-center-in-left').siblings(".select-content-center-in-right").find(".select-content-child-bottom .btn").each(function () {
+      _self.$AreaMultiSelect.find(".select-content-child-bottom .btn").each(function () {
         _self.selectChild($(this));
       });
     })
@@ -3257,11 +3199,12 @@ require("./bootstrap/navTop");
     _self.$AreaMultiSelect.on('click', '.select-content-center-in-right .checkbox-inline', function () {
       var _this = $(this);
       _this.parents('.select-content-center-in-right').siblings(".select-content-center-in-left").find(".checkbox-inline input:checkbox").prop('checked', _this.parents('.select-content-center-in-right').find(".content-item > label input:checkbox").length == _this.parents('.select-content-center-in-right').find(".content-item > label input:checkbox:checked").length);
-      var isChecked = _this.find('input:checkbox').prop("checked");
-      _this.siblings(".select-content-child").find(".checkbox-inline input:checkbox").each(function () {
-        $(this).prop('checked', isChecked);
+
+      _this.siblings(".select-content-child").find(".checkbox-inline").each(function () {
+        $(this).find('input:checkbox').prop('checked', _this.find('input:checkbox').prop("checked"));
       });
       _self.selectChild(_this.siblings(".select-content-child").find(".select-content-child-bottom .btn"));
+
     })
 
 
@@ -3306,14 +3249,22 @@ require("./bootstrap/navTop");
           $(this).find('input:checkbox').data("oldChecked", $(this).find('input:checkbox').prop('checked'));
         })
       }
+
+
+
     })
 
     //区域选择
     _self.$AreaMultiSelect.on('click', '.select-content-child .checkbox-inline', function () {
+
       _self.selectChild($(this).parents(".select-content-child").find(".select-content-child-bottom .btn"));
+
       $(this).parents(".select-content-child").siblings(".checkbox-inline").find('input:checkbox').prop('checked', $(this).parents(".select-content-child").find('input:checkbox').length === $(this).parents(".select-content-child").find('input:checkbox:checked').length);
+
       $(this).parents('.select-content-center-in-right').siblings(".select-content-center-in-left").find(".checkbox-inline input:checkbox").prop('checked', $(this).parents('.select-content-center-in-right').find(".content-item > label input:checkbox").length === $(this).parents('.select-content-center-in-right').find(".content-item > label input:checkbox:checked").length);
+
     })
+
 
     //区域选择中的确认
     _self.$AreaMultiSelect.on('click', '.select-content-child-bottom .btn.submit', function (event) {
@@ -3367,40 +3318,65 @@ require("./bootstrap/navTop");
     })
 
   }
-
-  AreaMultiSelect.prototype.dataConversion = function(data){
-    var _self = this;
-    _self.dataObj = {};
-    data.forEach(function(item){
-      _self.dataObj[item.id] = item;
-      if(item.children.length > 0){
-        item.children.forEach(function(childItem){
-          _self.dataObj[childItem.id] = childItem;
-          if(childItem.children.length > 0){
-            childItem.children.forEach(function(childChild){
-              _self.dataObj[childChild.id] = childChild;
-            });
-          }
-        });
-      }
-    })
-  }
-
   AreaMultiSelect.prototype.setSelect = function (selectList) {//设置选中
     var _self = this;
 
     _self.$AreaMultiSelect.find(".text-label span").remove();
     _self.$AreaMultiSelect.find(".select-content-outer input:checkbox").prop('checked', false);
 
+    // if (selectList.length > 0) {
+    //   selectList.forEach(function (item) {
+    //     _self.$AreaMultiSelect.find(".checkbox-beauty").each(function (index) {
+    //       if ($(this).find(".text-label").data("node").id == item && !$(this).find("input:checkbox").prop("checked")) {
+    //         $(this).find("input:checkbox").trigger("click");
+    //       }
+    //     });
+    //   })
+    // }
     var $domList = {};
     _self.$AreaMultiSelect.find(".checkbox-beauty").each(function (index) {
-      $domList[$(this).find(".text-label").attr("node-id")] = $(this);
+      $domList[$(this).find(".text-label").data("node").id] = $(this);
     });
     selectList.forEach(function (item) {
       if ($domList[item] && !$domList[item].find("input:checkbox").prop("checked")) {
         $domList[item].find("input:checkbox").trigger("click");
       }
-    });
+    })
+
+
+
+    // var $domList = {};
+    // _self.$AreaMultiSelect.find(".checkbox-beauty").each(function (index) {
+    //   $domList[$(this).find(".text-label").data("node").id] = $(this);
+    // });
+
+   
+    
+    // if (_self.options.data.length > 0) {
+    //   _self.options.data.forEach(function (item) {
+    //     if(selectList.indexOf(item.id) >= 0 ){
+    //       if (item.children.length > 0) {
+    //         item.children.forEach(function (childItem) {
+    //           selectList.push(childItem.id);
+    //           if (childItem.children.length > 0) {
+    //             childItem.children.forEach(function (childItemIn) {
+    //               selectList.push(childItemIn.id);
+    //             });
+    //           }
+    //         });
+    //       }
+    //     }
+    //   })
+    // }
+  
+    // selectList.forEach(function (item) {
+    //   if ($domList[item] && !$domList[item].find("input:checkbox").prop("checked")) {
+    //     $domList[item].find("input:checkbox").prop("checked",true);
+    //   }
+    // })
+   
+
+
   }
 
 
@@ -3875,7 +3851,6 @@ require("./bootstrap/navTop");
         var h = $id.outerHeight(); // 下拉框的高度
         var dw = $('body').outerWidth();  // document的宽度
         var dh = $(document).height(); // document的高度
-        var zIndex = getMaxZIndex();
 
         var t = top + height + mt; // 下拉框的top
         var l = left;  // 下拉框的left
@@ -3883,7 +3858,7 @@ require("./bootstrap/navTop");
         t = (t + h) > dh && ((top - mb - h) > 0) ? (top - mb - h) : t;
         l = (l + w) > dw ? (dw - w) : l;
 
-        $id.css({left: l, top: t, zIndex: zIndex});
+        $id.css({left: l, top: t});
     }
 
     /**
@@ -3907,20 +3882,7 @@ require("./bootstrap/navTop");
             var w = $id.find('.' + Cascader.MAINSTYLE.tabStyle).outerWidth();
             $id.css({width: len * w + 2}); // 加上边框的宽度
         }
-    }
 
-    // 获取最大zindex值
-    function getMaxZIndex() {
-        if(!Array.from) {
-            Array.from = function(el) {
-                return Array.apply(this , el)
-            }
-        }
-        var arr = Array.from(document.body.querySelectorAll('*')).map(function (item) {
-            return +window.getComputedStyle(item).zIndex || 0
-        });
-
-        return arr.length ? Math.max.apply(null, arr) : 0;
     }
 
     function getDropdownByDataId(id) {
@@ -3945,9 +3907,9 @@ require("./bootstrap/navTop");
     }
 
     Cascader.LISTTEMPLATE = {
-        radio: '<div class="radio"><label class="radio-card {{disabled}}"><input name="{{name}}" {{disabled}} type="radio"><span class="text-label" title="{{label}}">{{label}}</span></label></div>',
-        checkbox: '<div class="checkbox"><label class="checkbox-card {{disabled}}"><input name="{{name}}" {{disabled}} type="checkbox"><span class="text-label" title="{{label}}">{{label}}</span></label></div>',
-        list: '<span title="{{label}}">{{label}}</span>',
+        radio: '<div class="radio"><label class="radio-card {{disabled}}"><input name="{{name}}" {{disabled}} type="radio"><span class="text-label">{{label}}</span></label></div>',
+        checkbox: '<div class="checkbox"><label class="checkbox-card {{disabled}}"><input name="{{name}}" {{disabled}} type="checkbox"><span class="text-label">{{label}}</span></label></div>',
+        list: '<span>{{label}}</span>',
         arrow: '<span class="list-item-arrow aidicon aidicon-chevron-right"></span>',
         checked: '<span class="list-item-checked aidicon aidicon-check"></span>',
         listAll: '<li class="list-item check-all" data-value="all-item" data-label="all-item" data-actions="chooseAll"><span>全部</span><span class="list-item-checked aidicon aidicon-check"></span></li>',
@@ -4042,7 +4004,7 @@ require("./bootstrap/navTop");
     Cascader.prototype.initEvent = function () {
         this.$element.on('click.bs.Cascader.closeLabel.data-api', closeLabel, this, this.closeLabel);
         this.$element.on('click.bs.Cascader.cascaderToggle.data-api', this.toggle);
-        $(document).on('mousedown.bs.Cascader.closeDrop.data-api', this.closeDrop);
+        $(document).on('click.bs.Cascader.closeDrop.data-api', this.closeDrop);
     }
 
     // 初始化Dropdown
@@ -4681,7 +4643,7 @@ require("./bootstrap/navTop");
             obj.itemContent = self.getContentItem(d, pid);
             obj.disabled = d.disabled ? Cascader.MAINSTYLE.disabled : '';
             obj.haspopup = self.hasDataArray(d.children) ? Cascader.EMBELLISHSTYLE.hasPopup : '';
-            obj.itemListStyle = self.isListType ? Cascader.EMBELLISHSTYLE.listItem : d.label.length <= 5 ? Cascader.EMBELLISHSTYLE.listDefault : Cascader.EMBELLISHSTYLE.listDefault;
+            obj.itemListStyle = self.isListType ? Cascader.EMBELLISHSTYLE.listItem : d.label.length <= 5 ? Cascader.EMBELLISHSTYLE.listDefault : self.setTemplateClass(Cascader.EMBELLISHSTYLE.listDefault, Cascader.EMBELLISHSTYLE.listDefaultLg);
             contentItem += self.setTemplate(Cascader.DROPTEMPLATE.contentItemList, obj);
         });
 
@@ -7193,7 +7155,7 @@ $.fn.dropdownSelect.noConflict = function () {
                 var $span = document.createElement('span');
                 var half = (i%2 == 0) ? 'rate-half-left' : 'rate-half-right';
                 var click = (i < that.options.grade && that.options.grade != 0)? ' click ' : '';
-                var cun =  ( that.options.disable)? ' rate-cun disable' : '';
+                var cun =  ( that.options.disable)? ' rate-cun ' : '';
                 var disable = ((i < that.options.grade) &&that.options.disable) ? ' disable' : '';
                 $span.className = 'rate-icon '+ half + click + cun + disable;
                 $span.setAttribute('data-toggle', 'rate');

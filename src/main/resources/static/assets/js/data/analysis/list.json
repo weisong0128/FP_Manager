@@ -1,0 +1,107 @@
+{
+  "code": 0,
+  "msg": "操作成功",
+  "data": [
+    {
+      "pjName": "BBB",
+      "pjLocation": "[\"BBB\"]",
+      "pjLocationList": [
+        "BBB"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "测试",
+      "pjLocation": "[\"111\",\"222\"]",
+      "pjLocationList": [
+        "111",
+        "222"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "大数据情报国际化",
+      "pjLocation": "[\"南京公司测试环境\"]",
+      "pjLocationList": [
+        "南京公司测试环境"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "SXJG",
+      "pjLocation": "[\"山西省公安厅交管局\"]",
+      "pjLocationList": [
+        "山西省公安厅交管局"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "HCZZ",
+      "pjLocation": "[\"江苏省南京市\",\"江苏省南京市局\",\"江苏省厅\"]",
+      "pjLocationList": [
+        "江苏省南京市",
+        "江苏省南京市局",
+        "江苏省厅"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "智慧警务",
+      "pjLocation": "[\"江苏南京\",\"江苏省南京市\"]",
+      "pjLocationList": [
+        "江苏南京",
+        "江苏省南京市"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "AAA",
+      "pjLocation": "[\"AAA\",\"aaa\"]",
+      "pjLocationList": [
+        "AAA",
+        "aaa"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "万花筒",
+      "pjLocation": "[\"广西省来宾市\",\"江苏省省厅\"]",
+      "pjLocationList": [
+        "广西省来宾市",
+        "江苏省省厅"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "大集群",
+      "pjLocation": "[\"山西省省厅\"]",
+      "pjLocationList": [
+        "山西省省厅"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "JXH",
+      "pjLocation": "[\"广东省佛山市\"]",
+      "pjLocationList": [
+        "广东省佛山市"
+      ],
+      "path": null
+    },
+    {
+      "pjName": "ZDR",
+      "pjLocation": "[\"山西省太原市\"]",
+      "pjLocationList": [
+        "山西省太原市"
+      ],
+      "path": null
+    }
+  ],
+  "page": {
+    "pageNo": 1,
+    "pageSize": 15,
+    "rowEnd": 0,
+    "rowStart": 0,
+    "totalRows": 30
+  }
+}

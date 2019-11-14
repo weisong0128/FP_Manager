@@ -1,0 +1,44 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": {
+        "total": 20,
+        "rows": [{
+                "userId": "1",
+                "account": "admin",
+                "userName": "张三",
+                "password": "zhangsan",
+                "role": "超级管理员",
+                "roleId": "3",
+                "status": "1"
+            },
+            {
+                "userId": "2",
+                "account": "admin",
+                "userName": "",
+                "password": "zhangsan",
+                "role": "管理员",
+                "roleId": "2",
+                "status": "0"
+            },
+            {
+                "userId": "3",
+                "account": "admin",
+                "userName": "张三",
+                "password": "zhangsan",
+                "role": "普通用户",
+                "roleId": "1",
+                "status": "0"
+            },
+            {
+                "userId": "4",
+                "account": "admin",
+                "userName": "",
+                "password": "zhangsan",
+                "role": "运维",
+                "roleId": "4",
+                "status": "1"
+            }
+        ]
+    }
+}

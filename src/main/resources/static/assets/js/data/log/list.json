@@ -1,0 +1,18 @@
+{
+  "code": "0",
+  "msg": "success",
+  "data": {
+    "total": 52,
+    "rows": [
+      {
+        "meetingId": "1",
+        "meetingName": "培训会议",
+        "meetingAddress": "烽火科技大厦1楼102",
+        "meetingCreatorName": "zhangsan",
+        "meetingBegin": "2019-06-14 09:00:00",
+        "meetingEnd": "2019-06-15 17:00:00",
+        "joinPerson": "30"
+      }
+    ]
+  }
+}

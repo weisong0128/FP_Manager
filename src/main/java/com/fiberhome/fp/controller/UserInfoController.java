@@ -101,4 +101,6 @@ public class UserInfoController {
         map.put("uuids",uuid);
         return Response.ok(userInfoService.updateState(state,map));
     }
+
+
 }

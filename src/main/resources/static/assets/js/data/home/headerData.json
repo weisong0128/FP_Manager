@@ -1,0 +1,22 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [
+        {
+            "name": "fpTotal",
+            "value": "326560"
+        },{
+            "name": "online",
+            "value": "6560"
+        },{
+            "name": "test",
+            "value": "970"
+        },{
+            "name": "fpInstall",
+            "value": "37"
+        },{
+            "name": "fpApplication",
+            "value": "345"
+        }
+    ]
+}

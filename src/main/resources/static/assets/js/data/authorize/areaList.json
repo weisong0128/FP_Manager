@@ -1,0 +1,21 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+            "areaId": "1",
+            "area": "重庆"
+        },
+        {
+            "areaId": "2",
+            "area": "北京"
+        },
+        {
+            "areaId": "3",
+            "area": "南京"
+        },
+        {
+            "areaId": "4",
+            "area": "杭州"
+        }]
+
+}

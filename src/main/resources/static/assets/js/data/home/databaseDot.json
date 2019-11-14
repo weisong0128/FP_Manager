@@ -1,0 +1,36 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+      "name": "新疆",
+      "online": 10,
+      "test": 5,
+      "total": 15
+    },{
+      "name": "江苏",
+      "online": 30,
+      "test": 15,
+      "total": 45
+    },{
+      "name": "重庆",
+      "online": 6,
+      "test": 2,
+      "total": 8
+    },{
+      "name": "江西",
+      "online": 12,
+      "test": 16,
+      "total": 28
+    },{
+      "name": "北京",
+      "online": 16,
+      "test": 50,
+      "total": 66
+    },{
+      "name": "西藏",
+      "online": 120,
+      "test": 50,
+      "total": 170
+    }]
+  }
+  

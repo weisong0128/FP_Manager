@@ -1,0 +1,190 @@
+define([
+  'model',
+  'data',
+  'tool',
+  'public',
+  'filter',
+  'rightModal',
+  'analysis/analysisModel'
+], function (model, dataApp, tool, publicApp, filterApp, rightModalApp, analysisModel) {
+
+  var app = {
+    props: {},
+    table: "",
+    condition: {timeTag: "all"},
+    init: function (props) {
+      this.props = props;
+      publicApp.initAjaxSetup();
+      this.initAllSqlTable();
+      this.events();
+    },
+
+    initAllSqlTable: function () {
+      if (this.table) {
+        return;
+      }
+      var self = this;
+      var $id = $('#allSqlTable');
+      var columns = [
+        {
+          data: "pjLocation",
+          orderable: false,
+          render: function (args) {
+            return '<div class="w-small"><span class="ellipsis" title="' + args + '">' + args + '</span></div>';
+          }
+        },
+        {
+          data: "dateStr",
+          orderable: true,
+          render: function (args) {
+            return '<div class="w-small"><span title="' + args + '">' + args + '</span></div>';
+          }
+        },
+        {
+          data: "tagDescribe",
+          orderable: false,
+          render: function (args) {
+            return '<div class="w-xsmall"><span title="' + args + '">' + args + '</span></div>';
+          }
+        },
+        {
+          data: "time",
+          orderable: true,
+          render: function (args) {
+            return '<div class="w-xsmall"><span title="' + args + '">' + args + '</span></div>';
+          }
+        },
+        {
+          data: "sqlResult",
+          orderable: false,
+          render: function (args) {
+            return '<div class="w-xlarge"><span class="two-ellipsis" title=\"' + args + '\">' + args + '</span></div>';
+          }
+        },
+        {
+          data: "operation",
+          orderable: false,
+          render: function (args) {
+            return '<div class="operation w-xsmall" data-detail=\"' + args + '\">' +
+              '<button type="button" class="btn btn-link" data-action="showDetail">详情</button>' +
+              '</div>';
+          }
+        }
+      ];
+      var totalRows= 0,
+        rowStart=0,
+        rowEnd= 0;
+      var ajaxFun = function (params, callback) {
+        var condition = $.extend(true, {}, self.condition);
+        condition.pjName = self.props.projectName;
+        condition.pageNo = (params.start / params.length) + 1 || 1;
+        condition.pageSize = params.length;
+        condition.sort = params.order[0].dir;
+        condition.sortName = params.order[0].column === 1 ? 'date' : params.order[0].column === 3 ? 'time' : 'date';
+
+        analysisModel.getAllSql(condition).then(function (res) {
+          var obj = {
+            data: []
+          };
+          if (tool.checkStatusCode(res.code)) {
+            var total = res.data.page && res.data.page.totalRows || 0;
+            totalRows = total;
+            rowStart = res.data.page.rowStart + 1;
+            rowEnd = res.data.page.rowEnd;
+
+            if (total > dataApp.tableTotal) {
+              total = dataApp.tableTotal;
+              publicApp._toastDialog("数据量过大，只显示前30000条", {"intent": "warning", "position": "top_center"});
+            }
+
+            var pageData = res.data.allResult || [];
+            var dataTemp = [];
+            // 如有需要，可对表格数据进行封装（下面对返回的字段进行了筛选）
+            for (var i = 0; i < pageData.length; i++) {
+              var obj2 = {};
+              obj2['pjLocation'] = pageData[i].pjLocation || "";
+              obj2['dateStr'] = pageData[i].dateStr || "";
+              obj2['time'] = pageData[i].time !== null && pageData[i].time !== undefined ? Number(pageData[i].time)/1000 : "";
+              obj2['tagDescribe'] = pageData[i].tagDescribe || "";
+              var sqlResult = pageData[i].sqlResult !== null ? pageData[i].sqlResult.replace(/\'|\"/g,"\'") : '';
+              obj2['sqlResult'] = sqlResult;
+              obj2['operation'] = sqlResult;
+              dataTemp.push(obj2);
+            }
+            obj.data = dataTemp;
+            obj.draw = params.draw;
+            obj.recordsTotal = total;
+            obj.recordsFiltered = total;
+          } else {
+            publicApp._toastDialog(res.msg, {"intent": "danger", "position": "top_center"});
+          }
+          callback && callback(obj);
+        });
+      };
+
+      var options = {
+        serverSide: true,
+        destroy: true,
+        ordering: true,
+        orderClasses: false,
+        order: [[1, 'desc'], [3, '']],
+        scrollY: '520px',
+        drawCallback:function(){
+          $('#allSqlTable_info').html("共 " + totalRows + " 条记录，当前显示第 " + rowStart + " - " + rowEnd + " 条");
+        },
+        columns: columns,
+        ajax: ajaxFun
+      };
+
+      self.table = publicApp.initTable($id, options);
+    },
+
+    showDetail: function (detail) {
+      rightModalApp.init({
+        title: "SQL详情",
+        body: "<span>" + detail + "</span>"
+      });
+    },
+
+    setTableFilter: function (module) {
+      var filterObj = filterApp.getFilter(dataApp.filterObj[module]);
+      if (filterObj.searchTime === undefined || filterObj.searchTime === "" || filterObj.searchTime === "custom") {
+        filterObj.timeTag = 'all';
+      } else {
+        filterObj.timeTag = filterObj.searchTime;
+      }
+
+      this.condition = $.extend(true, {}, dataApp.allSqlParams, filterObj);
+      if(filterObj.searchTime === "custom") {
+        var timeArr = $.trim($("#"+module + " .customTimeTag").val()).split('~') || "";
+        this.condition.startTime = tool.getAbsoluteSecond(timeArr[0]) || 0;
+        this.condition.endTime = tool.getAbsoluteSecond(timeArr[1]) || 0;
+      }
+      publicApp.updateTable($('#' + module + 'Table'));
+    },
+
+    events: function () {
+      var self = this;
+
+      var allSqlSearch = '[data-action="allSqlSearch"]';
+      $(document).off('click.allSqlSearch.FPointer').on('click.allSqlSearch.FPointer', allSqlSearch, function () {
+        var $closest = $(this).closest(".form-validate");
+        var module = $closest.attr("id");
+        var value = $closest.find('.keyword').val();
+        dataApp.allSqlParams.keyWord = value;
+        dataApp.allSqlParams.isDistinct = Number($closest.find('.isDelDitto').prop("checked"));
+        self.setTableFilter(module);
+      });
+
+      $("[data-action='allSqlSearch']").click();
+
+      var showDetail = '[data-action="showDetail"]';
+      $(document).off('click.showDetail.FPointer').on('click.showDetail.FPointer', showDetail, function () {
+        var detail = $(this).closest('.operation').attr("data-detail");
+        self.showDetail(detail);
+        $(this).parents("tr").addClass("currentRow");
+      });
+    }
+  };
+  return app;
+});

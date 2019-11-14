@@ -1,0 +1,18 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+            "roleId": "0",
+            "role": "管理员"
+        },
+        {
+            "roleId": "1",
+            "role": "运维"
+        },
+        {
+            "roleId": "2",
+            "role": "普通用户"
+        }
+    ]
+
+}

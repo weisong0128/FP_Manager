@@ -1,0 +1,25 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+        "placeName": "全警大数据",
+        "testValue": 72,
+        "onlineValue": 27
+    },{
+        "placeName": "新疆兵团视察",
+        "testValue": 68,
+        "onlineValue": 86
+    },{
+        "placeName": "南方中心",
+        "testValue": 52,
+        "onlineValue": 25
+    },{
+        "placeName": "HC",
+        "testValue": 28,
+        "onlineValue": 82
+    },{
+        "placeName": "大数据实战",
+        "testValue": 88,
+        "onlineValue": 88
+    }]
+}

@@ -1,0 +1,97 @@
+{
+  "code": 0,
+  "msg": "操作成功",
+  "data": [
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51100"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51101"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51102"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51103"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    },
+    {
+      "tableName": "YDB_PHYSICAL_TABLE",
+      "tablePartition": "201908",
+      "pjlocation": "广西省来宾市",
+      "partition": "万花筒",
+      "count": "51106"
+    }
+  ],
+  "page": {
+    "totalRows": 71879,
+    "pageSize": 20,
+    "pageNo": 1,
+    "rowEnd": 20,
+    "rowStart": 0
+  }
+}

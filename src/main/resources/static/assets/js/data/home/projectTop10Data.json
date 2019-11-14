@@ -1,0 +1,35 @@
+{
+    "code": "0",
+    "msg": "success",
+    "data": [{
+        "name": "其他",
+        "value": 22
+    },{
+        "name": "全警大数据",
+        "value": 72
+    },{
+        "name": "新疆兵团视察",
+        "value": 68
+    },{
+        "name": "zdr",
+        "value": 32
+    },{
+        "name": "ccp",
+        "value": 50
+    },{
+        "name": "JXH",
+        "value": 42
+    },{
+        "name": "thunder",
+        "value": 38
+    },{
+        "name": "南方中心",
+        "value": 52
+    },{
+        "name": "HC",
+        "value": 28
+    },{
+        "name": "大数据实战",
+        "value": 88
+    }]
+}
